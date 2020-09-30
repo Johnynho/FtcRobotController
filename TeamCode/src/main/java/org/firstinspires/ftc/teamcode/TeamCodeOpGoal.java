@@ -3,11 +3,12 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.robotcore.external.navigation.MagneticFlux;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @TeleOp(name="Teleoperado TeamCodeGoal", group="Linear TesteOp")
 public class TeamCodeOpGoal extends LinearOpMode {
@@ -19,24 +20,14 @@ public class TeamCodeOpGoal extends LinearOpMode {
     DcMotor motorEsquerdaTras = null;
     DcMotor motorDireitaTras = null;
 
-    //Declaração objetos classe de referência a gyro.
-     SensorBNO055IMU a = new SensorBNO055IMU();
-
-     //Respectivamente y, x, x outro analógico e temp = drive;
+    BNO055IMU imu;
+    Orientation angles;
+     //Respectivamente eixos do gamepad y, x, x outro analógico e temp = drive;
     double drive, turn, meca, temp;
-    final float pi = 3.1415926f;
+    final double pi = 3.14;
     //Vetor para poderes;
     double []poder = new double[4];
-
-    //Metodos normais de hardware
-    public DcMotor getName(String name) {
-        return hardwareMap.get(DcMotor.class, name);
-    }
-
-    public Servo getNameS(String name) {
-        return hardwareMap.get(Servo.class, name);
-    }
-
+    double power = 1;
     public void rotacao() {
         //Rotação motores tração.
         motorEsquerda.setDirection(DcMotor.Direction.FORWARD);
@@ -50,14 +41,25 @@ public class TeamCodeOpGoal extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        //Calibra o gyro
-        a.gyroCalibrate();
 
+        //Configuração do gyro Hub
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+
+        //Inicia os parâmetros
         //Pega o nome das variáveis no Dv.
-        motorEsquerda = getName("motor_Esquerda");
-        motorEsquerdaTras = getName("motor_EsquerdaTras");
-        motorDireita = getName("motor_Direita");
-        motorDireitaTras = getName("motor_DireitaTras");
+        motorEsquerda = hardwareMap.get(DcMotor.class, "motor_Esquerda");
+        motorEsquerdaTras = hardwareMap.get(DcMotor.class, "motor_EsquerdaTras");
+        motorDireita = hardwareMap.get(DcMotor.class,"motor_Direita");
+        motorDireitaTras = hardwareMap.get(DcMotor.class,"motor_DireitaTras");
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
+
 
         //Define a rotação dos motores.
         rotacao();
@@ -67,8 +69,8 @@ public class TeamCodeOpGoal extends LinearOpMode {
 
         while (opModeIsActive()) {
             //Variáveis gamepad
-            drive = gamepad1.left_stick_y * -1;
-            turn = gamepad1.left_stick_x;
+            drive = -gamepad1.left_stick_y;
+            turn = gamepad1.left_stick_x * 1.5;
             meca = gamepad1.right_stick_x;
 
             processamentoGame(drive, turn);
@@ -97,17 +99,28 @@ public class TeamCodeOpGoal extends LinearOpMode {
                 poder[2] /= max;
                 poder[3] /= max;
                 }
+            telemetry.addData("Motor Esquerdo", poder[0]);
+            telemetry.addData("Motor EsquerdoTras", poder[1]);
+            telemetry.addData("Motor Direita", poder[2]);
+            telemetry.addData("Motor DireitaTras", poder[3]);
+            telemetry.addData("Valor aleatorio teste", power);
+
             //Metodo setPower que manda força para os motores.
             motorEsquerda.setPower(poder[0]);
             motorEsquerdaTras.setPower(poder[1]);
             motorDireita.setPower(poder[2]);
             motorDireitaTras.setPower(poder[3]);
+            telemetry.update();
             }
         }
         public void processamentoGame(double driveP, double turnP) {
-            double angle = (a.angleZ) * pi/180;
-            this.temp = driveP * Math.cos(angle) - turnP * Math.sin(angle);
-            this.turn = driveP * Math.sin(angle) + turnP * Math.cos(angle);
-            this.drive = this.temp;
+            double angle = gyroCalculate() * pi/180;
+            temp = driveP * Math.cos(angle) - turnP * Math.sin(angle);
+            turn = driveP * Math.sin(angle) + turnP * Math.cos(angle);
+            drive = temp;
         }
+    public double gyroCalculate(){
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        return angles.firstAngle;
+    }
     }
