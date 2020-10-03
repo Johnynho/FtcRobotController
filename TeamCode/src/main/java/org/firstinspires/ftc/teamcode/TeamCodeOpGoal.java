@@ -22,12 +22,15 @@ public class TeamCodeOpGoal extends LinearOpMode {
 
     BNO055IMU imu;
     Orientation angles;
-     //Respectivamente eixos do gamepad y, x, x outro analógico e temp = drive;
+    double angle;
+
+    //Respectivamente eixos do gamepad y, x, x outro analógico e temp = drive;
     double drive, turn, meca, temp;
-    final double pi = 3.14;
+    final double pi = 3.1415926;
+
     //Vetor para poderes;
     double []poder = new double[4];
-    double power = 1;
+
     public void rotacao() {
         //Rotação motores tração.
         motorEsquerda.setDirection(DcMotor.Direction.FORWARD);
@@ -58,8 +61,6 @@ public class TeamCodeOpGoal extends LinearOpMode {
         motorDireitaTras = hardwareMap.get(DcMotor.class,"motor_DireitaTras");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
-
-
 
         //Define a rotação dos motores.
         rotacao();
@@ -99,22 +100,24 @@ public class TeamCodeOpGoal extends LinearOpMode {
                 poder[2] /= max;
                 poder[3] /= max;
                 }
-            telemetry.addData("Motor Esquerdo", poder[0]);
-            telemetry.addData("Motor EsquerdoTras", poder[1]);
-            telemetry.addData("Motor Direita", poder[2]);
-            telemetry.addData("Motor DireitaTras", poder[3]);
-            telemetry.addData("Valor aleatorio teste", power);
 
             //Metodo setPower que manda força para os motores.
             motorEsquerda.setPower(poder[0]);
             motorEsquerdaTras.setPower(poder[1]);
             motorDireita.setPower(poder[2]);
             motorDireitaTras.setPower(poder[3]);
+
+            //Telemetria com os valores de cada roda
+            telemetry.addData("Motor Esquerdo", poder[0]);
+            telemetry.addData("Motor EsquerdoTras", poder[1]);
+            telemetry.addData("Motor Direita", poder[2]);
+            telemetry.addData("Motor DireitaTras", poder[3]);
+
             telemetry.update();
             }
         }
         public void processamentoGame(double driveP, double turnP) {
-            double angle = gyroCalculate() * pi/180;
+            angle = gyroCalculate() * pi/180;
             temp = driveP * Math.cos(angle) - turnP * Math.sin(angle);
             turn = driveP * Math.sin(angle) + turnP * Math.cos(angle);
             drive = temp;
