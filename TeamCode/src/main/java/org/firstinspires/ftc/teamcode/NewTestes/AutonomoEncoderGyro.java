@@ -35,29 +35,33 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous(name="Pushbot: Auto Drive By Encoder", group="Pushbot")
+
+@Autonomous(name="Autônomo Encoder Teste", group="Pushbot")
 @Disabled
 public class AutonomoEncoderGyro extends LinearOpMode {
 
     HardwareClass  robot   = new HardwareClass();   // Use a Pushbot's hardware
     private ElapsedTime     runtime = new ElapsedTime();
+    Orientation angles;
 
-    GyroThread gyroThread = new GyroThread();
-    Thread gyroPara = new Thread(gyroThread);
-    static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
-    static final double     DRIVE_GEAR_REDUCTION    = 2.0 ;     // This is < 1.0 if geared UP
-    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
+
+    static final double     COUNTS_PER_MOTOR_REV    = 1440 ;
+    static final double     DRIVE_GEAR_REDUCTION    = 2.0 ;
+    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                       (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.6;
+    static final double     DRIVE_SPEED            = 0.6;
     static final double     TURN_SPEED              = 0.5;
-
+    double speedEsquerda;
+    double speedDireita;
     @Override
     public void runOpMode() {
         robot.hardwareGeral(hardwareMap);
-        gyroPara.start();
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Resetting Encoders");    //
         telemetry.update();
@@ -77,9 +81,8 @@ public class AutonomoEncoderGyro extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        encoderDrive(DRIVE_SPEED,  48,  48, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
+        encoderDrive(DRIVE_SPEED,  12,  12, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
         encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
-        encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -98,7 +101,8 @@ public class AutonomoEncoderGyro extends LinearOpMode {
                              double timeoutS) {
         int newLeftTarget;
         int newRightTarget;
-
+        speedEsquerda = speed;
+        speedDireita = speed;
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
@@ -111,11 +115,16 @@ public class AutonomoEncoderGyro extends LinearOpMode {
             // Turn On RUN_TO_POSITION
             robot.motorEsquerda.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.motorDireita.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            if(gyroCalculate() > 0 && speed == 0.6) {
+                speedEsquerda = speedEsquerda - 0.2;
+            }
+            if(gyroCalculate() < 0 && speed == 0.6) {
+                speedDireita = speedDireita - 0.2;
+            }
 
-            // reset the timeout time and start motion.
             runtime.reset();
-            robot.motorEsquerda.setPower(Math.abs(speed));
-            robot.motorDireita.setPower(Math.abs(speed));
+            robot.motorEsquerda.setPower(Math.abs(speedEsquerda));
+            robot.motorDireita.setPower(Math.abs(speedDireita));
 
             while (opModeIsActive() &&
                    (runtime.seconds() < timeoutS) &&
@@ -137,7 +146,10 @@ public class AutonomoEncoderGyro extends LinearOpMode {
             robot.motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            //  sleep(250);   // optional pause after each move
         }
+    }
+    public double gyroCalculate(){
+        angles = HardwareClass.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        return angles.firstAngle;
     }
 }
