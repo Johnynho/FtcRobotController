@@ -30,9 +30,10 @@
 package org.firstinspires.ftc.teamcode.NewTestes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.PIDCoefficients;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -42,7 +43,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 
 @Autonomous(name="Autônomo Encoder Teste", group="Pushbot")
-@Disabled
 public class AutonomoEncoderGyro extends LinearOpMode {
 
     HardwareClass  robot   = new HardwareClass();   // Use a Pushbot's hardware
@@ -50,9 +50,9 @@ public class AutonomoEncoderGyro extends LinearOpMode {
     Orientation angles;
 
 
-    static final double     COUNTS_PER_MOTOR_REV    = 1440 ;
-    static final double     DRIVE_GEAR_REDUCTION    = 2.0 ;
-    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;
+    static final double     COUNTS_PER_MOTOR_REV    = 4480;
+    static final double     DRIVE_GEAR_REDUCTION    = 1.0;
+    static final double     WHEEL_DIAMETER_INCHES   = 3.5 ;
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                       (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double     DRIVE_SPEED            = 0.6;
@@ -62,8 +62,8 @@ public class AutonomoEncoderGyro extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.hardwareGeral(hardwareMap);
-        // Send telemetry message to signify robot waiting;
-        telemetry.addData("Status", "Resetting Encoders");    //
+        // Send telemetry message to signify robot waiting
+        telemetry.addData("Status", "Resetting Encoders");
         telemetry.update();
 
         robot.motorEsquerda.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -80,9 +80,7 @@ public class AutonomoEncoderGyro extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-
         encoderDrive(DRIVE_SPEED,  12,  12, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
-        encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -115,12 +113,6 @@ public class AutonomoEncoderGyro extends LinearOpMode {
             // Turn On RUN_TO_POSITION
             robot.motorEsquerda.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.motorDireita.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            if(gyroCalculate() > 0 && speed == 0.6) {
-                speedEsquerda = speedEsquerda - 0.2;
-            }
-            if(gyroCalculate() < 0 && speed == 0.6) {
-                speedDireita = speedDireita - 0.2;
-            }
 
             runtime.reset();
             robot.motorEsquerda.setPower(Math.abs(speedEsquerda));
