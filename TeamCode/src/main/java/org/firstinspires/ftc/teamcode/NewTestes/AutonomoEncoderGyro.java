@@ -47,6 +47,7 @@ public class AutonomoEncoderGyro extends LinearOpMode {
 
     HardwareClass  robot   = new HardwareClass();   // Use a Pushbot's hardware
     private ElapsedTime     runtime = new ElapsedTime();
+    AutonomoGyro t1 = new AutonomoGyro();
     Orientation angles;
 
 
@@ -62,6 +63,7 @@ public class AutonomoEncoderGyro extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.hardwareGeral(hardwareMap);
+        new Thread(t1).start();
         // Send telemetry message to signify robot waiting
         telemetry.addData("Status", "Resetting Encoders");
         telemetry.update();
