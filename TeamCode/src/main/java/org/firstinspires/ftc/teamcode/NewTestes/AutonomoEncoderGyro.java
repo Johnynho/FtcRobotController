@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode.NewTestes;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.vuforia.ar.pl.DrawOverlayView;
 
@@ -98,6 +99,7 @@ public class AutonomoEncoderGyro extends LinearOpMode {
                              double timeoutS) {
         int newLeftTarget;
         int newRightTarget;
+
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
@@ -107,9 +109,15 @@ public class AutonomoEncoderGyro extends LinearOpMode {
             robot.motorEsquerda.setTargetPosition(newLeftTarget);
             robot.motorDireita.setTargetPosition(newRightTarget);
 
-            runtime.reset();
+            // Turn On RUN_TO_POSITION
+            robot.motorEsquerda.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.motorDireita.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            alinhar(speed);
+            // reset the timeout time and start motion.
+            runtime.reset();
+            robot.motorEsquerda.setPower(Math.abs(speed));
+            robot.motorDireita.setPower(Math.abs(speed));
+
 
             while (opModeIsActive() &&
                    (runtime.seconds() < timeoutS) &&
@@ -136,25 +144,5 @@ public class AutonomoEncoderGyro extends LinearOpMode {
     public double gyroCalculate(){
         angles = HardwareClass.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         return angles.firstAngle;
-    }
-    public void alinhar(double speed) {
-        robot.motorEsquerda.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.motorDireita.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        while(gyroCalculate() < 0) {
-            robot.motorEsquerda.setPower(DRIVE_SPEED);
-            robot.motorDireita.setPower(-DRIVE_SPEED);
-        }
-        while(gyroCalculate() > 0) {
-            robot.motorEsquerda.setPower(-DRIVE_SPEED);
-            robot.motorDireita.setPower(DRIVE_SPEED);
-        }
-        robot.motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        robot.motorEsquerda.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.motorDireita.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        robot.motorEsquerda.setPower(Math.abs(speed));
-        robot.motorDireita.setPower(Math.abs(speed));
     }
 }
