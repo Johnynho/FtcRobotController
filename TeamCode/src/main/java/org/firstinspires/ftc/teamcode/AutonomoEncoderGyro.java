@@ -27,14 +27,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.NewTestes;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.vuforia.ar.pl.DrawOverlayView;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -47,7 +45,6 @@ public class AutonomoEncoderGyro extends LinearOpMode {
 
     HardwareClass  robot   = new HardwareClass();   // Use a Pushbot's hardware
     private ElapsedTime     runtime = new ElapsedTime();
-    //AutonomoGyro t1 = new AutonomoGyro();
     Orientation angles;
 
 

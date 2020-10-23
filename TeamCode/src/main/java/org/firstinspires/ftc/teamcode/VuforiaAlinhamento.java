@@ -79,7 +79,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 
 
 @TeleOp(name="Vuforia", group ="Concept")
-public class VuforiaUltimateGoal extends TeamCodeOpGoal {
+public class VuforiaAlinhamento extends TeamCodeOpGoal {
 
     // IMPORTANT:  For Phone Camera, set 1) the camera source and 2) the orientation, based on how your phone is mounted:
     // 1) Camera Source.  Valid choices are:  BACK (behind screen) or FRONT (selfie side)
@@ -92,6 +92,7 @@ public class VuforiaUltimateGoal extends TeamCodeOpGoal {
 
     HardwareClass robot = new HardwareClass();
     PID pid = new PID();
+    TeamCodeOpGoal robot2 = new TeamCodeOpGoal();
     List<VuforiaTrackable> allTrackables = new ArrayList<>();
     VuforiaTrackables targetsUltimateGoal = this.vuforia.loadTrackablesFromAsset("UltimateGoal");
 
@@ -115,12 +116,16 @@ public class VuforiaUltimateGoal extends TeamCodeOpGoal {
     private OpenGLMatrix lastLocation = null;
     VuforiaLocalizer vuforia = null;
     boolean targetVisible = false;
+
     private float phoneXRotate = 0;
     float phoneYRotate = 0;
     float phoneZRotate = 0;
 
-    double Xs, Ys, hypo;
-    double []posicao = new double[4];
+    double []posicaoC = new double[3];
+    double []output = new double[2];
+    double []posicaoAtu = new double[4];
+
+    double diff = robot2.gyroCalculate();
     public void vuforiaCalibre() {
         robot.motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorEsquerdaTras.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -177,15 +182,15 @@ public class VuforiaUltimateGoal extends TeamCodeOpGoal {
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, 0, -90)));
         frontWallTarget.setLocation(OpenGLMatrix
                 .translation(-halfField + (blocks / 2), quadField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 270)));
 
         // The tower goal targets are located a quarter field length from the ends of the back perimeter wall.
         blueTowerGoalTarget.setLocation(OpenGLMatrix
                 .translation(halfField + blocks / 2, (blocks / 2) * 4, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 90, 0)));
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, 90, 90)));
         redTowerGoalTarget.setLocation(OpenGLMatrix
                 .translation(halfField + blocks / 2, 0, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, 0, 90)));
 
         // Info:  The coordinate frame for the robot looks the same as the field.
         // The robot's "forward" direction is facing out along X axis, with the LEFT side facing out along the Y axis.
@@ -223,7 +228,7 @@ public class VuforiaUltimateGoal extends TeamCodeOpGoal {
         targetsUltimateGoal.activate();
     }
 
-    public void alinharGol() {
+    public void alinharGol(boolean a) {
             // check all the trackable targets to see which one (if any) is visible.
             targetVisible = false;
             for (VuforiaTrackable trackable : allTrackables) {
@@ -244,24 +249,38 @@ public class VuforiaUltimateGoal extends TeamCodeOpGoal {
             if (targetVisible) {
                 // express position (translation) of robot in inches.
                 VectorF translation = lastLocation.getTranslation();
+                posicaoC[0] = translation.get(0) / mmPerInch;
+                posicaoC[1] = translation.get(1) / mmPerInch;
+                posicaoC[2] = translation.get(2) / mmPerInch;
                 telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                        translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
+                        posicaoC[0], posicaoC[1], posicaoC[2]);
 
-                //hypo = hypotenusa da translação a partir do setPoint
-                 hypo = Math.hypot(translation.get(0), translation.get(1));
-                 Ys = translation.get(2) * Math.tan(hypo);
-                 Xs = Math.cos(hypo);
-
-                posicao[0] = Ys + Xs;
-                posicao[1] = Ys - Xs;
-                posicao[2] = Ys - Xs;
-                posicao[3] = Ys + Xs;
-
-                pid.feedForward();
                 // express the rotation of the robot in degrees.
                 Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
                 telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
 
+                if(a && targetVisible) {
+                    posicaoC[0] = translation.get(0) / mmPerInch;
+                    do {
+                        output[0] = pid.tracionada(posicaoC[0]);
+                        robot.motorDireita.setPower(output[0]);
+                        robot.motorEsquerda.setPower(-output[0]);
+                    }while(gyroCalculate() < 2);
+
+                    do {
+                        output[1] = pid.tracionada(posicaoC[0]);
+                        robot.motorDireita.setPower(-output[1]);
+                        robot.motorEsquerda.setPower(output[1]);
+                    }while(gyroCalculate() > 2);
+
+                        motorEsquerda.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        motorDireita.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        motorDireitaTras.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        motorEsquerdaTras.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                        pid.feedForward(motorEsquerda.getCurrentPosition(), motorEsquerdaTras.getCurrentPosition(),
+                                motorDireita.getCurrentPosition(), motorDireitaTras.getCurrentPosition(), posicaoC[0]);
+                }
             } else {
                 telemetry.addData("Visible Target", "none");
             }
@@ -270,11 +289,5 @@ public class VuforiaUltimateGoal extends TeamCodeOpGoal {
 
         // Disable Tracking when we are done;
         targetsUltimateGoal.deactivate();
-    }
-    //Lembrar que quando chamar, tem que colocar a desativação e modos normais
-    public void movimentar() {
-
-
-
     }
 }

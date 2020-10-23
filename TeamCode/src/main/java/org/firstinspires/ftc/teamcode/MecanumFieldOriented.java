@@ -9,21 +9,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
- /**
-  * Se você veio nessa Classe pelo link do vídeo da stemOS saiba\ que essa classe contém o código
-  * oficial da nossa equipe (Under Ctrl 14391) e poderá ser modificado para testes, para prevenir
-  * que você copie um código que irá ser testado nós colocamos o código do vídeo em outra classe
-  * por isso de uma olhada na classe {@link MecanumFieldOriented}
+
+/**
+  * Código certo do vídeo da stemOS com field oriented
   */
 @TeleOp(name="Teleoperado TeamCodeGoal", group="Linear TesteOp")
-public class TeamCodeOpGoal extends LinearOpMode {
+public class MecanumFieldOriented extends LinearOpMode {
 
-     ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime runtime = new ElapsedTime();
 
     //Declaração Motores.
-   public DcMotor motorEsquerda, motorDireita = null;
-   public DcMotor motorEsquerdaTras = null;
-   public DcMotor motorDireitaTras = null;
+    DcMotor motorEsquerda, motorDireita = null;
+    DcMotor motorEsquerdaTras = null;
+    DcMotor motorDireitaTras = null;
 
     BNO055IMU imu;
     Orientation angles;
