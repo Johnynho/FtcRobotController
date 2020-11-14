@@ -34,9 +34,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 
@@ -46,7 +43,6 @@ public class AutonomoEncoderGyro extends LinearOpMode {
     HardwareClass  robot   = new HardwareClass();   // Use a Pushbot's hardware
     private ElapsedTime     runtime = new ElapsedTime();
     Orientation angles;
-
 
     static final double     COUNTS_PER_MOTOR_REV    = 4480;
     static final double     DRIVE_GEAR_REDUCTION    = 1.0;
@@ -58,7 +54,7 @@ public class AutonomoEncoderGyro extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.hardwareGeral(hardwareMap);
-        //new Thread(t1).start();
+
         // Send telemetry message to signify robot waiting
         telemetry.addData("Status", "Resetting Encoders");
         telemetry.update();
@@ -135,11 +131,6 @@ public class AutonomoEncoderGyro extends LinearOpMode {
             // Turn off RUN_TO_POSITION
             robot.motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         }
-    }
-    public double gyroCalculate(){
-        angles = HardwareClass.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        return angles.firstAngle;
     }
 }

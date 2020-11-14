@@ -33,6 +33,16 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
+
 public class HardwareClass {
     //Declaração dos motores
     DcMotor motorEsquerda, motorDireita = null;
@@ -43,9 +53,44 @@ public class HardwareClass {
 
     HardwareMap hwMap   =  null;
 
+    public List<VuforiaTrackable> allTrackables = new ArrayList<>();
+    VuforiaTrackables targetsUltimateGoal;
+
+    private static final String VUFORIA_KEY =
+            "AYWpo1j/////AAABmXdvyto7jU+LuXGPiPaJ7eQ4FIrujbhvZmoi " +
+                    " KRcyjHFOYhPWujqUT8itJ5yl5d6xeQtRltWIaeULLDoE/zTbq+fGgveeiVmFzR45LGe6HWGjNi2twZhZqTPWFh" +
+                    " 8KGHueGcpX5am/wGJGKEp25ELJ+z9laddGkm0ykwJVAJ5NP47SSdBbAb/yzDCQmAUnuNvQMgSbm8fv0wE/tukSV" +
+                    " CgkhEaGuipkWgO9t6HDyh2E2UBsYeOjKwzZVsSBcn3hC2UyOimn5nkdyLqn08uu8l1eZBJWingstpU+YyRTwc0t" +
+                    " VDM7mK+GnS861EiN55nBYxXM2+XH4xqtgaA+0Wpum2J04BaNtg2vgs03PIK5Gw+bmUfM  ";
+
+    VuforiaLocalizer vuforia = null;
+
+    // 1) Camera Source.  Valid choices are:  BACK (camêra traseira) or FRONT (camêra fronteira)
+    // 2) PHONE_IS_PORTRAIT = true (portatil) or PHONE_IS_PORTRAIT = false (Deitado)
+    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
+    private static final boolean PHONE_IS_PORTRAIT = false;
+
+    float phoneXRotate = 0;
+    float phoneYRotate = 0;
+    float phoneZRotate = 0;
+
+    float CAMERA_FORWARD_DISPLACEMENT;
+    float CAMERA_VERTICAL_DISPLACEMENT;
+    float CAMERA_LEFT_DISPLACEMENT;
+
+    VuforiaLocalizer.Parameters parameters1;
+
+    private static final float mmPerInch = 25.4f;
+
     public void hardwareGeral(HardwareMap ahwMap) {
         //Referência hardware
         hwMap = ahwMap;
+
+        /*
+         * =============================================================================
+         *                                  GYRO
+         * =============================================================================
+         */
 
         //Configura o gyro
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -55,21 +100,59 @@ public class HardwareClass {
         parameters.loggingEnabled      = true;
         parameters.loggingTag          = "IMU";
 
+        imu = hwMap.get(BNO055IMU.class, "imu");
+
+        //Inicializa os parametros do gyro
+        imu.initialize(parameters);
+
+        /*
+         * =============================================================================
+         *                                  ACIONADORES
+         * =============================================================================
+         */
+
         //Pega o nome das variáveis no Dv.
         motorEsquerda = hwMap.get(DcMotor.class, "motor_Esquerda");
         motorEsquerdaTras = hwMap.get(DcMotor.class, "motor_EsquerdaTras");
         motorDireita = hwMap.get(DcMotor.class,"motor_Direita");
         motorDireitaTras = hwMap.get(DcMotor.class,"motor_DireitaTras");
-        imu = hwMap.get(BNO055IMU.class, "imu");
-
-        //Inicializa os parametros do gyro
-        imu.initialize(parameters);
 
         //Direção dos motores
         motorEsquerda.setDirection(DcMotor.Direction.FORWARD);
         motorDireita.setDirection(DcMotor.Direction.REVERSE);
         motorEsquerdaTras.setDirection(DcMotor.Direction.FORWARD);
         motorDireitaTras.setDirection(DcMotor.Direction.REVERSE);
+
+        /*
+         * =============================================================================
+         *                                  VUFORIA
+         * =============================================================================
+         */
+
+        int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
+        parameters1 = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+
+        parameters1.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters1.cameraDirection = CAMERA_CHOICE;
+
+        parameters1.useExtendedTracking = false;
+
+        //Instância o vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters1);
+
+        if (CAMERA_CHOICE == BACK) {
+            phoneYRotate = -90;
+        } else {
+            phoneYRotate = 90;
+        }
+
+        if (PHONE_IS_PORTRAIT) {
+            phoneXRotate = 90;
+        }
+
+        CAMERA_FORWARD_DISPLACEMENT = 5.0f * mmPerInch;   //De acordo com o centro do robô
+        CAMERA_VERTICAL_DISPLACEMENT = 8.0f * mmPerInch;   //Altura da camêra (referente ao chão)
+        CAMERA_LEFT_DISPLACEMENT = 0;     //Deslocamento da camêra
     }
  }
 
