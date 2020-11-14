@@ -94,7 +94,7 @@ public class VuforiaAlinhamento{
     //Posições em X, Y e Z
     double[] posicaoC = new double[3];
 
-    public void vuforiaCalibre(double dx, double dy, double dz) {
+    public void setPointGoal(double dx, double dy, double dz) {
 
         //Define os trackables
         init.targetsUltimateGoal = init.vuforia.loadTrackablesFromAsset("UltimateGoal");
