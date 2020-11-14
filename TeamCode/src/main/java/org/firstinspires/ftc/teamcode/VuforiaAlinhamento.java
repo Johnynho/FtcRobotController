@@ -125,10 +125,10 @@ public class VuforiaAlinhamento{
         //Localização do robô em relação ao setPoint (são 4), lembrando que é REFERÊNCIA a imagem
         redAllianceTarget.setLocation(OpenGLMatrix
                 .translation(0, -blocks - (blocks / 2), mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, 0, -90)));
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
         blueAllianceTarget.setLocation(OpenGLMatrix
                 .translation(0, halfField + blocks / 2, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, 0, 90)));
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90)));
         frontWallTarget.setLocation(OpenGLMatrix
                 .translation(-halfField + (blocks / 2), quadField, mmTargetHeight)
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
