@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -8,22 +9,22 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
+
 @TeleOp(name="Teleoperado TeamCodeGoal", group="Linear TesteOp")
 public class TeleOperado extends LinearOpMode {
 
      ElapsedTime runtime = new ElapsedTime();
 
-     HardwareClass hard = new HardwareClass();
+     private final HardwareClass hard = new HardwareClass();
 
-    Orientation angles;
-    double angle;
+     Orientation angles;
 
-    //Respectivamente eixos do gamepad y, x, x outro analógico e temp = drive;
-    double drive, turn, giro, temp;
-    final double pi = 3.1415926;
+     //Respectivamente eixos do gamepad y, x, x outro analógico
+     double drive, turn, giro;
+     double pi = 3.1415926;
 
-    //Vetor para poderes;
-    double []poder = new double[4];
+     //Vetor para poderes;
+     private final double []poder = new double[4];
 
     @Override
     public void runOpMode() {
@@ -75,19 +76,18 @@ public class TeleOperado extends LinearOpMode {
             hard.motorDireitaTras.setPower(poder[3]);
 
             //Telemetria com os valores de cada roda
-            telemetry.addData("Motor Esquerdo", poder[0]);
-            telemetry.addData("Motor EsquerdoTras", poder[1]);
-            telemetry.addData("Motor Direita", poder[2]);
-            telemetry.addData("Motor DireitaTras", poder[3]);
+            telemetry.addData("Motor Esquerdo %.2f", poder[0]);
+            telemetry.addData("Motor EsquerdoTras %.2f", poder[1]);
+            telemetry.addData("Motor Direita %.2f", poder[2]);
+            telemetry.addData("Motor DireitaTras %.2f", poder[3]);
 
             telemetry.update();
             }
         }
         private void processamentoGame(double driveP, double turnP) {
-            angle = gyroCalculate() * pi/180;
-            temp = driveP * Math.cos(angle) - turnP * Math.sin(angle);
+            double angle = gyroCalculate() * pi / 180;
+            drive = driveP * Math.cos(angle) - turnP * Math.sin(angle);
             turn = driveP * Math.sin(angle) + turnP * Math.cos(angle);
-            drive = temp;
         }
         private double gyroCalculate(){
         angles = HardwareClass.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
