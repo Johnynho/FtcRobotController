@@ -103,6 +103,19 @@ public class TeleOperado extends LinearOpMode {
             telemetry.addData("Motor Direita %.2f", poder[2]);
             telemetry.addData("Motor DireitaTras %.2f", poder[3]);
 
+            if(gamepad1.right_bumper && !antiBumper) {
+                hard.motorIntake.setPower(onOff ? 1 : 0);
+                onOff = !onOff;
+                antiBumper = true;
+            }else if (!gamepad1.right_bumper) {
+                antiBumper = false;
+            }
+            if (gamepad1.left_bumper) {
+                hard.motorIntake.setPower(-1);
+            }else{
+                hard.motorIntake.setPower(0);
+            }
+
             telemetry.update();
             }
         }
