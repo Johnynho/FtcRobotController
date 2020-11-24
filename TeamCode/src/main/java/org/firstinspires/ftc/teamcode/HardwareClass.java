@@ -177,23 +177,23 @@ public class HardwareClass {
         //==============================================================================
 
         alvosPS[0] = targetsUltimateGoal.get(0);
-        alvosPS[0].setName("Blue Tower Goal Target");
+        alvosPS[0].setName("Blue Tower Power Shot Target");
 
         //Imagem da Torre Vermelha
         alvosPS[1] = targetsUltimateGoal.get(1);
-        alvosPS[1].setName("Red Tower Goal Target");
+        alvosPS[1].setName("Red Tower Power Shot Target");
 
         //Imagem da Aliança Vermelha
         alvosPS[2] = targetsUltimateGoal.get(2);
-        alvosPS[2].setName("Red Alliance Target");
+        alvosPS[2].setName("Red Alliance Power Shot Target");
 
         //Imagem da Aliança Azul
         alvosPS[3] = targetsUltimateGoal.get(3);
-        alvosPS[3] .setName("Blue Alliance Target");
+        alvosPS[3] .setName("Blue Alliance Power Shot Target");
 
         //Imagem de trás da arena (observadores)
         alvosPS[4] = targetsUltimateGoal.get(4);
-        alvosPS[4].setName("Front Wall Target");
+        alvosPS[4].setName("Front Wall Power Shot Target");
 
         // Para melhorar o uso dos trackables ele coloca em um array
         allTrackablesGol.addAll(targetsUltimateGoal);

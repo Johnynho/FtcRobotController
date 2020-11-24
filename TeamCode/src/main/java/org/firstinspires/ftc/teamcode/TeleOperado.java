@@ -10,13 +10,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 
-@TeleOp(name="Teleoperado TeamCodeGoal", group="Linear TesteOp")
+@TeleOp(name="Teleoperado Under Ctrl 14391", group="Linear TesteOp")
 public class TeleOperado extends LinearOpMode {
 
      ElapsedTime runtime = new ElapsedTime();
 
      private final HardwareClass hard = new HardwareClass();
-
+     private final Vuforia h = new Vuforia();
      Orientation angles;
 
      //Respectivamente eixos do gamepad y, x, x outro analógico
@@ -31,12 +31,34 @@ public class TeleOperado extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
+        //Iniciando o hardware do robô (Acionadores, Vuforia e Gyro)
         hard.hardwareGeral(hardwareMap);
 
+        //Iniciando a Thread paralela do vuforia
+        Runnable vision = new Vuforia();
+        Thread visionThread = new Thread(vision);
+        visionThread.start();
+        //Analisar qualquer erro na thread
+        visionThread.setUncaughtExceptionHandler(h.handler);
+
+        //Escolha de aliança pela seta esquerda ou direita
+        //Respectivamente Azul e Vermelha
+        while(!gamepad1.dpad_left ^ !gamepad1.dpad_right) {
+            if(gamepad1.dpad_left) {
+                h.setPointGoal("Azul");
+                break;
+            } else if(gamepad1.dpad_right) {
+                h.setPointGoal("Vermelho");
+                break;
+            }
+        }
+
+        //Espera o start na Ds
         waitForStart();
         runtime.reset();
 
         while (opModeIsActive()) {
+
             //Variáveis gamepad
             drive = -gamepad1.left_stick_y;
             turn = gamepad1.left_stick_x * 1.5;
@@ -84,6 +106,7 @@ public class TeleOperado extends LinearOpMode {
             telemetry.update();
             }
         }
+
         private void processamentoGame(double driveP, double turnP) {
             double angle = gyroCalculate() * pi / 180;
             drive = driveP * Math.cos(angle) - turnP * Math.sin(angle);

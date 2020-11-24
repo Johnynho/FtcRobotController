@@ -58,7 +58,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
  * (Positive no centro, em direção a aliança azul)
  * - O eixo Z vai do chão para cima (Positivo é acima do chão)
 **/
-public class Vuforia {
+public class Vuforia implements Runnable{
 
     //Variáveis genéricas de instância
     private final TeleOperado hard = new TeleOperado();
@@ -79,9 +79,93 @@ public class Vuforia {
     //Posições em X, Y e Z
     private final double [][]posicaoC = new double[2][3];
 
-     void setPointGoal(String alianca) {
+    @Override
+    public void run() {
+        /*
+         * ================================================================================
+         *                                   GOLS
+         * ================================================================================
+         */
+            //Verifica os targets visiveis
+            boolean targetVisibleGols = false;
+
+            for (VuforiaTrackable trackable : init.allTrackablesGol) {
+                if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
+                    hard.telemetry.addData("Visible Target", trackable.getName());
+                    hard.telemetry.addLine("Mirar Gol");
+                    targetVisibleGols = true;
+
+                    OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
+                    if (robotLocationTransform != null) {
+                        lastLocationGol = robotLocationTransform;
+                    }
+                    break;
+                }
+            }
+            //Parte do código que mostra a localização do robô
+            if (targetVisibleGols) {
+
+                //Expressa a translação do robô em polegadas
+                VectorF translation = lastLocationGol.getTranslation();
+                posicaoC[0][0] = translation.get(0) / mmPerInch; //Posição X
+                posicaoC[0][1] = translation.get(1) / mmPerInch; //Posição Y
+                posicaoC[0][2] = translation.get(2) / mmPerInch; //Posição Z
+                hard.telemetry.addData("Pos (in) Mirar Gol", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                        posicaoC[1][0], posicaoC[1][1], posicaoC[1][2]);
+
+                //Rotação do robô em graus
+                Orientation rotationGol = Orientation.getOrientation(lastLocationGol, EXTRINSIC, XYZ, DEGREES);
+                hard.telemetry.addData("Rot (deg) Gol", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotationGol.firstAngle, rotationGol.secondAngle, rotationGol.thirdAngle);
+
+            } else {
+                hard.telemetry.addData("Visible Target Torre Gol", "none");
+            }
+        hard.telemetry.update();
+    /*
+     * ================================================================================
+     *                                   POWER SHOTS
+     * ================================================================================
+     */
+        //Verifica os targets visiveis
+        boolean targetVisiblePs = false;
+
+        for (VuforiaTrackable trackable : init.allTrackablesPS) {
+            if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
+                hard.telemetry.addData("Visible Target", trackable.getName());
+                hard.telemetry.addLine("Mirar Power Shot");
+                targetVisiblePs = true;
+
+                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
+                if (robotLocationTransform != null) {
+                    lastLocationPS = robotLocationTransform;
+                }
+                break;
+            }
+        }
+        //Parte do código que mostra a localização do robô
+        if (targetVisiblePs) {
+
+            //Expressa a translação do robô em polegadas
+            VectorF translation = lastLocationPS.getTranslation();
+            posicaoC[1][0] = translation.get(0) / mmPerInch; //Posição X
+            posicaoC[1][1] = translation.get(1) / mmPerInch; //Posição Y
+            posicaoC[1][2] = translation.get(2) / mmPerInch; //Posição Z
+            hard.telemetry.addData("Pos (in) Power Shot", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                    posicaoC[2][0], posicaoC[2][1], posicaoC[2][2]);
+
+            //Rotação do robô em graus
+            Orientation rotationPs = Orientation.getOrientation(lastLocationPS, EXTRINSIC, XYZ, DEGREES);
+            hard.telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotationPs.firstAngle, rotationPs.secondAngle, rotationPs.thirdAngle);
+
+        } else {
+            hard.telemetry.addData("Visible Target", "none");
+        }
+        hard.telemetry.update();
+    }
+
+    void setPointGoal(String alianca) {
         if(alianca.equals("Azul")){
-            //Localização do robô em relação ao setPoint do GOL azul (são 2), lembrando que é REFERÊNCIA a imagem
+            //Localização do robô em relação ao setPoint do GOL azul, lembrando que é REFERÊNCIA a imagem
             //Posição referente da Aliança Vermelha
             HardwareClass.alvosGol[2].setLocation(OpenGLMatrix
                     .translation(0, -blocks - (blocks / 2), mmTargetHeight)
@@ -105,7 +189,7 @@ public class Vuforia {
                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 46)));
 
         } else {
-            //Localização do robô em relação ao GOL vermelho (são 2), lembrando que é REFERÊNCIA a imagem
+            //Localização do robô em relação ao GOL vermelho, lembrando que é REFERÊNCIA a imagem
             //Posição referente da Aliança Vermelha
             HardwareClass.alvosGol[2].setLocation(OpenGLMatrix
                     .translation(0, -blocks * 4 - (blocks / 2), mmTargetHeight)
@@ -140,6 +224,8 @@ public class Vuforia {
 
          setPointPS(alianca);
     }
+
+
     private void setPointPS(String alianca) {
          if(alianca.equals("Azul")) {
              //Posição referente da Aliança Vermelha
@@ -193,87 +279,14 @@ public class Vuforia {
         for (VuforiaTrackable trackable : init.allTrackablesPS) {
             ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(init.robotFromCamera, init.parameters1.cameraDirection);
         }
-    }
-
-     void alinharGol(boolean y) {
-        //Ativa os alvos
         init.targetsUltimateGoal.activate();
-
-        //Verifica os targets visiveis
-        boolean targetVisible = false;
-
-        for (VuforiaTrackable trackable : init.allTrackablesGol) {
-            if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
-                hard.telemetry.addData("Visible Target", trackable.getName());
-                hard.telemetry.addLine("Mirar Gol");
-                targetVisible = true;
-
-                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
-                if (robotLocationTransform != null) {
-                    lastLocationGol = robotLocationTransform;
-                }
-                break;
-            }
-        }
-        //Parte do código que mostra a localização do robô
-        if (targetVisible) {
-
-            //Expressa a translação do robô em polegadas
-            VectorF translation = lastLocationGol.getTranslation();
-            posicaoC[0][0] = translation.get(0) / mmPerInch; //Posição X
-            posicaoC[0][1] = translation.get(1) / mmPerInch; //Posição Y
-            posicaoC[0][2] = translation.get(2) / mmPerInch; //Posição Z
-            hard.telemetry.addData("Pos (in) Mirar Gol", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                    posicaoC[1][0], posicaoC[1][1], posicaoC[1][2]);
-
-            //Rotação do robô em graus
-            Orientation rotation = Orientation.getOrientation(lastLocationGol, EXTRINSIC, XYZ, DEGREES);
-            hard.telemetry.addData("Rot (deg) Gol", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
-
-            } else {
-            hard.telemetry.addData("Visible Target Torre Gol", "none");
-        }
-        hard.telemetry.update();
     }
 
-    void alinharPS(boolean a) {
-        //Ativa os alvos
-        init.targetsUltimateGoal.activate();
-        //Verifica os targets visiveis
-        boolean targetVisible = false;
-
-        for (VuforiaTrackable trackable : init.allTrackablesPS) {
-            if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
-                hard.telemetry.addData("Visible Target", trackable.getName());
-                hard.telemetry.addLine("Mirar Power Shot");
-                targetVisible = true;
-
-                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
-                if (robotLocationTransform != null) {
-                    lastLocationPS = robotLocationTransform;
-                }
-                break;
-            }
+    Thread.UncaughtExceptionHandler handler = new Thread.UncaughtExceptionHandler() {
+        @Override
+        public void uncaughtException(Thread t, Throwable e) {
+            System.out.println("Erro lançado pela thread " + t.getName() + " " + e.getMessage());
         }
-        //Parte do código que mostra a localização do robô
-        if (targetVisible) {
-
-            //Expressa a translação do robô em polegadas
-            VectorF translation = lastLocationPS.getTranslation();
-            posicaoC[1][0] = translation.get(0) / mmPerInch; //Posição X
-            posicaoC[1][1] = translation.get(1) / mmPerInch; //Posição Y
-            posicaoC[1][2] = translation.get(2) / mmPerInch; //Posição Z
-            hard.telemetry.addData("Pos (in) Power Shot", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                    posicaoC[2][0], posicaoC[2][1], posicaoC[2][2]);
-
-            //Rotação do robô em graus
-            Orientation rotation = Orientation.getOrientation(lastLocationPS, EXTRINSIC, XYZ, DEGREES);
-            hard.telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
-
-        } else {
-            hard.telemetry.addData("Visible Target", "none");
-        }
-        hard.telemetry.update();
-    }
+    };
 }
 
