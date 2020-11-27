@@ -103,7 +103,7 @@ public class HardwareClass {
          * =============================================================================
          */
 
-        //Configura o gyro
+       //Configura o gyro
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
@@ -139,7 +139,7 @@ public class HardwareClass {
          * =============================================================================
          */
 
-        int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
+       int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
         parameters1 = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
         parameters1.vuforiaLicenseKey = VUFORIA_KEY;
@@ -216,6 +216,9 @@ public class HardwareClass {
         robotFromCamera = OpenGLMatrix
                 .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES, phoneYRotate, phoneZRotate, phoneXRotate));
+
+
     }
+
  }
 

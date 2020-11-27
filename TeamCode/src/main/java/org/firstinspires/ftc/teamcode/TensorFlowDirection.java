@@ -46,6 +46,7 @@ public class TensorFlowDirection extends LinearOpMode {
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
     String argolas = null;
+    HardwareClass h = new HardwareClass();
 
     private static final String VUFORIA_KEY =
             "AYWpo1j/////AAABmXdvyto7jU+LuXGPiPaJ7eQ4FIrujbhvZmoi " +
@@ -69,6 +70,7 @@ public class TensorFlowDirection extends LinearOpMode {
     public synchronized void runOpMode() {
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
+        h.hardwareGeral(hardwareMap);
         initVuforia();
         initTfod();
 

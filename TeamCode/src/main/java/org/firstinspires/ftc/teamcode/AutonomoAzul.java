@@ -34,15 +34,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-
-@Autonomous(name="Autônomo Encoder Teste", group="Pushbot")
-public class AutonomoEncoderGyro extends LinearOpMode {
+@Autonomous(name="Autônomo Aliança Azul", group="Pushbot")
+public class AutonomoAzul extends LinearOpMode {
 
     HardwareClass  robot   = new HardwareClass();   // Use a Pushbot's hardware
-    private ElapsedTime     runtime = new ElapsedTime();
-    Orientation angles;
+    Vuforia vision = new Vuforia();
+    private final ElapsedTime     runtime = new ElapsedTime();
 
     static final double     COUNTS_PER_MOTOR_REV    = 4480;
     static final double     DRIVE_GEAR_REDUCTION    = 1.0;
@@ -73,7 +71,6 @@ public class AutonomoEncoderGyro extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        encoderDrive(DRIVE_SPEED,  12,  12, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
