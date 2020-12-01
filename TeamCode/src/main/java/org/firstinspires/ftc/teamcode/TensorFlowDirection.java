@@ -29,9 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
@@ -40,12 +37,15 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@TeleOp(name = "Tensor Flow Direction", group = "Concept")
-public class TensorFlowDirection extends LinearOpMode {
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
+public class TensorFlowDirection extends Thread {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
     String argolas = null;
+    HardwareClass h = new HardwareClass();
 
     private static final String VUFORIA_KEY =
             "AYWpo1j/////AAABmXdvyto7jU+LuXGPiPaJ7eQ4FIrujbhvZmoi " +
@@ -64,9 +64,8 @@ public class TensorFlowDirection extends LinearOpMode {
      * Detection engine.
      */
     private TFObjectDetector tfod;
-
     @Override
-    public synchronized void runOpMode() {
+    public void run() {
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
         initVuforia();
@@ -86,7 +85,7 @@ public class TensorFlowDirection extends LinearOpMode {
             //tfod.setZoom(2.5, 1.78);
         }
 
-        if (opModeIsActive()) {
+        if (!isInterrupted()) {
                 if (tfod != null) {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.

@@ -29,16 +29,24 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
 /**
  * From the Audience perspective, the Red Alliance station is on the right and the
@@ -58,235 +66,234 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
  * (Positive no centro, em direção a aliança azul)
  * - O eixo Z vai do chão para cima (Positivo é acima do chão)
 **/
-public class Vuforia implements Runnable{
-
-    //Variáveis genéricas de instância
-    private final TeleOperado hard = new TeleOperado();
-    private final HardwareClass init = new HardwareClass();
-
+public class Vuforia {
     // Constantes convertidas para converter polegadas para mm
-    private static final float mmPerInch = 25.4f;
+    static final float mmPerInch = 25.4f;
     //Definida pelo altura do centro das imagens do chão
     private static final float mmTargetHeight = (6) * mmPerInch;
 
     //Constante do tamanho de tatame da quadra quadra convertida
     private static final float blocks = 23f * mmPerInch;
 
-    //Ultima posição do vuforia para Gol e Power Shot
-    private OpenGLMatrix lastLocationGol = null;
-    private OpenGLMatrix lastLocationPS = null;
+    List<VuforiaTrackable> allTrackablesGol = new ArrayList<>();
+    List<VuforiaTrackable> allTrackablesPS = new ArrayList<>();
+    VuforiaTrackables targetsUltimateGoal;
+    VuforiaTrackables targetsUltimatePS;
 
-    //Posições em X, Y e Z
-    private final double [][]posicaoC = new double[2][3];
+    private static final String VUFORIA_KEY =
+            "AYWpo1j/////AAABmXdvyto7jU+LuXGPiPaJ7eQ4FIrujbhvZmoi " +
+                    " KRcyjHFOYhPWujqUT8itJ5yl5d6xeQtRltWIaeULLDoE/zTbq+fGgveeiVmFzR45LGe6HWGjNi2twZhZqTPWFh" +
+                    " 8KGHueGcpX5am/wGJGKEp25ELJ+z9laddGkm0ykwJVAJ5NP47SSdBbAb/yzDCQmAUnuNvQMgSbm8fv0wE/tukSV" +
+                    " CgkhEaGuipkWgO9t6HDyh2E2UBsYeOjKwzZVsSBcn3hC2UyOimn5nkdyLqn08uu8l1eZBJWingstpU+YyRTwc0t" +
+                    " VDM7mK+GnS861EiN55nBYxXM2+XH4xqtgaA+0Wpum2J04BaNtg2vgs03PIK5Gw+bmUfM  ";
 
-    @Override
-    public void run() {
-        /*
-         * ================================================================================
-         *                                   GOLS
-         * ================================================================================
-         */
-            //Verifica os targets visiveis
-            boolean targetVisibleGols = false;
+    VuforiaLocalizer vuforia = null;
 
-            for (VuforiaTrackable trackable : init.allTrackablesGol) {
-                if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
-                    hard.telemetry.addData("Visible Target", trackable.getName());
-                    hard.telemetry.addLine("Mirar Gol");
-                    targetVisibleGols = true;
+    // 1) Camera Source.  Valid choices are:  BACK (camêra traseira) or FRONT (camêra fronteira)
+    // 2) PHONE_IS_PORTRAIT = true (portatil) or PHONE_IS_PORTRAIT = false (Deitado)
+    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
+    private static final boolean PHONE_IS_PORTRAIT = false;
 
-                    OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
-                    if (robotLocationTransform != null) {
-                        lastLocationGol = robotLocationTransform;
-                    }
-                    break;
-                }
-            }
-            //Parte do código que mostra a localização do robô
-            if (targetVisibleGols) {
+    float phoneXRotate = 0;
+    float phoneYRotate = 0;
+    float phoneZRotate = 0;
 
-                //Expressa a translação do robô em polegadas
-                VectorF translation = lastLocationGol.getTranslation();
-                posicaoC[0][0] = translation.get(0) / mmPerInch; //Posição X
-                posicaoC[0][1] = translation.get(1) / mmPerInch; //Posição Y
-                posicaoC[0][2] = translation.get(2) / mmPerInch; //Posição Z
-                hard.telemetry.addData("Pos (in) Mirar Gol", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                        posicaoC[1][0], posicaoC[1][1], posicaoC[1][2]);
+    VuforiaLocalizer.Parameters parameters1;
 
-                //Rotação do robô em graus
-                Orientation rotationGol = Orientation.getOrientation(lastLocationGol, EXTRINSIC, XYZ, DEGREES);
-                hard.telemetry.addData("Rot (deg) Gol", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotationGol.firstAngle, rotationGol.secondAngle, rotationGol.thirdAngle);
+    public void configureVuforia(String a, HardwareMap wMap) {
 
-            } else {
-                hard.telemetry.addData("Visible Target Torre Gol", "none");
-            }
-        hard.telemetry.update();
-    /*
-     * ================================================================================
-     *                                   POWER SHOTS
-     * ================================================================================
-     */
-        //Verifica os targets visiveis
-        boolean targetVisiblePs = false;
+        int cameraMonitorViewId = wMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", wMap.appContext.getPackageName());
+        parameters1 = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
-        for (VuforiaTrackable trackable : init.allTrackablesPS) {
-            if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
-                hard.telemetry.addData("Visible Target", trackable.getName());
-                hard.telemetry.addLine("Mirar Power Shot");
-                targetVisiblePs = true;
+        parameters1.vuforiaLicenseKey = VUFORIA_KEY;
 
-                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
-                if (robotLocationTransform != null) {
-                    lastLocationPS = robotLocationTransform;
-                }
-                break;
-            }
-        }
-        //Parte do código que mostra a localização do robô
-        if (targetVisiblePs) {
+        //Direção da camêra
+        parameters1.cameraDirection = CAMERA_CHOICE;
 
-            //Expressa a translação do robô em polegadas
-            VectorF translation = lastLocationPS.getTranslation();
-            posicaoC[1][0] = translation.get(0) / mmPerInch; //Posição X
-            posicaoC[1][1] = translation.get(1) / mmPerInch; //Posição Y
-            posicaoC[1][2] = translation.get(2) / mmPerInch; //Posição Z
-            hard.telemetry.addData("Pos (in) Power Shot", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                    posicaoC[2][0], posicaoC[2][1], posicaoC[2][2]);
+        parameters1.useExtendedTracking = false;
 
-            //Rotação do robô em graus
-            Orientation rotationPs = Orientation.getOrientation(lastLocationPS, EXTRINSIC, XYZ, DEGREES);
-            hard.telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotationPs.firstAngle, rotationPs.secondAngle, rotationPs.thirdAngle);
+        //Instância o vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters1);
 
-        } else {
-            hard.telemetry.addData("Visible Target", "none");
-        }
-        hard.telemetry.update();
-    }
+        VuforiaTrackable []alvosGol = new VuforiaTrackable[5];
+        VuforiaTrackable []alvosPS = new VuforiaTrackable[5];
 
-    void setPointGoal(String alianca) {
-        if(alianca.equals("Azul")){
+        targetsUltimateGoal = vuforia.loadTrackablesFromAsset("UltimateGoal");
+        targetsUltimatePS = vuforia.loadTrackablesFromAsset("UltimateGoal");
+        //Imagem da Torre Azul
+        alvosGol[0] = targetsUltimateGoal.get(0);
+        alvosGol[0].setName("Blue Tower Goal Target");
+
+        //Imagem da Torre Vermelha
+        alvosGol[1] = targetsUltimateGoal.get(1);
+        alvosGol[1].setName("Red Tower Goal Target");
+
+        //Imagem da Aliança Vermelha
+        alvosGol[2] = targetsUltimateGoal.get(2);
+        alvosGol[2].setName("Red Alliance Target");
+
+        //Imagem da Aliança Azul
+        alvosGol[3] = targetsUltimateGoal.get(3);
+        alvosGol[3] .setName("Blue Alliance Target");
+
+        //Imagem de trás da arena (observadores)
+        alvosGol[4] = targetsUltimateGoal.get(4);
+        alvosGol[4].setName("Front Wall Target");
+
+        //==============================================================================
+
+        alvosPS[0] = targetsUltimatePS.get(0);
+        alvosGol[0].setName("Blue Tower Goal Target");
+
+        //Imagem da Torre Vermelha
+        alvosPS[1] = targetsUltimatePS.get(1);
+        alvosGol[1].setName("Red Tower Goal Target");
+
+        //Imagem da Aliança Vermelha
+        alvosPS[2] = targetsUltimatePS.get(2);
+        alvosPS[2].setName("Red Alliance Target");
+
+        //Imagem da Aliança Azul
+        alvosPS[3] = targetsUltimatePS.get(3);
+        alvosGol[3] .setName("Blue Alliance Target");
+
+        //Imagem de trás da arena (observadores)
+        alvosPS[4] = targetsUltimatePS.get(4);
+        alvosPS[4].setName("Front Wall Target");
+        // Para melhorar o uso dos trackables ele coloca em um array
+        allTrackablesGol.addAll(targetsUltimateGoal);
+        allTrackablesPS.addAll(targetsUltimatePS);
+        if(a.equals("Azul")){
             //Localização do robô em relação ao setPoint do GOL azul, lembrando que é REFERÊNCIA a imagem
             //Posição referente da Aliança Vermelha
-            HardwareClass.alvosGol[2].setLocation(OpenGLMatrix
+            alvosGol[2].setLocation(OpenGLMatrix
                     .translation(0, -blocks - (blocks / 2), mmTargetHeight)
                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
             //Posição referente da Aliança Azul
-            HardwareClass.alvosGol[3].setLocation(OpenGLMatrix
+            alvosGol[3].setLocation(OpenGLMatrix
                     .translation(0, blocks * 4 + (blocks / 2), mmTargetHeight)
                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90)));
             //Imagem de trás da arena (observadores)
-            HardwareClass.alvosGol[4].setLocation(OpenGLMatrix
+            alvosGol[4].setLocation(OpenGLMatrix
                     .translation(-blocks * 3, blocks + (blocks / 2), mmTargetHeight)
                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
 
             //Posição referente da Torre Azul
-            HardwareClass.alvosGol[0].setLocation(OpenGLMatrix
+            alvosGol[0].setLocation(OpenGLMatrix
                     .translation(blocks * 3, blocks * 3, mmTargetHeight)
                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
             //Posição da Torre Vermelha
-            HardwareClass.alvosGol[1].setLocation(OpenGLMatrix
+            alvosGol[1].setLocation(OpenGLMatrix
                     .translation(blocks * 3, 0, mmTargetHeight)
                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 46)));
 
         } else {
             //Localização do robô em relação ao GOL vermelho, lembrando que é REFERÊNCIA a imagem
             //Posição referente da Aliança Vermelha
-            HardwareClass.alvosGol[2].setLocation(OpenGLMatrix
+            alvosGol[2].setLocation(OpenGLMatrix
                     .translation(0, -blocks * 4 - (blocks / 2), mmTargetHeight)
                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
             //Posição referente da Aliança Azul
-            HardwareClass.alvosGol[3].setLocation(OpenGLMatrix
+            alvosGol[3].setLocation(OpenGLMatrix
                     .translation(0, blocks + (blocks / 2), mmTargetHeight)
                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90)));
             //Imagem de trás da arena (observadores)
-            HardwareClass.alvosGol[4].setLocation(OpenGLMatrix
+            alvosGol[4].setLocation(OpenGLMatrix
                     .translation(-blocks * 3, -blocks - (blocks / 2), mmTargetHeight)
                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
 
             //Posição referente da Torre Azul
-            HardwareClass.alvosGol[0].setLocation(OpenGLMatrix
+            alvosGol[0].setLocation(OpenGLMatrix
                     .translation(blocks * 3, 0, mmTargetHeight)
                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 46)));
             //Posição da Torre Vermelha
-            HardwareClass.alvosGol[1].setLocation(OpenGLMatrix
+            alvosGol[1].setLocation(OpenGLMatrix
                     .translation(blocks * 3, -blocks * 3, mmTargetHeight)
                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
 
 
         }
 
-        // A frente do robô está virada para o eixo X (Posição Inicial)
-        // Y é o lado esquerdo de acordo com a visão de X = frente.
-        // Z é em cima do robô
-        for (VuforiaTrackable trackable : init.allTrackablesGol) {
-            ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(init.robotFromCamera, init.parameters1.cameraDirection);
-        }
-
-         setPointPS(alianca);
-    }
-
-
-    private void setPointPS(String alianca) {
-         if(alianca.equals("Azul")) {
+         if(a.equals("Azul")) {
              //Posição referente da Aliança Vermelha
              //18.75in é a distância entre gol azul e vermelho para o primeiro Power shot
              //7.5in é a distância entre eles
-             HardwareClass.alvosPS[2].setLocation(OpenGLMatrix
+             alvosPS[2].setLocation(OpenGLMatrix
                      .translation(0, -blocks * 3 - 18.75f, mmTargetHeight)
                      .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
              //Posição referente da Aliança Azul
              //6 é a distância do gol pro primeiro power shot
-             HardwareClass.alvosPS[3].setLocation(OpenGLMatrix
+             alvosPS[3].setLocation(OpenGLMatrix
                      .translation(0, blocks * 2 + 6, mmTargetHeight)
                      .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90)));
              //Imagem de trás da arena (observadores)
-             HardwareClass.alvosPS[4].setLocation(OpenGLMatrix
+             alvosPS[4].setLocation(OpenGLMatrix
                      .translation(-blocks * 3, -18.75f, mmTargetHeight)
                      .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
 
              //Posição referente da Torre Azul
-             HardwareClass.alvosPS[0].setLocation(OpenGLMatrix
+             alvosPS[0].setLocation(OpenGLMatrix
                      .translation(blocks * 3, (blocks / 2) - 6, mmTargetHeight)
                      .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 50)));
              //Posição da Torre Vermelha
-             HardwareClass.alvosPS[1].setLocation(OpenGLMatrix
+             alvosPS[1].setLocation(OpenGLMatrix
                      .translation(blocks * 3, -blocks - (blocks / 2) - 18.75f, mmTargetHeight)
                      .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
 
          } else {
-             HardwareClass.alvosPS[2].setLocation(OpenGLMatrix
+             alvosPS[2].setLocation(OpenGLMatrix
                      .translation(0, -blocks * 2 - 6, mmTargetHeight)
                      .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
              //Posição referente da Aliança Azul
-             HardwareClass.alvosPS[3].setLocation(OpenGLMatrix
+             alvosPS[3].setLocation(OpenGLMatrix
                      .translation(0, blocks * 3 + 18.75f, mmTargetHeight)
                      .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90)));
              //Imagem de trás da arena (observadores)
-             HardwareClass.alvosPS[4].setLocation(OpenGLMatrix
+             alvosPS[4].setLocation(OpenGLMatrix
                      .translation(-blocks * 3, 18.75f, mmTargetHeight)
                      .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
 
              //Posição referente da Torre Azul
-             HardwareClass.alvosPS[0].setLocation(OpenGLMatrix
+             alvosPS[0].setLocation(OpenGLMatrix
                      .translation(blocks * 3, blocks + (blocks / 2) + 18.75f, mmTargetHeight)
                      .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
              //Posição da Torre Vermelha
-             HardwareClass.alvosPS[1].setLocation(OpenGLMatrix
+             alvosPS[1].setLocation(OpenGLMatrix
                      .translation(blocks * 3, -(blocks / 2) + 6, mmTargetHeight)
                      .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 50)));
          }
-
-        for (VuforiaTrackable trackable : init.allTrackablesPS) {
-            ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(init.robotFromCamera, init.parameters1.cameraDirection);
+        if (CAMERA_CHOICE == BACK) {
+            phoneYRotate = -90;
+        } else {
+            phoneYRotate = 90;
         }
-        init.targetsUltimateGoal.activate();
+
+        // Rotate the phone vertical about the X axis if it's in portrait mode
+        if (PHONE_IS_PORTRAIT) {
+            phoneXRotate = 90 ;
+        }
+
+        // Next, translate the camera lens to where it is on the robot.
+        // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
+        final float CAMERA_FORWARD_DISPLACEMENT  = 4.0f * mmPerInch;   // eg: Camera is 4 Inches in front of robot center
+        final float CAMERA_VERTICAL_DISPLACEMENT = 8.0f * mmPerInch;   // eg: Camera is 8 Inches above ground
+        final float CAMERA_LEFT_DISPLACEMENT     = 0;     // eg: Camera is ON the robot's center line
+
+        OpenGLMatrix robotFromCamera = OpenGLMatrix
+                .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES, phoneYRotate, phoneZRotate, phoneXRotate));
+
+        // A frente do robô está virada para o eixo X (Posição Inicial)
+        // Y é o lado esquerdo de acordo com a visão de X = frente.
+        // Z é em cima do robô
+        for (VuforiaTrackable trackable : allTrackablesGol) {
+            ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, parameters1.cameraDirection);
+        }
+        for (VuforiaTrackable trackable : allTrackablesPS) {
+            ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, parameters1.cameraDirection);
+        }
+
+        targetsUltimateGoal.activate();
     }
-
-    Thread.UncaughtExceptionHandler handler = new Thread.UncaughtExceptionHandler() {
-        @Override
-        public void uncaughtException(Thread t, Throwable e) {
-            System.out.println("Erro lançado pela thread " + t.getName() + " " + e.getMessage());
-        }
-    };
 }
 
