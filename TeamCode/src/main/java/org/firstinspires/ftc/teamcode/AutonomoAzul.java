@@ -34,7 +34,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-
 @Autonomous(name="Autônomo Aliança Azul", group="Pushbot")
 public class AutonomoAzul extends LinearOpMode {
 
@@ -52,6 +51,8 @@ public class AutonomoAzul extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.hardwareGeral(hardwareMap);
+
+        TeleOperado.ladoO = "Azul";
 
         // Send telemetry message to signify robot waiting
         telemetry.addData("Status", "Resetting Encoders");
