@@ -31,13 +31,15 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-//FUNCIONOU?
+
 public class HardwareClass {
     //Declaração dos motores
     DcMotor motorEsquerda, motorDireita = null;
     DcMotor motorEsquerdaTras = null;
     DcMotor motorDireitaTras = null;
+    DcMotor motorIntake = null;
 
     static BNO055IMU imu;
     HardwareMap hwMap   =  null;
@@ -75,12 +77,14 @@ public class HardwareClass {
         motorEsquerdaTras = hwMap.get(DcMotor.class, "motor_EsquerdaTras");
         motorDireita = hwMap.get(DcMotor.class,"motor_Direita");
         motorDireitaTras = hwMap.get(DcMotor.class,"motor_DireitaTras");
+        motorIntake = hwMap.get(DcMotor.class,"motor_Intake")
 
         //Direção dos motores
         motorEsquerda.setDirection(DcMotor.Direction.FORWARD);
         motorDireita.setDirection(DcMotor.Direction.REVERSE);
         motorEsquerdaTras.setDirection(DcMotor.Direction.FORWARD);
         motorDireitaTras.setDirection(DcMotor.Direction.REVERSE);
+        motorIntake.setDirection(DcMotorSimple.Direction.FORWARD);
 
     }
 
