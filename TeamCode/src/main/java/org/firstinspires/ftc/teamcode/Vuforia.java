@@ -77,9 +77,8 @@ public class Vuforia {
 
     List<VuforiaTrackable> allTrackablesGol = new ArrayList<>();
     List<VuforiaTrackable> allTrackablesPS = new ArrayList<>();
-    VuforiaTrackables targetsUltimateGoal;
-    VuforiaTrackables targetsUltimatePS;
-
+    private VuforiaTrackables targetsUltimateGoal;
+    private VuforiaTrackables targetsUltimatePS;
     private static final String VUFORIA_KEY =
             "AYWpo1j/////AAABmXdvyto7jU+LuXGPiPaJ7eQ4FIrujbhvZmoi " +
                     " KRcyjHFOYhPWujqUT8itJ5yl5d6xeQtRltWIaeULLDoE/zTbq+fGgveeiVmFzR45LGe6HWGjNi2twZhZqTPWFh" +
@@ -101,7 +100,7 @@ public class Vuforia {
     VuforiaLocalizer.Parameters parameters1;
 
     public void configureVuforia(String a, HardwareMap wMap) {
-
+        String []name = new String[] {"Blue Tower Goal Target", "Red Tower Goal Target", "Red Alliance Target", "Blue Alliance Target", "Front Wall Target"};
         int cameraMonitorViewId = wMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", wMap.appContext.getPackageName());
         parameters1 = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
@@ -120,49 +119,22 @@ public class Vuforia {
 
         targetsUltimateGoal = vuforia.loadTrackablesFromAsset("UltimateGoal");
         targetsUltimatePS = vuforia.loadTrackablesFromAsset("UltimateGoal");
-        //Imagem da Torre Azul
-        alvosGol[0] = targetsUltimateGoal.get(0);
-        alvosGol[0].setName("Blue Tower Goal Target");
+        //Carregando trackables
+        for(int i = 0; i <= 4; i++) {
+            alvosGol[i] = targetsUltimateGoal.get(i);
+            alvosGol[i].setName(name[i]);
 
-        //Imagem da Torre Vermelha
-        alvosGol[1] = targetsUltimateGoal.get(1);
-        alvosGol[1].setName("Red Tower Goal Target");
+            //==============================================================================
 
-        //Imagem da Aliança Vermelha
-        alvosGol[2] = targetsUltimateGoal.get(2);
-        alvosGol[2].setName("Red Alliance Target");
+            alvosPS[i] = targetsUltimatePS.get(i);
+            alvosPS[i].setName(name[i]);
+        }
 
-        //Imagem da Aliança Azul
-        alvosGol[3] = targetsUltimateGoal.get(3);
-        alvosGol[3] .setName("Blue Alliance Target");
 
-        //Imagem de trás da arena (observadores)
-        alvosGol[4] = targetsUltimateGoal.get(4);
-        alvosGol[4].setName("Front Wall Target");
-
-        //==============================================================================
-
-        alvosPS[0] = targetsUltimatePS.get(0);
-        alvosGol[0].setName("Blue Tower Goal Target");
-
-        //Imagem da Torre Vermelha
-        alvosPS[1] = targetsUltimatePS.get(1);
-        alvosGol[1].setName("Red Tower Goal Target");
-
-        //Imagem da Aliança Vermelha
-        alvosPS[2] = targetsUltimatePS.get(2);
-        alvosPS[2].setName("Red Alliance Target");
-
-        //Imagem da Aliança Azul
-        alvosPS[3] = targetsUltimatePS.get(3);
-        alvosGol[3] .setName("Blue Alliance Target");
-
-        //Imagem de trás da arena (observadores)
-        alvosPS[4] = targetsUltimatePS.get(4);
-        alvosPS[4].setName("Front Wall Target");
         // Para melhorar o uso dos trackables ele coloca em um array
         allTrackablesGol.addAll(targetsUltimateGoal);
         allTrackablesPS.addAll(targetsUltimatePS);
+
         if(a.equals("Azul")){
             //Localização do robô em relação ao setPoint do GOL azul, lembrando que é REFERÊNCIA a imagem
             //Posição referente da Aliança Vermelha
@@ -292,8 +264,10 @@ public class Vuforia {
         for (VuforiaTrackable trackable : allTrackablesPS) {
             ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, parameters1.cameraDirection);
         }
-
+    }
+    public void ativeVuforia() {
         targetsUltimateGoal.activate();
+        targetsUltimatePS.activate();
     }
 }
 

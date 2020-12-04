@@ -35,8 +35,9 @@ public class TeleOperado extends LinearOpMode {
     private final double[] poder = new double[4];
 
     Vuforia a = new Vuforia();
-    boolean targetVisibleGols;
+    boolean targetVisible;
     OpenGLMatrix lastLocationGol;
+    OpenGLMatrix lastLocationPS;
 
     @Override
     public void runOpMode() {
@@ -46,6 +47,7 @@ public class TeleOperado extends LinearOpMode {
 
         hard.hardwareGeral(hardwareMap);
         a.configureVuforia("Azul", hardwareMap);
+        a.ativeVuforia();
 
         runtime.reset();
         waitForStart();
@@ -91,7 +93,7 @@ public class TeleOperado extends LinearOpMode {
             hard.motorEsquerda.setPower(poder[0]);
             hard.motorEsquerdaTras.setPower(poder[1]);
             hard.motorDireita.setPower(poder[2]);
-            hard.motorDireitaTras.setPower(poder[3]); 
+            hard.motorDireitaTras.setPower(poder[3]);
 
             //Telemetria com os valores de cada roda
             telemetry.addData("Motor Esquerdo %.2f", poder[0]);
@@ -116,45 +118,64 @@ public class TeleOperado extends LinearOpMode {
     }
 
     public void acessp() {
-                telemetry.addData("none", "acesso");
-                //Posições em X, Y e Z
-                    double[] posicaoGol = new double[3];
-                    /*
-                     * ================================================================================
-                     *                                   GOLS
-                     * ================================================================================
-                     */
-                    //Verifica os targets visiveis
-                    targetVisibleGols = false;
-                    for (VuforiaTrackable trackable : a.allTrackablesGol) {
-                        if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
-                            telemetry.addData("Visible Target", trackable.getName());
-                            targetVisibleGols = true;
+        telemetry.addData("none", "acesso");
+        //Posições em X, Y e Z
+        double[] posicaoGol = new double[3];
+        double[] posicaoPS = new double[3];
+        /*
+         * ================================================================================
+         *                                   GOLS
+         * ================================================================================
+         */
+        //Verifica os targets visiveis
+        targetVisible = false;
+        for (VuforiaTrackable trackable : a.allTrackablesGol) {
+            if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
+                telemetry.addData("Visible Target", trackable.getName());
+                targetVisible = true;
 
-                            OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
-                            if (robotLocationTransform != null) {
-                                lastLocationGol = robotLocationTransform;
-                            }
-                            break;
-                        }
-                    }
-                    //Parte do código que mostra a localização do robô
-                    if (targetVisibleGols) {
-
-                        //Expressa a translação do robô em polegadas
-                        VectorF translation = lastLocationGol.getTranslation();
-                        posicaoGol[0] = translation.get(0) / Vuforia.mmPerInch; //Posição X
-                        posicaoGol[1] = translation.get(1) / Vuforia.mmPerInch; //Posição Y
-                        posicaoGol[2] = translation.get(2) / Vuforia.mmPerInch; //Posição Z
-                        telemetry.addData("Pos (in) Mirar Gol", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                                posicaoGol[0], posicaoGol[1], posicaoGol[2]);
-
-                        //Rotação do robô em graus
-                        Orientation rotationGol = Orientation.getOrientation(lastLocationGol, EXTRINSIC, XYZ, DEGREES);
-                        telemetry.addData("Rot (deg) Gol", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotationGol.firstAngle, rotationGol.secondAngle, rotationGol.thirdAngle);
-
-                    } else {
-                        telemetry.addData("Visible Target Torre Gol", "none");
-                    }
+                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
+                if (robotLocationTransform != null) {
+                    lastLocationGol = robotLocationTransform;
+                }
+                break;
             }
+        }
+
+        for (VuforiaTrackable trackable1 : a.allTrackablesPS) {
+            if (((VuforiaTrackableDefaultListener) trackable1.getListener()).isVisible()) {
+
+                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable1.getListener()).getUpdatedRobotLocation();
+                if (robotLocationTransform != null) {
+                    lastLocationPS = robotLocationTransform;
+                }
+                break;
+            }
+        }
+        //Parte do código que mostra a localização do robô
+        if (targetVisible) {
+            //Expressa a translação do robô em polegadas
+            VectorF translation = lastLocationGol.getTranslation();
+            posicaoGol[0] = translation.get(0) / Vuforia.mmPerInch; //Posição X
+            posicaoGol[1] = translation.get(1) / Vuforia.mmPerInch; //Posição Y
+            posicaoGol[2] = translation.get(2) / Vuforia.mmPerInch; //Posição Z
+            telemetry.addData("Pos (in) Mirar Gol", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                    posicaoGol[0], posicaoGol[1], posicaoGol[2]);
+
+            //Expressa a translação do robô em polegadas
+            VectorF translationPS = lastLocationGol.getTranslation();
+            posicaoPS[0] = translationPS.get(0) / Vuforia.mmPerInch; //Posição X
+            posicaoPS[1] = translationPS.get(1) / Vuforia.mmPerInch; //Posição Y
+            posicaoPS[2] = translationPS.get(2) / Vuforia.mmPerInch; //Posição Z
+            telemetry.addData("Pos (in) Mirar Power shot", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                    posicaoPS[0], posicaoPS[1], posicaoPS[2]);
+
+            //Rotação do robô em graus
+            Orientation rotationGol = Orientation.getOrientation(lastLocationPS, EXTRINSIC, XYZ, DEGREES);
+            telemetry.addData("Rot (deg) Power shot", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotationGol.firstAngle, rotationGol.secondAngle, rotationGol.thirdAngle);
+
+        } else {
+            telemetry.addData("Visible Target", "none");
+        }
     }
+}
