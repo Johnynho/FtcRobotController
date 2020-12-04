@@ -77,7 +77,7 @@ public class HardwareClass {
         motorEsquerdaTras = hwMap.get(DcMotor.class, "motor_EsquerdaTras");
         motorDireita = hwMap.get(DcMotor.class,"motor_Direita");
         motorDireitaTras = hwMap.get(DcMotor.class,"motor_DireitaTras");
-        motorIntake = hwMap.get(DcMotor.class,"motor_Intake")
+        motorIntake = hwMap.get(DcMotor.class,"motor_Intake");
 
         //Direção dos motores
         motorEsquerda.setDirection(DcMotor.Direction.FORWARD);

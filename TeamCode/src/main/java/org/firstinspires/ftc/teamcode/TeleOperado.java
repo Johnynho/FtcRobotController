@@ -114,12 +114,14 @@ public class TeleOperado extends LinearOpMode {
             antiBumper = true;
         }else if (!gamepad1.right_bumper) {
             antiBumper = false;
+            if (gamepad1.left_bumper) {
+                hard.motorIntake.setPower(-1);
+                onOff = !onOff;
+            } else {
+                hard.motorIntake.setPower(onOff ? 1 : 0);
+            }
         }
-        if (gamepad1.left_bumper) {
-            hard.motorIntake.setPower(-1);
-        }else{
-            hard.motorIntake.setPower(0);
-        }
+
 
     }
 
