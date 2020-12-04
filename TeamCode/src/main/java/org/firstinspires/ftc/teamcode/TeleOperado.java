@@ -21,6 +21,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 @TeleOp(name="Teleoperado Under Ctrl 14391", group="Linear TesteOp")
 public class TeleOperado extends LinearOpMode {
 
+    boolean antiBumper = false;
+    boolean onOff = true;
+
     ElapsedTime runtime = new ElapsedTime();
 
     HardwareClass hard = new HardwareClass();
@@ -104,6 +107,20 @@ public class TeleOperado extends LinearOpMode {
             acessp();
             telemetry.update();
         }
+
+        if(gamepad1.right_bumper && !antiBumper) {
+            hard.motorIntake.setPower(onOff ? 1 : 0);
+            onOff = !onOff;
+            antiBumper = true;
+        }else if (!gamepad1.right_bumper) {
+            antiBumper = false;
+        }
+        if (gamepad1.left_bumper) {
+            hard.motorIntake.setPower(-1);
+        }else{
+            hard.motorIntake.setPower(0);
+        }
+
     }
 
     private void processamentoGame(double driveP, double turnP) {
