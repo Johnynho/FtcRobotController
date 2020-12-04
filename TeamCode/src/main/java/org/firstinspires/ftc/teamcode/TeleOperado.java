@@ -119,6 +119,7 @@ public class TeleOperado extends LinearOpMode {
                 onOff = false;
             } else {
                 hard.motorIntake.setPower(onOff ? 1 : 0);
+                onOff = true;
             }
         }
 
