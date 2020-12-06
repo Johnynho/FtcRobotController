@@ -108,6 +108,7 @@ public class TeleOperado extends LinearOpMode {
             telemetry.update();
         }
 
+        //Toggle do intake para pegar argolas assim como para soltar
         if(gamepad1.right_bumper && !antiBumper) {
             hard.motorIntake.setPower(onOff ? 1 : 0);
             onOff = !onOff;
@@ -117,9 +118,8 @@ public class TeleOperado extends LinearOpMode {
             if (gamepad1.left_bumper) {
                 hard.motorIntake.setPower(-1);
                 onOff = false;
-            } else {
-                hard.motorIntake.setPower(onOff ? 1 : 0);
-                onOff = true;
+            } else if (hard.motorIntake.getPower() == -1){
+                hard.motorIntake.setPower(0);
             }
         }
 

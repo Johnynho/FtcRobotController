@@ -119,6 +119,7 @@ public class Vuforia {
 
         targetsUltimateGoal = vuforia.loadTrackablesFromAsset("UltimateGoal");
         targetsUltimatePS = vuforia.loadTrackablesFromAsset("UltimateGoal");
+
         //Carregando trackables
         for(int i = 0; i <= 4; i++) {
             alvosGol[i] = targetsUltimateGoal.get(i);
