@@ -33,6 +33,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 public class HardwareClass {
     //Declaração dos motores
@@ -40,6 +41,8 @@ public class HardwareClass {
     public DcMotor motorEsquerdaTras = null;
     public DcMotor motorDireitaTras = null;
     public DcMotor motorIntake = null;
+    public DcMotor motorChapa = null;
+    public Servo servoChapa = null;
 
     //Referências de hardware e gyro
     static BNO055IMU imu;
@@ -80,6 +83,8 @@ public class HardwareClass {
         motorDireita = hwMap.get(DcMotor.class,"motor_Direita");
         motorDireitaTras = hwMap.get(DcMotor.class,"motor_DireitaTras");
         motorIntake = hwMap.get(DcMotor.class,"motor_Intake");
+        motorChapa = hwMap.get(DcMotor.class,"motor_Chapa");
+        servoChapa = hwMap.get(Servo.class,"servo_Chapa");
 
         //Direção dos motores
         motorEsquerda.setDirection(DcMotor.Direction.FORWARD);
@@ -87,18 +92,22 @@ public class HardwareClass {
         motorEsquerdaTras.setDirection(DcMotor.Direction.FORWARD);
         motorDireitaTras.setDirection(DcMotor.Direction.REVERSE);
         motorIntake.setDirection(DcMotorSimple.Direction.FORWARD);
+        motorChapa.setDirection(DcMotorSimple.Direction.FORWARD);
+        servoChapa.setDirection(Servo.Direction.FORWARD);
 
         //Reseta os encoder, por que são usados em dois OpModes
         motorEsquerda.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorDireita.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorEsquerdaTras.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorDireitaTras.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
+        motorChapa.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        
         //Coloca para se mexer contando o encoder
         motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorEsquerdaTras.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorDireitaTras.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorChapa.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
  }

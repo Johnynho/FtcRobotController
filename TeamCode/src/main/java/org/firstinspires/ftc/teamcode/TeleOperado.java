@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -20,9 +21,12 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 
 @TeleOp(name="Teleoperado Under Ctrl 14391", group="Linear TesteOp")
 public class TeleOperado extends LinearOpMode {
-
+    //Variáveis de controle dos ifs
     boolean antiBumper = false;
     boolean onOff = true;
+    boolean antiBumperc = false;
+    boolean onOffc = true;
+    int c2 = 0;
 
     ElapsedTime runtime = new ElapsedTime();
 
@@ -130,8 +134,30 @@ public class TeleOperado extends LinearOpMode {
             }
         }
 
-
-    }
+        //Toggle da chapa para carregar o Gol pêndulo
+        if(gamepad1.b && !antiBumperc){
+            hard.motorChapa.setTargetPosition(-1600);
+            hard.motorChapa.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            hard.motorChapa.setPower(onOffc ? 0.8 : 0);
+            onOffc = !onOffc;
+            antiBumperc = true;
+            c2++;
+        }else if(!gamepad1.b){
+        antiBumperc = false;
+    }if(gamepad1.x && c2==1) {
+            hard.servoChapa.setPosition(1);
+            hard.motorChapa.setTargetPosition(1600);
+            hard.motorChapa.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            hard.motorChapa.setPower(0.8);
+            c2++;
+        }else if(gamepad1.b && c2==2){
+            hard.motorChapa.setTargetPosition(500);
+            hard.motorChapa.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            hard.servoChapa.setPosition(0);
+            hard.motorChapa.setTargetPosition(1600);
+            hard.motorChapa.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            hard.motorChapa.setPower(0.8);
+        }
 
     private void processamentoGame(double driveP, double turnP) {
         double angle = gyroCalculate() * pi / 180;
