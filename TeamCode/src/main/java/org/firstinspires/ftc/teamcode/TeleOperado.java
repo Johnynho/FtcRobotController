@@ -28,7 +28,8 @@ public class TeleOperado extends LinearOpMode {
 
     HardwareClass hard = new HardwareClass();
     static String ladoO;
-    //Thread visionThread;
+
+    //Referência de oritenação para field Oriented
     Orientation angles;
 
     //Respectivamente eixos do gamepad y, x, x outro analógico
@@ -47,26 +48,27 @@ public class TeleOperado extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-
+        //Inicia o hardware do robô
         hard.hardwareGeral(hardwareMap);
+        //Manda o lado que estejamos jogando com base no autônomo e configura o vuforia
         a.configureVuforia("Azul", hardwareMap);
+        //Ativa o vuforia
         a.ativeVuforia();
 
         runtime.reset();
+        //Espera o botão start na Ds
         waitForStart();
 
-        //TeleOperado g = new TeleOperado();
-        //Thread t1 = new Thread(g);
-        //t1.start();
-        acessp();
         while (opModeIsActive()) {
             //Variáveis gamepad
             drive = -gamepad1.left_stick_y;
             turn = gamepad1.left_stick_x * 1.5;
             giro = gamepad1.right_stick_x;
 
+            //Calculo para field oriented
             processamentoGame(drive, turn);
 
+            //Valores para movimentação com mechanum (lados espelhados)
             //Motor Esquerda Frente;
             poder[0] = drive + turn + giro;
             //Motor Esquerda trás;
@@ -76,6 +78,7 @@ public class TeleOperado extends LinearOpMode {
             //Motor Direita trás;
             poder[3] = drive + turn - giro;
 
+            //Verificar se algum valor é maior que 1
             if (Math.abs(poder[0]) > 1 || Math.abs(poder[1]) > 1
                     || Math.abs(poder[2]) > 1 || Math.abs(poder[3]) > 1) {
 
@@ -104,7 +107,10 @@ public class TeleOperado extends LinearOpMode {
             telemetry.addData("Motor Direita %.2f", poder[2]);
             telemetry.addData("Motor DireitaTras %.2f", poder[3]);
             telemetry.addData("A nossa aliança é a: ", ladoO);
+
+            //Chama a leitura do Vuforia
             acessp();
+
             telemetry.update();
         }
 
@@ -118,6 +124,7 @@ public class TeleOperado extends LinearOpMode {
             if (gamepad1.left_bumper) {
                 hard.motorIntake.setPower(-1);
                 onOff = false;
+                //Só desativar caso esteja rodando ao contrário, para não dar conflito com o toggle
             } else if (hard.motorIntake.getPower() == -1){
                 hard.motorIntake.setPower(0);
             }

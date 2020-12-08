@@ -88,15 +88,17 @@ public class HardwareClass {
         motorDireitaTras.setDirection(DcMotor.Direction.REVERSE);
         motorIntake.setDirection(DcMotorSimple.Direction.FORWARD);
 
+        //Reseta os encoder, por que são usados em dois OpModes
         motorEsquerda.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorDireita.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorEsquerdaTras.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorDireitaTras.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        //Coloca para se mexer contando o encoder
         motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorEsquerdaTras.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorDireitaTras.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorDireitaTras.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
  }

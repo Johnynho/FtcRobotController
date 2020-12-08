@@ -67,6 +67,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * - O eixo Z vai do chão para cima (Positivo é acima do chão)
 **/
 public class Vuforia {
+
     // Constantes convertidas para converter polegadas para mm
     static final float mmPerInch = 25.4f;
     //Definida pelo altura do centro das imagens do chão
@@ -100,6 +101,7 @@ public class Vuforia {
     VuforiaLocalizer.Parameters parameters1;
 
     public void configureVuforia(String a, HardwareMap wMap) {
+        //Vetor de String que guarda os nomes dos alvos
         String []name = new String[] {"Blue Tower Goal Target", "Red Tower Goal Target", "Red Alliance Target", "Blue Alliance Target", "Front Wall Target"};
         int cameraMonitorViewId = wMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", wMap.appContext.getPackageName());
         parameters1 = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
@@ -235,13 +237,15 @@ public class Vuforia {
                      .translation(blocks * 3, -(blocks / 2) + 6, mmTargetHeight)
                      .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 50)));
          }
+
+         //Corige a rotação da camêra dependendo da configuração
         if (CAMERA_CHOICE == BACK) {
             phoneYRotate = -90;
         } else {
             phoneYRotate = 90;
         }
 
-        // Rotate the phone vertical about the X axis if it's in portrait mode
+        //Se o phone estiver portátil muda configuração para X
         if (PHONE_IS_PORTRAIT) {
             phoneXRotate = 90 ;
         }
