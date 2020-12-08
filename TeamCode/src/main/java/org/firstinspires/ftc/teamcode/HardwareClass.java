@@ -36,11 +36,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class HardwareClass {
     //Declaração dos motores
-    DcMotor motorEsquerda, motorDireita = null;
-    DcMotor motorEsquerdaTras = null;
-    DcMotor motorDireitaTras = null;
-    DcMotor motorIntake = null;
+    public DcMotor motorEsquerda, motorDireita = null;
+    public DcMotor motorEsquerdaTras = null;
+    public DcMotor motorDireitaTras = null;
+    public DcMotor motorIntake = null;
 
+    //Referências de hardware e gyro
     static BNO055IMU imu;
     HardwareMap hwMap   =  null;
 
@@ -61,6 +62,7 @@ public class HardwareClass {
         parameters.loggingEnabled      = true;
         parameters.loggingTag          = "IMU";
 
+        //Imu no Drive Station
         imu = hwMap.get(BNO055IMU.class, "imu");
 
         //Inicializa os parametros do gyro
@@ -86,6 +88,15 @@ public class HardwareClass {
         motorDireitaTras.setDirection(DcMotor.Direction.REVERSE);
         motorIntake.setDirection(DcMotorSimple.Direction.FORWARD);
 
+        motorEsquerda.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorDireita.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorEsquerdaTras.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorDireitaTras.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorEsquerdaTras.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorDireitaTras.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
  }

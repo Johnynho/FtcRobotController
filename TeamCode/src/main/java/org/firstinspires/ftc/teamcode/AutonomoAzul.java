@@ -41,13 +41,6 @@ public class AutonomoAzul extends LinearOpMode {
     Vuforia vision = new Vuforia();
     private final ElapsedTime     runtime = new ElapsedTime();
 
-    static final double     COUNTS_PER_MOTOR_REV    = 4480;
-    static final double     DRIVE_GEAR_REDUCTION    = 1.0;
-    static final double     WHEEL_DIAMETER_INCHES   = 3.5 ;
-    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-                                                      (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED            = 0.6;
-    static final double     TURN_SPEED              = 0.5;
     @Override
     public void runOpMode() {
         robot.hardwareGeral(hardwareMap);
@@ -57,13 +50,6 @@ public class AutonomoAzul extends LinearOpMode {
         // Send telemetry message to signify robot waiting
         telemetry.addData("Status", "Resetting Encoders");
         telemetry.update();
-
-        robot.motorEsquerda.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorDireita.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        robot.motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         // Send telemetry message to indicate successful Encoder reset
         telemetry.addData("Path0",  "Starting at %7d :%7d",
                           robot.motorEsquerda.getCurrentPosition(),
@@ -93,13 +79,6 @@ public class AutonomoAzul extends LinearOpMode {
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
-
-            // Determine new target position, and pass to motor controller
-            newLeftTarget = robot.motorEsquerda.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
-            newRightTarget = robot.motorDireita.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
-            robot.motorEsquerda.setTargetPosition(newLeftTarget);
-            robot.motorDireita.setTargetPosition(newRightTarget);
-
             // Turn On RUN_TO_POSITION
             robot.motorEsquerda.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.motorDireita.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -115,7 +94,6 @@ public class AutonomoAzul extends LinearOpMode {
                    (robot.motorEsquerda.isBusy() && robot.motorDireita.isBusy())) {
 
                 // Display it for the driver.
-                telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
                 telemetry.addData("Path2",  "Running at %7d :%7d",
                                             robot.motorEsquerda.getCurrentPosition(),
                                             robot.motorDireita.getCurrentPosition());
