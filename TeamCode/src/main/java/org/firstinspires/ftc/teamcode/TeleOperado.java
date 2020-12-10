@@ -24,8 +24,6 @@ public class TeleOperado extends LinearOpMode {
     //Variáveis de controle dos ifs
     boolean antiBumper = false;
     boolean onOff = true;
-    boolean antiBumperc = false;
-    boolean onOffc = true;
     int c2 = 0;
 
     ElapsedTime runtime = new ElapsedTime();
@@ -134,33 +132,25 @@ public class TeleOperado extends LinearOpMode {
             }
         }
 
-        //Toggle da chapa para carregar o Gol pêndulo
         //No primeiro aperto do botão B apenas abaixa a chapa
-        if(gamepad1.b && !antiBumperc){
+        if(gamepad1.b && c2==0){
             hard.motorChapa.setTargetPosition(-1600);
-            hard.motorChapa.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            hard.motorChapa.setPower(onOffc ? 0.8 : 0);
-            onOffc = !onOffc;
-            antiBumperc = true;
+            hard.motorChapa.setPower(0.8);
             c2++;
-         //Controle do if
-        }else if(!gamepad1.b){
-        antiBumperc = false;
         //Aqui verifica se a chapa está abaixada com a váriavel C2 e o botão X apertado então o servo se fecha e a chapa levanta
     }else if(gamepad1.x && c2==1) {
             hard.servoChapa.setPosition(1);
+            sleep(500);
             hard.motorChapa.setTargetPosition(1600);
-            hard.motorChapa.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             hard.motorChapa.setPower(0.8);
             c2++;
          /*Verifica se o botão B foi apertado duas vezes e o servo está fechado se tudo estiver certo, a chapa se abaixa um pouco
          e abre o servo assim soltando o wobble goal*/
         }else if(gamepad1.b && c2==2) {
             hard.motorChapa.setTargetPosition(500);
-            hard.motorChapa.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             hard.servoChapa.setPosition(0);
+            sleep(1000);
             hard.motorChapa.setTargetPosition(1600);
-            hard.motorChapa.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             hard.motorChapa.setPower(0.8);
             c2=0;
         }
