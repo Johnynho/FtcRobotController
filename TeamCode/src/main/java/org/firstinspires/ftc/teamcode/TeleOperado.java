@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -114,46 +113,47 @@ public class TeleOperado extends LinearOpMode {
             acessp();
 
             telemetry.update();
-        }
 
-        //Toggle do intake para pegar argolas assim como para soltar
-        if(gamepad1.right_bumper && !antiBumper) {
-            hard.motorIntake.setPower(onOff ? 1 : 0);
-            onOff = !onOff;
-            antiBumper = true;
-        }else if (!gamepad1.right_bumper) {
-            antiBumper = false;
-            if (gamepad1.left_bumper) {
-                hard.motorIntake.setPower(-1);
-                onOff = false;
-                //Só desativar caso esteja rodando ao contrário, para não dar conflito com o toggle
-            } else if (hard.motorIntake.getPower() == -1){
-                hard.motorIntake.setPower(0);
+            //Toggle do intake para pegar argolas assim como para soltar
+            if (gamepad1.right_bumper && !antiBumper) {
+                hard.motorIntake.setPower(onOff ? 1 : 0);
+                onOff = !onOff;
+                antiBumper = true;
+            } else if (!gamepad1.right_bumper) {
+                antiBumper = false;
+                if (gamepad1.left_bumper) {
+                    hard.motorIntake.setPower(-1);
+                    onOff = false;
+                    //Só desativar caso esteja rodando ao contrário, para não dar conflito com o toggle
+                } else if (hard.motorIntake.getPower() == -1) {
+                    hard.motorIntake.setPower(0);
+                }
             }
-        }
 
-        //No primeiro aperto do botão B apenas abaixa a chapa
-        if(gamepad1.b && c2==0){
-            hard.motorChapa.setTargetPosition(-1600);
-            hard.motorChapa.setPower(0.8);
-            c2++;
-        //Aqui verifica se a chapa está abaixada com a váriavel C2 e o botão X apertado então o servo se fecha e a chapa levanta
-    }else if(gamepad1.x && c2==1) {
-            hard.servoChapa.setPosition(1);
-            sleep(500);
-            hard.motorChapa.setTargetPosition(1600);
-            hard.motorChapa.setPower(0.8);
-            c2++;
+            //No primeiro aperto do botão B apenas abaixa a chapa
+            if (gamepad1.b && c2 == 0) {
+                hard.motorChapa.setTargetPosition(-1600);
+                hard.motorChapa.setPower(0.8);
+                c2++;
+                //Aqui verifica se a chapa está abaixada com a váriavel C2 e o botão X apertado então o servo se fecha e a chapa levanta
+            } else if (gamepad1.x && c2 == 1) {
+                hard.servoChapa.setPosition(1);
+                sleep(500);
+                hard.motorChapa.setTargetPosition(1600);
+                hard.motorChapa.setPower(0.8);
+                c2++;
          /*Verifica se o botão B foi apertado duas vezes e o servo está fechado se tudo estiver certo, a chapa se abaixa um pouco
          e abre o servo assim soltando o wobble goal*/
-        }else if(gamepad1.b && c2==2) {
-            hard.motorChapa.setTargetPosition(500);
-            hard.servoChapa.setPosition(0);
-            sleep(1000);
-            hard.motorChapa.setTargetPosition(1600);
-            hard.motorChapa.setPower(0.8);
-            c2=0;
+            } else if (gamepad1.b && c2 == 2) {
+                hard.motorChapa.setTargetPosition(500);
+                hard.servoChapa.setPosition(0);
+                sleep(1000);
+                hard.motorChapa.setTargetPosition(1600);
+                hard.motorChapa.setPower(0.8);
+                c2 = 0;
+            }
         }
+    }
 
     private void processamentoGame(double driveP, double turnP) {
         double angle = gyroCalculate() * pi / 180;
