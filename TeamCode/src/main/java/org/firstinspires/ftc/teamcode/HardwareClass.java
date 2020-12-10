@@ -108,6 +108,8 @@ public class HardwareClass {
         motorEsquerdaTras.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorDireitaTras.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorChapa.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        motorChapa.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
  }
