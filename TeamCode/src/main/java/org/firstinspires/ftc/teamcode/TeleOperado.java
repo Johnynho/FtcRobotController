@@ -132,24 +132,21 @@ public class TeleOperado extends LinearOpMode {
 
             //No primeiro aperto do botão B apenas abaixa a chapa
             if (gamepad1.b && c2 == 0) {
-                hard.motorChapa.setTargetPosition(-1600);
-                hard.motorChapa.setPower(0.8);
+            hard.servoPivo.setPosition(0);
                 c2++;
                 //Aqui verifica se a chapa está abaixada com a váriavel C2 e o botão X apertado então o servo se fecha e a chapa levanta
             } else if (gamepad1.x && c2 == 1) {
                 hard.servoChapa.setPosition(1);
                 sleep(500);
-                hard.motorChapa.setTargetPosition(1600);
-                hard.motorChapa.setPower(0.8);
+                hard.servoPivo.setPosition(1);
                 c2++;
          /*Verifica se o botão B foi apertado duas vezes e o servo está fechado se tudo estiver certo, a chapa se abaixa um pouco
          e abre o servo assim soltando o wobble goal*/
             } else if (gamepad1.b && c2 == 2) {
-                hard.motorChapa.setTargetPosition(500);
+                hard.servoPivo.setPosition(0.7);
                 hard.servoChapa.setPosition(0);
                 sleep(1000);
-                hard.motorChapa.setTargetPosition(1600);
-                hard.motorChapa.setPower(0.8);
+                hard.servoPivo.setPosition(1);
                 c2 = 0;
             }
         }
