@@ -43,6 +43,7 @@ public class HardwareClass {
     public DcMotor motorIntake = null;
     public DcMotor motorChapa = null;
     public Servo servoChapa = null;
+    public Servo servoPivo = null;
 
     //Referências de hardware e gyro
     static BNO055IMU imu;
@@ -83,7 +84,7 @@ public class HardwareClass {
         motorDireita = hwMap.get(DcMotor.class,"motor_Direita");
         motorDireitaTras = hwMap.get(DcMotor.class,"motor_DireitaTras");
         motorIntake = hwMap.get(DcMotor.class,"motor_Intake");
-        motorChapa = hwMap.get(DcMotor.class,"motor_Chapa");
+        servoPivo = hwMap.get(Servo.class,"servo_Pivo");
         servoChapa = hwMap.get(Servo.class,"servo_Chapa");
 
         //Direção dos motores
@@ -92,7 +93,7 @@ public class HardwareClass {
         motorEsquerdaTras.setDirection(DcMotor.Direction.FORWARD);
         motorDireitaTras.setDirection(DcMotor.Direction.REVERSE);
         motorIntake.setDirection(DcMotorSimple.Direction.FORWARD);
-        motorChapa.setDirection(DcMotorSimple.Direction.FORWARD);
+        servoPivo.setDirection(Servo.Direction.FORWARD);
         servoChapa.setDirection(Servo.Direction.FORWARD);
 
         //Reseta os encoder, por que são usados em dois OpModes
@@ -100,16 +101,12 @@ public class HardwareClass {
         motorDireita.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorEsquerdaTras.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorDireitaTras.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorChapa.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         
         //Coloca para se mexer contando o encoder
         motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorEsquerdaTras.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorDireitaTras.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorChapa.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        motorChapa.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
  }
