@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.testestracao;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -37,11 +38,27 @@ public class HardwareClassRPM {
      DcMotor motorEsquerda, motorDireita = null;
      DcMotor motorEsquerdaTras = null;
      DcMotor motorDireitaTras = null;
+
      HardwareMap hwMap   =  null;
+
+     static BNO055IMU imu;
 
     public void hardwareGeral(HardwareMap ahwMap) {
         //Referência hardware
         hwMap = ahwMap;
+
+        //Configura o gyro
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+
+        //Imu no Drive Station
+        imu = hwMap.get(BNO055IMU.class, "imu");
+
+        //Inicializa os parametros do gyro
+        imu.initialize(parameters);
         /*
          * =============================================================================
          *                                  ACIONADORES
