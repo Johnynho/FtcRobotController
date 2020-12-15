@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.testestracao;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorControllerEx;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
+@TeleOp(name="Teste de RPM Under Ctrl 14391", group="Linear TesteOp")
 public class TesteRPM extends LinearOpMode {
 
     HardwareClassRPM robo = new HardwareClassRPM();
@@ -33,12 +35,12 @@ public class TesteRPM extends LinearOpMode {
         v2RPM = (int)(motor2.getMaxRPM()/motor2.getTicksPerRev());
 
         while(opModeIsActive()) {
-            if(gamepad1.dpad_up) {
+            if(gamepad1.dpad_up && power < 1) {
                 power += 0.1;
                 porta1.setMotorPower(0, power);
                 porta2.setMotorPower(1, power);
                 sleep(1000);
-            } else if (gamepad1.dpad_down) {
+            } else if (gamepad1.dpad_down && power > -1) {
                 power -= 0.1;
                 porta1.setMotorPower(0, power);
                 porta2.setMotorPower(1, power);
@@ -53,12 +55,15 @@ public class TesteRPM extends LinearOpMode {
             v2Volta = v2Ticks/rpmPerSecond2;
 
             //Telemetria de ticks per second, ticks per rev e rpm
-            telemetry.addData("Motor porta 1 in ticks per second  %.2f", v1Ticks);
-            telemetry.addData("Motor porta 2 in ticks per second  %.2f", v2Ticks);
-            telemetry.addData("Motor porta 1 in ticks per rev  %.2f", v1Volta);
-            telemetry.addData("Motor porta 2 in ticks per rev  %.2f", v2Volta);
-            telemetry.addData("Motor porta 1 in rpm  %.2f", v1RPM * v1Volta);
-            telemetry.addData("Motor porta 2 in rpm  %.2f", v2RPM * v2Volta);
+            telemetry.addData("Motor porta 1 in ticks per second  %.1f", v1Ticks);
+            telemetry.addData("Motor porta 2 in ticks per second  %.1f", v2Ticks);
+            telemetry.addData("Motor porta 1 in ticks per rev  %.1f", v1Volta);
+            telemetry.addData("Motor porta 2 in ticks per rev  %.1f", v2Volta);
+            telemetry.addData("Motor porta 1 in rpm  %.1f", v1RPM * v1Volta);
+            telemetry.addData("Motor porta 2 in rpm  %.1f", v2RPM * v2Volta);
+            telemetry.addData("Motor porta 2 in rpm  %.1f", power);
+
+            telemetry.update();
         }
     }
 }
