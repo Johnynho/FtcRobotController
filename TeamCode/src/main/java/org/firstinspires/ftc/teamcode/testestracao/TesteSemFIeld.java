@@ -4,8 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
 
 @TeleOp(name="Teleoperado Under Ctrl (sem field) 14391", group="Linear TesteOp")
 public class TesteSemFIeld extends LinearOpMode {
@@ -13,14 +11,9 @@ public class TesteSemFIeld extends LinearOpMode {
     ElapsedTime runtime = new ElapsedTime();
 
     HardwareClassTracao hard = new HardwareClassTracao();
-    static String ladoO;
-
-    //Referência de oritenação para field Oriented
-    Orientation angles;
 
     //Respectivamente eixos do gamepad y, x, x outro analógico
     double drive, turn, giro;
-    double pi = 3.1415926;
 
     //Vetor para poderes;
     private final double[] poder = new double[4];
@@ -83,7 +76,10 @@ public class TesteSemFIeld extends LinearOpMode {
             telemetry.addData("Motor EsquerdoTras %.2f", poder[1]);
             telemetry.addData("Motor Direita %.2f", poder[2]);
             telemetry.addData("Motor DireitaTras %.2f", poder[3]);
-            telemetry.addData("A nossa aliança é a: ", ladoO);
+            telemetry.addData("Posição motor Esquerda", hard.motorEsquerda.getCurrentPosition());
+            telemetry.addData("Posição motor EsquerdaTras", hard.motorEsquerdaTras.getCurrentPosition());
+            telemetry.addData("Posição motor Direita", hard.motorDireita.getCurrentPosition());
+            telemetry.addData("Posição motor DireitaTras", hard.motorEsquerda.getCurrentPosition());
 
             telemetry.update();
         }
