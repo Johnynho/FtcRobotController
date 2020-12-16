@@ -77,12 +77,6 @@ public class HardwareClassTracao {
         motorEsquerdaTras = hwMap.get(DcMotor.class, "motor_EsquerdaTras");
         motorDireita = hwMap.get(DcMotor.class,"motor_Direita");
         motorDireitaTras = hwMap.get(DcMotor.class,"motor_DireitaTras");
-
-        //Direção dos motores
-        motorEsquerda.setDirection(DcMotor.Direction.FORWARD);
-        motorDireita.setDirection(DcMotor.Direction.REVERSE);
-        motorEsquerdaTras.setDirection(DcMotor.Direction.FORWARD);
-        motorDireitaTras.setDirection(DcMotor.Direction.REVERSE);
     }
 
  }
