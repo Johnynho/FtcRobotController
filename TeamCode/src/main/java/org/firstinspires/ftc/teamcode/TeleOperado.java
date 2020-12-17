@@ -114,6 +114,9 @@ public class TeleOperado extends LinearOpMode {
 
             telemetry.update();
 
+            //Ativação do LED para saber que pode atirar
+            hard.ledShooter.enableLight(true);
+
             //Toggle do intake para pegar argolas assim como para soltar
             if (gamepad1.right_bumper && !antiBumper) {
                 hard.motorIntake.setPower(onOff ? 1 : 0);
@@ -132,6 +135,7 @@ public class TeleOperado extends LinearOpMode {
 
             //No primeiro aperto do botão B apenas abaixa a chapa
             if (gamepad1.b && c2 == 0) {
+            hard.ledShooter.enableLight(false);
             hard.servoPivo.setPosition(0);
                 c2++;
                 //Aqui verifica se a chapa está abaixada com a váriavel C2 e o botão X apertado então o servo se fecha e a chapa levanta
@@ -140,13 +144,16 @@ public class TeleOperado extends LinearOpMode {
                 sleep(500);
                 hard.servoPivo.setPosition(1);
                 c2++;
+                hard.ledShooter.enableLight(true);
          /*Verifica se o botão B foi apertado duas vezes e o servo está fechado se tudo estiver certo, a chapa se abaixa um pouco
          e abre o servo assim soltando o wobble goal*/
             } else if (gamepad1.b && c2 == 2) {
+                hard.ledShooter.enableLight(false);
                 hard.servoPivo.setPosition(0.7);
                 hard.servoChapa.setPosition(0);
                 sleep(1000);
                 hard.servoPivo.setPosition(1);
+                hard.ledShooter.enableLight(true);
                 c2 = 0;
             }
         }
