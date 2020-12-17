@@ -33,6 +33,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class HardwareClass {
@@ -41,9 +42,9 @@ public class HardwareClass {
     public DcMotor motorEsquerdaTras = null;
     public DcMotor motorDireitaTras = null;
     public DcMotor motorIntake = null;
-    public DcMotor motorChapa = null;
     public Servo servoChapa = null;
     public Servo servoPivo = null;
+    public LED ledShooter = null;
 
     //Referências de hardware e gyro
     static BNO055IMU imu;
@@ -86,6 +87,7 @@ public class HardwareClass {
         motorIntake = hwMap.get(DcMotor.class,"motor_Intake");
         servoPivo = hwMap.get(Servo.class,"servo_Pivo");
         servoChapa = hwMap.get(Servo.class,"servo_Chapa");
+        ledShooter = hwMap.get(LED.class,"led_Shooter");
 
         //Direção dos motores
         motorEsquerda.setDirection(DcMotor.Direction.FORWARD);
