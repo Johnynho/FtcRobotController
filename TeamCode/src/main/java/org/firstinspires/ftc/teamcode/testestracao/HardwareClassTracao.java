@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode.testestracao;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class HardwareClassTracao {
@@ -78,11 +79,8 @@ public class HardwareClassTracao {
         motorDireita = hwMap.get(DcMotor.class,"motor_Direita");
         motorDireitaTras = hwMap.get(DcMotor.class,"motor_DireitaTras");
 
-        //Direção dos motores
-        motorEsquerda.setDirection(DcMotor.Direction.FORWARD);
-        motorDireita.setDirection(DcMotor.Direction.REVERSE);
-        motorEsquerdaTras.setDirection(DcMotor.Direction.FORWARD);
-        motorDireitaTras.setDirection(DcMotor.Direction.REVERSE);
+        motorEsquerda.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorEsquerdaTras.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
  }

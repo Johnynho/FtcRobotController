@@ -47,13 +47,13 @@ public class TesteSemFIeld extends LinearOpMode {
 
             //Valores para movimentação com mechanum (lados espelhados)
             //Motor Esquerda Frente;
-            poder[0] = drive + turn + giro;
+            poder[0] = Math.cbrt(drive + turn + giro);
             //Motor Esquerda trás;
-            poder[1] = drive - turn + giro;
+            poder[1] = Math.cbrt(drive - turn + giro);
             //Motor Direita Frente;
-            poder[2] = drive - turn - giro;
+            poder[2] = Math.cbrt(drive - turn - giro);
             //Motor Direita trás;
-            poder[3] = drive + turn - giro;
+            poder[3] = Math.cbrt(drive + turn - giro);
 
             //Verificar se algum valor é maior que 1
             if (Math.abs(poder[0]) > 1 || Math.abs(poder[1]) > 1
