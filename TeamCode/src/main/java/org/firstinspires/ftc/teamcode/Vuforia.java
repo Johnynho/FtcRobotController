@@ -280,7 +280,7 @@ public class Vuforia extends TeleOperado{
         targetsUltimateGoal.activate();
         targetsUltimatePS.activate();
     }
-    public void acessp() {
+    public boolean acessp() {
         //Posições em X, Y e Z
         double[] posicaoGol = new double[3];
         double[] posicaoPS = new double[3];
@@ -331,6 +331,7 @@ public class Vuforia extends TeleOperado{
         } else {
             telemetry.addData("Visible Target", "none");
         }
+        return targetVisible;
     }
 }
 

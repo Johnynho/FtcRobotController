@@ -97,8 +97,6 @@ public class TeleOperado extends LinearOpMode {
             telemetry.addData("Motor DireitaTras %.2f", poder[3]);
             telemetry.addData("A nossa aliança é a: ", ladoO);
 
-            //Chama a leitura do Vuforia
-            vuforiaObj.acessp();
 
             telemetry.update();
 
@@ -123,8 +121,8 @@ public class TeleOperado extends LinearOpMode {
 
             //No primeiro aperto do botão B apenas abaixa a chapa
             if (gamepad1.b && c2 == 0) {
-            hard.ledShooter.enableLight(false);
-            hard.servoPivo.setPosition(0);
+                hard.ledShooter.enableLight(false);
+                hard.servoPivo.setPosition(0);
                 c2++;
                 //Aqui verifica se a chapa está abaixada com a váriavel C2 e o botão X apertado então o servo se fecha e a chapa levanta
             } else if (gamepad1.x && c2 == 1) {
@@ -144,6 +142,9 @@ public class TeleOperado extends LinearOpMode {
                 hard.ledShooter.enableLight(true);
                 c2 = 0;
             }
+
+            //Chama a leitura do Vuforia
+            boolean alvoVisivel = vuforiaObj.acessp();
         }
     }
 
