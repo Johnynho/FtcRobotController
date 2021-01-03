@@ -4,18 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 
 
 @TeleOp(name="Teleoperado Under Ctrl 14391", group="Linear TesteOp")
@@ -25,9 +17,11 @@ public class TeleOperado extends LinearOpMode {
     boolean onOff = true;
     int c2 = 0;
 
+    //Instanciação de objetos
     ElapsedTime runtime = new ElapsedTime();
-
+    Vuforia vuforiaObj = new Vuforia();
     HardwareClass hard = new HardwareClass();
+
     static String ladoO;
 
     //Referência de oritenação para field Oriented
@@ -35,14 +29,11 @@ public class TeleOperado extends LinearOpMode {
 
     //Respectivamente eixos do gamepad y, x, x outro analógico
     double drive, turn, giro;
-    double pi = 3.1415926;
-    //Vetor para poderes;
+
+    //Vetor para potência do motor
     private final double[] poder = new double[4];
 
-    Vuforia a = new Vuforia();
-    boolean targetVisible;
-    OpenGLMatrix lastLocationGol;
-    OpenGLMatrix lastLocationPS;
+
 
     @Override
     public void runOpMode() {
@@ -52,9 +43,9 @@ public class TeleOperado extends LinearOpMode {
         //Inicia o hardware do robô
         hard.hardwareGeral(hardwareMap);
         //Manda o lado que estejamos jogando com base no autônomo e configura o vuforia
-        a.configureVuforia("Azul", hardwareMap);
+        vuforiaObj.configureVuforia("Azul", hardwareMap);
         //Ativa o vuforia
-        a.ativeVuforia();
+        vuforiaObj.ativeVuforia();
 
         runtime.reset();
         //Espera o botão start na Ds
@@ -65,9 +56,6 @@ public class TeleOperado extends LinearOpMode {
             drive = -gamepad1.left_stick_y;
             turn = gamepad1.left_stick_x * 1.5;
             giro = gamepad1.right_stick_x;
-
-            //Calculo para field oriented
-            processamentoGame(drive, turn);
 
             //Valores para movimentação com mechanum (lados espelhados)
             //Motor Esquerda Frente;
@@ -110,7 +98,7 @@ public class TeleOperado extends LinearOpMode {
             telemetry.addData("A nossa aliança é a: ", ladoO);
 
             //Chama a leitura do Vuforia
-            acessp();
+            vuforiaObj.acessp();
 
             telemetry.update();
 
@@ -159,76 +147,8 @@ public class TeleOperado extends LinearOpMode {
         }
     }
 
-    private void processamentoGame(double driveP, double turnP) {
-        double angle = gyroCalculate() * pi / 180;
-        drive = driveP * Math.cos(angle) - turnP * Math.sin(angle);
-        turn = driveP * Math.sin(angle) + turnP * Math.cos(angle);
-    }
-
     private double gyroCalculate() {
         angles = HardwareClass.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         return angles.firstAngle;
-    }
-
-    public void acessp() {
-        telemetry.addData("none", "acesso");
-        //Posições em X, Y e Z
-        double[] posicaoGol = new double[3];
-        double[] posicaoPS = new double[3];
-        /*
-         * ================================================================================
-         *                                   GOLS
-         * ================================================================================
-         */
-        //Verifica os targets visiveis
-        targetVisible = false;
-        for (VuforiaTrackable trackable : a.allTrackablesGol) {
-            if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
-                telemetry.addData("Visible Target", trackable.getName());
-                targetVisible = true;
-
-                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
-                if (robotLocationTransform != null) {
-                    lastLocationGol = robotLocationTransform;
-                }
-                break;
-            }
-        }
-
-        for (VuforiaTrackable trackable1 : a.allTrackablesPS) {
-            if (((VuforiaTrackableDefaultListener) trackable1.getListener()).isVisible()) {
-
-                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable1.getListener()).getUpdatedRobotLocation();
-                if (robotLocationTransform != null) {
-                    lastLocationPS = robotLocationTransform;
-                }
-                break;
-            }
-        }
-        //Parte do código que mostra a localização do robô
-        if (targetVisible) {
-            //Expressa a translação do robô em polegadas
-            VectorF translation = lastLocationGol.getTranslation();
-            posicaoGol[0] = translation.get(0) / Vuforia.mmPerInch; //Posição X
-            posicaoGol[1] = translation.get(1) / Vuforia.mmPerInch; //Posição Y
-            posicaoGol[2] = translation.get(2) / Vuforia.mmPerInch; //Posição Z
-            telemetry.addData("Pos (in) Mirar Gol", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                    posicaoGol[0], posicaoGol[1], posicaoGol[2]);
-
-            //Expressa a translação do robô em polegadas
-            VectorF translationPS = lastLocationGol.getTranslation();
-            posicaoPS[0] = translationPS.get(0) / Vuforia.mmPerInch; //Posição X
-            posicaoPS[1] = translationPS.get(1) / Vuforia.mmPerInch; //Posição Y
-            posicaoPS[2] = translationPS.get(2) / Vuforia.mmPerInch; //Posição Z
-            telemetry.addData("Pos (in) Mirar Power shot", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                    posicaoPS[0], posicaoPS[1], posicaoPS[2]);
-
-            //Rotação do robô em graus
-            Orientation rotationGol = Orientation.getOrientation(lastLocationPS, EXTRINSIC, XYZ, DEGREES);
-            telemetry.addData("Rot (deg) Power shot", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotationGol.firstAngle, rotationGol.secondAngle, rotationGol.thirdAngle);
-
-        } else {
-            telemetry.addData("Visible Target", "none");
-        }
     }
 }

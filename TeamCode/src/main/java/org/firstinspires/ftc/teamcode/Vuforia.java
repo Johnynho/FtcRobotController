@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
@@ -66,7 +67,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * (Positive no centro, em direção a aliança azul)
  * - O eixo Z vai do chão para cima (Positivo é acima do chão)
 **/
-public class Vuforia {
+public class Vuforia extends TeleOperado{
 
     // Constantes convertidas para converter polegadas para mm
     static final float mmPerInch = 25.4f;
@@ -78,8 +79,10 @@ public class Vuforia {
 
     List<VuforiaTrackable> allTrackablesGol = new ArrayList<>();
     List<VuforiaTrackable> allTrackablesPS = new ArrayList<>();
+
     private VuforiaTrackables targetsUltimateGoal;
     private VuforiaTrackables targetsUltimatePS;
+
     private static final String VUFORIA_KEY =
             "AYWpo1j/////AAABmXdvyto7jU+LuXGPiPaJ7eQ4FIrujbhvZmoi " +
                     " KRcyjHFOYhPWujqUT8itJ5yl5d6xeQtRltWIaeULLDoE/zTbq+fGgveeiVmFzR45LGe6HWGjNi2twZhZqTPWFh" +
@@ -99,6 +102,9 @@ public class Vuforia {
     float phoneZRotate = 0;
 
     VuforiaLocalizer.Parameters parameters1;
+
+    OpenGLMatrix lastLocationGol;
+    OpenGLMatrix lastLocationPS;
 
     public void configureVuforia(String a, HardwareMap wMap) {
         //Vetor de String que guarda os nomes dos alvos
@@ -273,6 +279,58 @@ public class Vuforia {
     public void ativeVuforia() {
         targetsUltimateGoal.activate();
         targetsUltimatePS.activate();
+    }
+    public void acessp() {
+        //Posições em X, Y e Z
+        double[] posicaoGol = new double[3];
+        double[] posicaoPS = new double[3];
+
+        //Verifica os targets visiveis
+        boolean targetVisible = false;
+        for (VuforiaTrackable trackable : allTrackablesGol) {
+            if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
+                telemetry.addData("Visible Target", trackable.getName());
+                targetVisible = true;
+
+                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
+                if (robotLocationTransform != null) {
+                    lastLocationGol = robotLocationTransform;
+                }
+                break;
+            }
+        }
+
+        for (VuforiaTrackable trackable1 : allTrackablesPS) {
+            if (((VuforiaTrackableDefaultListener) trackable1.getListener()).isVisible()) {
+
+                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable1.getListener()).getUpdatedRobotLocation();
+                if (robotLocationTransform != null) {
+                    lastLocationPS = robotLocationTransform;
+                }
+                break;
+            }
+        }
+        //Parte do código que mostra a localização do robô
+        if (targetVisible) {
+            //Expressa a translação do robô em polegadas
+            VectorF translation = lastLocationGol.getTranslation();
+            posicaoGol[0] = translation.get(0) / Vuforia.mmPerInch; //Posição X
+            posicaoGol[1] = translation.get(1) / Vuforia.mmPerInch; //Posição Y
+            posicaoGol[2] = translation.get(2) / Vuforia.mmPerInch; //Posição Z
+            telemetry.addData("Pos (in) Mirar Gol", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                    posicaoGol[0], posicaoGol[1], posicaoGol[2]);
+
+            //Expressa a translação do robô em polegadas
+            VectorF translationPS = lastLocationPS.getTranslation();
+            posicaoPS[0] = translationPS.get(0) / Vuforia.mmPerInch; //Posição X
+            posicaoPS[1] = translationPS.get(1) / Vuforia.mmPerInch; //Posição Y
+            posicaoPS[2] = translationPS.get(2) / Vuforia.mmPerInch; //Posição Z
+            telemetry.addData("Pos (in) Mirar Power shot", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                    posicaoPS[0], posicaoPS[1], posicaoPS[2]);
+
+        } else {
+            telemetry.addData("Visible Target", "none");
+        }
     }
 }
 
