@@ -144,103 +144,55 @@ public class Vuforia extends TeleOperado{
         allTrackablesGol.addAll(targetsUltimateGoal);
         allTrackablesPS.addAll(targetsUltimatePS);
 
-        if(a.equals("Azul")){
-            //Localização do robô em relação ao setPoint do GOL azul, lembrando que é REFERÊNCIA a imagem
-            //Posição referente da Aliança Vermelha
-            alvosGol[2].setLocation(OpenGLMatrix
-                    .translation(0, -blocks - (blocks / 2), mmTargetHeight)
-                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
-            //Posição referente da Aliança Azul
-            alvosGol[3].setLocation(OpenGLMatrix
-                    .translation(0, blocks * 4 + (blocks / 2), mmTargetHeight)
-                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90)));
-            //Imagem de trás da arena (observadores)
-            alvosGol[4].setLocation(OpenGLMatrix
-                    .translation(-blocks * 3, blocks + (blocks / 2), mmTargetHeight)
-                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
 
+         //Posição do setPoint em relação a imagem (GOL)
+        //Importante: Se jogarmos na aliança azul temos que mirar no gol vermelho e vice versa
+        if(a.equals("Azul")){
             //Posição referente da Torre Azul
             alvosGol[0].setLocation(OpenGLMatrix
-                    .translation(blocks * 3, blocks * 3, mmTargetHeight)
+                    .translation(blocks * 3 + 5, blocks * 3, mmTargetHeight)
                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
             //Posição da Torre Vermelha
             alvosGol[1].setLocation(OpenGLMatrix
-                    .translation(blocks * 3, 0, mmTargetHeight)
+                    .translation(blocks * 3 + 5, 0, mmTargetHeight)
                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 46)));
 
         } else {
-            //Localização do robô em relação ao GOL vermelho, lembrando que é REFERÊNCIA a imagem
-            //Posição referente da Aliança Vermelha
-            alvosGol[2].setLocation(OpenGLMatrix
-                    .translation(0, -blocks * 4 - (blocks / 2), mmTargetHeight)
-                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
-            //Posição referente da Aliança Azul
-            alvosGol[3].setLocation(OpenGLMatrix
-                    .translation(0, blocks + (blocks / 2), mmTargetHeight)
-                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90)));
-            //Imagem de trás da arena (observadores)
-            alvosGol[4].setLocation(OpenGLMatrix
-                    .translation(-blocks * 3, -blocks - (blocks / 2), mmTargetHeight)
-                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
 
             //Posição referente da Torre Azul
             alvosGol[0].setLocation(OpenGLMatrix
-                    .translation(blocks * 3, 0, mmTargetHeight)
+                    .translation(blocks * 3 + 5, 0, mmTargetHeight)
                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 46)));
             //Posição da Torre Vermelha
             alvosGol[1].setLocation(OpenGLMatrix
-                    .translation(blocks * 3, -blocks * 3, mmTargetHeight)
+                    .translation(blocks * 3 + 5, -blocks * 3, mmTargetHeight)
                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
 
 
         }
 
+        //Posição do setPoint em relação a imagem (POWER'S SHOT)
          if(a.equals("Azul")) {
              //Posição referente da Aliança Vermelha
-             //18.75in é a distância entre gol azul e vermelho para o primeiro Power shot
+             //18.75in é a distância entre gol azul e vermelho  para o primeiro Power shot
              //7.5in é a distância entre eles
-             alvosPS[2].setLocation(OpenGLMatrix
-                     .translation(0, -blocks * 3 - 18.75f, mmTargetHeight)
-                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
-             //Posição referente da Aliança Azul
-             //6 é a distância do gol pro primeiro power shot
-             alvosPS[3].setLocation(OpenGLMatrix
-                     .translation(0, blocks * 2 + 6, mmTargetHeight)
-                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90)));
-             //Imagem de trás da arena (observadores)
-             alvosPS[4].setLocation(OpenGLMatrix
-                     .translation(-blocks * 3, -18.75f, mmTargetHeight)
-                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
-
              //Posição referente da Torre Azul
              alvosPS[0].setLocation(OpenGLMatrix
-                     .translation(blocks * 3, (blocks / 2) - 6, mmTargetHeight)
+                     .translation(blocks * 3 + 5, (blocks / 2) - 6, mmTargetHeight)
                      .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 50)));
              //Posição da Torre Vermelha
              alvosPS[1].setLocation(OpenGLMatrix
-                     .translation(blocks * 3, -blocks - (blocks / 2) - 18.75f, mmTargetHeight)
+                     .translation(blocks * 3 + 5, -blocks - (blocks / 2) - 18.75f, mmTargetHeight)
                      .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
 
          } else {
-             alvosPS[2].setLocation(OpenGLMatrix
-                     .translation(0, -blocks * 2 - 6, mmTargetHeight)
-                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
-             //Posição referente da Aliança Azul
-             alvosPS[3].setLocation(OpenGLMatrix
-                     .translation(0, blocks * 3 + 18.75f, mmTargetHeight)
-                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90)));
-             //Imagem de trás da arena (observadores)
-             alvosPS[4].setLocation(OpenGLMatrix
-                     .translation(-blocks * 3, 18.75f, mmTargetHeight)
-                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
-
              //Posição referente da Torre Azul
              alvosPS[0].setLocation(OpenGLMatrix
-                     .translation(blocks * 3, blocks + (blocks / 2) + 18.75f, mmTargetHeight)
+                     .translation(blocks * 3 + 5, blocks + (blocks / 2) + 18.75f, mmTargetHeight)
                      .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
              //Posição da Torre Vermelha
              alvosPS[1].setLocation(OpenGLMatrix
-                     .translation(blocks * 3, -(blocks / 2) + 6, mmTargetHeight)
+                     .translation(blocks * 3 + 5, -(blocks / 2) + 6, mmTargetHeight)
                      .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 50)));
          }
 
