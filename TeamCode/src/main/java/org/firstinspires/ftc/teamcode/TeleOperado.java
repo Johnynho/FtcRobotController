@@ -145,6 +145,21 @@ public class TeleOperado extends LinearOpMode {
 
             //Chama a leitura do Vuforia
             boolean alvoVisivel = vuforiaObj.acessp();
+
+            if (alvoVisivel && gamepad1.x ^ gamepad1.a){
+            while(gyroCalculate() < 90 && gyroCalculate() > 0 && alvoVisivel) {
+                hard.motorEsquerda.setPower(0.2);
+                hard.motorEsquerdaTras.setPower(0.2);
+                hard.motorDireita.setPower(-0.2);
+                hard.motorDireitaTras.setPower(-0.2);
+            }
+            while(gyroCalculate() > -90 && gyroCalculate() < 0 && alvoVisivel) {
+                hard.motorEsquerda.setPower(-0.2);
+                hard.motorEsquerdaTras.setPower(-0.2);
+                hard.motorDireita.setPower(0.2);
+                hard.motorDireitaTras.setPower(0.2);
+            }
+        }
         }
     }
 
