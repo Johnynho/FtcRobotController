@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.movimentos.SubSistemas;
 
 
 @TeleOp(name="Teleoperado Under Ctrl 14391", group="Linear TesteOp")
@@ -21,7 +22,7 @@ public class TeleOperado extends LinearOpMode {
     ElapsedTime runtime = new ElapsedTime();
     Vuforia vuforiaObj = new Vuforia();
     HardwareClass hard = new HardwareClass();
-
+    SubSistemas ali = new SubSistemas();
     static String ladoO;
 
     //Referência de oritenação para field Oriented
@@ -33,10 +34,8 @@ public class TeleOperado extends LinearOpMode {
     //Vetor para potência do motor
     private final double[] poder = new double[4];
 
-
-
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -48,6 +47,7 @@ public class TeleOperado extends LinearOpMode {
         vuforiaObj.ativeVuforia();
 
         runtime.reset();
+
         //Espera o botão start na Ds
         waitForStart();
 
@@ -97,9 +97,6 @@ public class TeleOperado extends LinearOpMode {
             telemetry.addData("Motor DireitaTras %.2f", poder[3]);
             telemetry.addData("A nossa aliança é a: ", ladoO);
 
-
-            telemetry.update();
-
             //Ativação do LED para saber que pode atirar
             hard.ledShooter.enableLight(true);
 
@@ -119,47 +116,81 @@ public class TeleOperado extends LinearOpMode {
                 }
             }
 
-            //No primeiro aperto do botão B apenas abaixa a chapa
+            //No primeiro aperto do botão B apenas levanta a chapa
             if (gamepad1.b && c2 == 0) {
                 hard.ledShooter.enableLight(false);
-                hard.servoPivo.setPosition(0);
+                hard.servoPivo.setPosition(SubSistemas.servoPosicao(90));
+                telemetry.addData("Chapa estado", "chapa levantada 1ª", 90);
                 c2++;
-                //Aqui verifica se a chapa está abaixada com a váriavel C2 e o botão X apertado então o servo se fecha e a chapa levanta
+                //Aqui verifica se a chapa está levantada com a váriavel C2 e o botão X apertado então o servo se fecha e a chapa levanta
             } else if (gamepad1.x && c2 == 1) {
                 hard.servoChapa.setPosition(1);
                 sleep(500);
-                hard.servoPivo.setPosition(1);
+                hard.servoPivo.setPosition(SubSistemas.servoPosicao(180));
+                telemetry.addData("Chapa estado", "chapa levantada 2ª", 180);
                 c2++;
                 hard.ledShooter.enableLight(true);
          /*Verifica se o botão B foi apertado duas vezes e o servo está fechado se tudo estiver certo, a chapa se abaixa um pouco
          e abre o servo assim soltando o wobble goal*/
             } else if (gamepad1.b && c2 == 2) {
                 hard.ledShooter.enableLight(false);
-                hard.servoPivo.setPosition(0.7);
+                hard.servoPivo.setPosition(SubSistemas.servoPosicao(160));
+                telemetry.addData("Chapa estado", "chapa levantada 3ª", 160);
                 hard.servoChapa.setPosition(0);
                 sleep(1000);
-                hard.servoPivo.setPosition(1);
+                hard.servoPivo.setPosition(0);
+                telemetry.addData("Chapa estado", "chapa levantada 4ª", 0);
                 hard.ledShooter.enableLight(true);
                 c2 = 0;
             }
 
-            //Chama a leitura do Vuforia
-            boolean alvoVisivel = vuforiaObj.acessp();
+            //Chama a leitura do Vuforia (somente verificar se o alvo está visível)
+            vuforiaObj.vuforiaPosi();
 
-            if (alvoVisivel && gamepad1.x ^ gamepad1.a){
-            while(gyroCalculate() < 90 && gyroCalculate() > 0 && alvoVisivel) {
+            if (vuforiaObj.visible() && gamepad1.x ^ gamepad1.a){
+                //Variável que somente verifica se algum dos botões foi apertado
+                boolean xApertado = gamepad1.x;
+                while(gyroCalculate() < 90 && gyroCalculate() > 0) {
                 hard.motorEsquerda.setPower(0.2);
                 hard.motorEsquerdaTras.setPower(0.2);
                 hard.motorDireita.setPower(-0.2);
                 hard.motorDireitaTras.setPower(-0.2);
-            }
-            while(gyroCalculate() > -90 && gyroCalculate() < 0 && alvoVisivel) {
+                }
+
+                while(gyroCalculate() > -90 && gyroCalculate() < 0) {
                 hard.motorEsquerda.setPower(-0.2);
                 hard.motorEsquerdaTras.setPower(-0.2);
                 hard.motorDireita.setPower(0.2);
                 hard.motorDireitaTras.setPower(0.2);
+                }
+
+                //Verifica se botão X foi apertado
+                if(xApertado) {
+                    //Pega a posição Y do robô  (1 = margem de erro)
+                    while(vuforiaObj.posicaoRobot[1] < 1 ^ vuforiaObj.posicaoRobot[1] > 1) {
+                        //Chamada do vuforia para saber a posição Y
+                        vuforiaObj.vuforiaPosi();
+
+                        //Método para alinhar em Y (envia o Y do vuforia, força para motores)
+                        ali.alinharY(vuforiaObj.posicaoRobot[1], 0.5f);
+                    }
+                } else { //Caso não seja o botão X só sobra o A
+                    //Pega a posição Y do robô  (1 = margem de erro)
+                    while(vuforiaObj.posicaoRobot[1] < 10.5 ^ vuforiaObj.posicaoRobot[1] > 12.5) {
+                        //Chamada do vuforia para saber a posição Y
+                        vuforiaObj.vuforiaPosi();
+
+                        //Método para alinhar em Y (envia o Y do vuforia, força para motores)
+                        ali.alinharY(vuforiaObj.posicaoRobot[1], 0.5f);
+
+                        //Fazer código que faz ele andar 17.5" pra esquerda/direita
+                    }
+                }
+
+                //Chama o método para alinhar em X (sleep ativado)
+                ali.alinharX(vuforiaObj.posicaoRobot[0], 0.8);
             }
-        }
+            telemetry.update();
         }
     }
 
