@@ -61,7 +61,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * @see VuforiaTrackableDefaultListener
  * see  ultimategoal/doc/tutorial/FTC_FieldCoordinateSystemDefinition.pdf
  * =====================================================================================
- * Você está olhando da aliança vermeleha (tudo perspectiva);
+ * Você está olhando da aliança vermeleha (perspectiva);
  * - O eixo X é da sua esquerda para direita. (positivo do centro para direita)
  * - O eixo Y é da aliança vermelha para o outro lado do campo onde está a aliança azul
  * (Positive no centro, em direção a aliança azul)
@@ -77,11 +77,9 @@ public class Vuforia extends TeleOperado{
     //Constante do tamanho de tatame da quadra quadra convertida
     private static final float blocks = 23f * mmPerInch;
 
-    List<VuforiaTrackable> allTrackablesGol = new ArrayList<>();
-    List<VuforiaTrackable> allTrackablesPS = new ArrayList<>();
+    List<VuforiaTrackable> allTrackables = new ArrayList<>();
 
     private VuforiaTrackables targetsUltimateGoal;
-    private VuforiaTrackables targetsUltimatePS;
 
     private static final String VUFORIA_KEY =
             "AYWpo1j/////AAABmXdvyto7jU+LuXGPiPaJ7eQ4FIrujbhvZmoi " +
@@ -101,102 +99,71 @@ public class Vuforia extends TeleOperado{
     float phoneYRotate = 0;
     float phoneZRotate = 0;
 
-    VuforiaLocalizer.Parameters parameters1;
+    OpenGLMatrix lastLocation;
 
-    OpenGLMatrix lastLocationGol;
-    OpenGLMatrix lastLocationPS;
+    //Posições em X, Y e Z
+    double[] posicaoRobot = new double[3];
+
+    boolean targetVisible;
 
     public void configureVuforia(String a, HardwareMap wMap) {
         //Vetor de String que guarda os nomes dos alvos
-        String []name = new String[] {"Blue Tower Goal Target", "Red Tower Goal Target", "Red Alliance Target", "Blue Alliance Target", "Front Wall Target"};
+        String []name = new String[] {"Blue Tower Goal Target", "Red Tower Goal Target"};
         int cameraMonitorViewId = wMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", wMap.appContext.getPackageName());
-        parameters1 = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
-        parameters1.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
 
         //Direção da camêra
-        parameters1.cameraDirection = CAMERA_CHOICE;
+        parameters.cameraDirection = CAMERA_CHOICE;
 
-        parameters1.useExtendedTracking = false;
+        parameters.useExtendedTracking = false;
 
         //Instância o vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters1);
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
-        VuforiaTrackable []alvosGol = new VuforiaTrackable[5];
-        VuforiaTrackable []alvosPS = new VuforiaTrackable[5];
+        VuforiaTrackable []alvos = new VuforiaTrackable[2];
 
         targetsUltimateGoal = vuforia.loadTrackablesFromAsset("UltimateGoal");
-        targetsUltimatePS = vuforia.loadTrackablesFromAsset("UltimateGoal");
 
         //Carregando trackables
-        for(int i = 0; i <= 4; i++) {
-            alvosGol[i] = targetsUltimateGoal.get(i);
-            alvosGol[i].setName(name[i]);
-
-            //==============================================================================
-
-            alvosPS[i] = targetsUltimatePS.get(i);
-            alvosPS[i].setName(name[i]);
+        for(int i = 0; i <= 1; i++) {
+            alvos[i] = targetsUltimateGoal.get(i);
+            alvos[i].setName(name[i]);
         }
-
 
         // Para melhorar o uso dos trackables ele coloca em um array
-        allTrackablesGol.addAll(targetsUltimateGoal);
-        allTrackablesPS.addAll(targetsUltimatePS);
+        allTrackables.addAll(targetsUltimateGoal);
 
-
-         //Posição do setPoint em relação a imagem (GOL)
-        //Importante: Se jogarmos na aliança azul temos que mirar no gol vermelho e vice versa
-        if(a.equals("Azul")){
-            //Posição referente da Torre Azul
-            alvosGol[0].setLocation(OpenGLMatrix
-                    .translation(blocks * 3 + 5, blocks * 3, mmTargetHeight)
-                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
+         /*
+          * Posição do setPoint em relação a imagem
+          * Importante: Se jogarmos na aliança azul temos que mirar no gol vermelho e vice versa
+          * 7.5 é a distância entre cada power shot
+          */
+        if(a.equals("Azul")){ //Se estivermos jogando na aliança azul temos que ajustar os trackable
             //Posição da Torre Vermelha
-            alvosGol[1].setLocation(OpenGLMatrix
-                    .translation(blocks * 3 + 5, 0, mmTargetHeight)
-                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 46)));
-
-        } else {
-
-            //Posição referente da Torre Azul
-            alvosGol[0].setLocation(OpenGLMatrix
-                    .translation(blocks * 3 + 5, 0, mmTargetHeight)
-                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 46)));
-            //Posição da Torre Vermelha
-            alvosGol[1].setLocation(OpenGLMatrix
-                    .translation(blocks * 3 + 5, -blocks * 3, mmTargetHeight)
+            alvos[1].setLocation(OpenGLMatrix
+                    .translation(blocks * 3, 0, mmTargetHeight)
                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
 
+            //Posição referente da Torre Azul (Power shot)
+            alvos[0].setLocation(OpenGLMatrix
+                    .translation(blocks, (blocks / 2) + 6, mmTargetHeight)
+                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 46)));
 
+        } else { //Se não estivermos jogando na aliança azul, estaremos na vermelha
+            //Posição referente da Torre Azul
+            alvos[0].setLocation(OpenGLMatrix
+                    .translation(blocks * 3, 0, mmTargetHeight)
+                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
+            //Posição da Torre Vermelha (power shot)
+            alvos[1].setLocation(OpenGLMatrix
+                    .translation(blocks * 3, (-blocks / 2) - 6, mmTargetHeight)
+                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 46)));
         }
 
-        //Posição do setPoint em relação a imagem (POWER'S SHOT)
-         if(a.equals("Azul")) {
-             //Posição referente da Aliança Vermelha
-             //18.75in é a distância entre gol azul e vermelho  para o primeiro Power shot
-             //7.5in é a distância entre eles
-             //Posição referente da Torre Azul
-             alvosPS[0].setLocation(OpenGLMatrix
-                     .translation(blocks * 3 + 5, (blocks / 2) - 6, mmTargetHeight)
-                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 50)));
-             //Posição da Torre Vermelha
-             alvosPS[1].setLocation(OpenGLMatrix
-                     .translation(blocks * 3 + 5, -blocks - (blocks / 2) - 18.75f, mmTargetHeight)
-                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
 
-         } else {
-             //Posição referente da Torre Azul
-             alvosPS[0].setLocation(OpenGLMatrix
-                     .translation(blocks * 3 + 5, blocks + (blocks / 2) + 18.75f, mmTargetHeight)
-                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
-             //Posição da Torre Vermelha
-             alvosPS[1].setLocation(OpenGLMatrix
-                     .translation(blocks * 3 + 5, -(blocks / 2) + 6, mmTargetHeight)
-                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 50)));
-         }
-
-         //Corige a rotação da camêra dependendo da configuração
+         //Corrige a rotação da camêra dependendo da configuração
         if (CAMERA_CHOICE == BACK) {
             phoneYRotate = -90;
         } else {
@@ -221,43 +188,28 @@ public class Vuforia extends TeleOperado{
         // A frente do robô está virada para o eixo X (Posição Inicial)
         // Y é o lado esquerdo de acordo com a visão de X = frente.
         // Z é em cima do robô
-        for (VuforiaTrackable trackable : allTrackablesGol) {
-            ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, parameters1.cameraDirection);
-        }
-        for (VuforiaTrackable trackable : allTrackablesPS) {
-            ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, parameters1.cameraDirection);
+        for (VuforiaTrackable trackable : allTrackables) {
+            ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, parameters.cameraDirection);
         }
     }
+
     public void ativeVuforia() {
         targetsUltimateGoal.activate();
-        targetsUltimatePS.activate();
     }
-    public boolean acessp() {
-        //Posições em X, Y e Z
-        double[] posicaoGol = new double[3];
-        double[] posicaoPS = new double[3];
 
-        //Verifica os targets visiveis
-        boolean targetVisible = false;
-        for (VuforiaTrackable trackable : allTrackablesGol) {
+    //Verifica os targets visiveis
+    public void vuforiaPosi() {
+
+        targetVisible = false;
+
+        for (VuforiaTrackable trackable : allTrackables) {
             if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
                 telemetry.addData("Visible Target", trackable.getName());
                 targetVisible = true;
 
                 OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
                 if (robotLocationTransform != null) {
-                    lastLocationGol = robotLocationTransform;
-                }
-                break;
-            }
-        }
-
-        for (VuforiaTrackable trackable1 : allTrackablesPS) {
-            if (((VuforiaTrackableDefaultListener) trackable1.getListener()).isVisible()) {
-
-                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable1.getListener()).getUpdatedRobotLocation();
-                if (robotLocationTransform != null) {
-                    lastLocationPS = robotLocationTransform;
+                    lastLocation = robotLocationTransform;
                 }
                 break;
             }
@@ -265,24 +217,19 @@ public class Vuforia extends TeleOperado{
         //Parte do código que mostra a localização do robô
         if (targetVisible) {
             //Expressa a translação do robô em polegadas
-            VectorF translation = lastLocationGol.getTranslation();
-            posicaoGol[0] = translation.get(0) / Vuforia.mmPerInch; //Posição X
-            posicaoGol[1] = translation.get(1) / Vuforia.mmPerInch; //Posição Y
-            posicaoGol[2] = translation.get(2) / Vuforia.mmPerInch; //Posição Z
+            VectorF translation = lastLocation.getTranslation();
+            posicaoRobot[0] = translation.get(0) / Vuforia.mmPerInch; //Posição X
+            posicaoRobot[1] = translation.get(1) / Vuforia.mmPerInch; //Posição Y
+            posicaoRobot[2] = translation.get(2) / Vuforia.mmPerInch; //Posição Z
             telemetry.addData("Pos (in) Mirar Gol", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                    posicaoGol[0], posicaoGol[1], posicaoGol[2]);
-
-            //Expressa a translação do robô em polegadas
-            VectorF translationPS = lastLocationPS.getTranslation();
-            posicaoPS[0] = translationPS.get(0) / Vuforia.mmPerInch; //Posição X
-            posicaoPS[1] = translationPS.get(1) / Vuforia.mmPerInch; //Posição Y
-            posicaoPS[2] = translationPS.get(2) / Vuforia.mmPerInch; //Posição Z
-            telemetry.addData("Pos (in) Mirar Power shot", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                    posicaoPS[0], posicaoPS[1], posicaoPS[2]);
+                    posicaoRobot[0], posicaoRobot[1], posicaoRobot[2]);
 
         } else {
             telemetry.addData("Visible Target", "none");
         }
+    }
+
+    public boolean visible() {
         return targetVisible;
     }
 }
