@@ -149,7 +149,7 @@ public class Vuforia extends TeleOperado{
             //Posição referente da Torre Azul (Power shot)
             alvos[0].setLocation(OpenGLMatrix
                     .translation(blocks, (blocks / 2) + 6, mmTargetHeight)
-                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 46)));
+                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
 
         } else { //Se não estivermos jogando na aliança azul, estaremos na vermelha
             //Posição referente da Torre Azul
@@ -159,7 +159,7 @@ public class Vuforia extends TeleOperado{
             //Posição da Torre Vermelha (power shot)
             alvos[1].setLocation(OpenGLMatrix
                     .translation(blocks * 3, (-blocks / 2) - 6, mmTargetHeight)
-                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 46)));
+                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
         }
 
 
@@ -175,8 +175,7 @@ public class Vuforia extends TeleOperado{
             phoneXRotate = 90 ;
         }
 
-        // Next, translate the camera lens to where it is on the robot.
-        // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
+        //Indicar em que localização do robô a camêra está
         final float CAMERA_FORWARD_DISPLACEMENT  = 4.0f * mmPerInch;   // eg: Camera is 4 Inches in front of robot center
         final float CAMERA_VERTICAL_DISPLACEMENT = 8.0f * mmPerInch;   // eg: Camera is 8 Inches above ground
         final float CAMERA_LEFT_DISPLACEMENT     = 0;     // eg: Camera is ON the robot's center line
@@ -195,6 +194,10 @@ public class Vuforia extends TeleOperado{
 
     public void ativeVuforia() {
         targetsUltimateGoal.activate();
+    }
+
+    public void deactivateVuforia(){
+        targetsUltimateGoal.deactivate();
     }
 
     //Verifica os targets visiveis
@@ -221,7 +224,7 @@ public class Vuforia extends TeleOperado{
             posicaoRobot[0] = translation.get(0) / Vuforia.mmPerInch; //Posição X
             posicaoRobot[1] = translation.get(1) / Vuforia.mmPerInch; //Posição Y
             posicaoRobot[2] = translation.get(2) / Vuforia.mmPerInch; //Posição Z
-            telemetry.addData("Pos (in) Mirar Gol", "{X, Y, Z} = %.1f, %.1f, %.1f",
+            telemetry.addData("Posição robô (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
                     posicaoRobot[0], posicaoRobot[1], posicaoRobot[2]);
 
         } else {

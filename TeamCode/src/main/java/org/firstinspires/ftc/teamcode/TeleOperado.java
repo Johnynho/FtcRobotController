@@ -23,9 +23,11 @@ public class TeleOperado extends LinearOpMode {
     Vuforia vuforiaObj = new Vuforia();
     HardwareClass hard = new HardwareClass();
     SubSistemas ali = new SubSistemas();
+
+    //String para configurar o vuforia (variável contém a cor da aliança)
     static String ladoO;
 
-    //Referência de oritenação para field Oriented
+    //Referência de oritenação do gyro
     Orientation angles;
 
     //Respectivamente eixos do gamepad y, x, x outro analógico

@@ -29,8 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -38,16 +36,15 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-public class TensorFlowDirection extends LinearOpMode {
+public class TensorFlowDirection  extends AutonomoVermelho{
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
     String argolas = null;
-    Vuforia a = new Vuforia();
 
      //{@link #vuforia} is the variable we will use to store our instance of the Vuforia
      //localization engine.
-    private VuforiaLocalizer vuforia;
+    VuforiaLocalizer vuforia;
 
     /*
      * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
@@ -55,10 +52,9 @@ public class TensorFlowDirection extends LinearOpMode {
      */
     private TFObjectDetector tfod;
 
-    public void runOpMode() {
+    public int pilhaArgolas() {
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
-        a.configureVuforia("Azul", hardwareMap);
         initTfod();
 
         if (tfod != null) {
@@ -74,8 +70,6 @@ public class TensorFlowDirection extends LinearOpMode {
             // Uncomment the following line if you want to adjust the magnification and/or the aspect ratio of the input images.
             //tfod.setZoom(2.5, 1.78);
         }
-
-        while (opModeIsActive()) {
                 if (tfod != null) {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
@@ -99,11 +93,13 @@ public class TensorFlowDirection extends LinearOpMode {
                         telemetry.update();
                     }
                 }
-        }
+
 
         if (tfod != null) {
             tfod.shutdown();
         }
+        tfod.deactivate();
+        return Integer.parseInt(argolas);
     }
     /**
      * Initialize the TensorFlow Object Detection engine.

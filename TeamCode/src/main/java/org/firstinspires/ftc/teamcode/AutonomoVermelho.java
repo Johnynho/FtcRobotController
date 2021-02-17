@@ -31,80 +31,66 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.movimentos.SubSistemas;
 
+/**
+ * Inicialmente tentar usar o pacote de movimentos (sem encoder)
+ * @see SubSistemas, após adquirir os encoders utilizar e aprimorar a Classe abaixo
+ * @see org.firstinspires.ftc.teamcode.movimentos.CalculoEncoder
+ */
 @Autonomous(name="Autônomo Aliança Vermelha", group="Pushbot")
 public class AutonomoVermelho extends LinearOpMode {
 
+    //Objetos
     HardwareClass  robot   = new HardwareClass();   // Use a Pushbot's hardware
-    private final ElapsedTime     runtime = new ElapsedTime();
+    Vuforia vuf = new Vuforia();
+    TensorFlowDirection tF = new TensorFlowDirection();
+    SubSistemas move = new SubSistemas();
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
+        //Envia um telemetria para mostrar que o robô está iniciando
+        telemetry.addData("Status", "Iniciando robô");
+        telemetry.update();
+
         robot.hardwareGeral(hardwareMap);
-
-        // Send telemetry message to signify robot waiting
-        telemetry.addData("Status", "Resetting Encoders");
-        telemetry.update();
-
-        // Send telemetry message to indicate successful Encoder reset
-        telemetry.addData("Path0",  "Starting at %7d :%7d",
-                          robot.motorEsquerda.getCurrentPosition(),
-                          robot.motorDireita.getCurrentPosition());
-        telemetry.update();
-
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
-    }
 
-    /*
-     *  Method to perform a relative move, based on encoder counts.
-     *  Encoders are not reset as the move is based on the current position.
-     *  Move will stop if any of three conditions occur:
-     *  1) Move gets to the desired position
-     *  2) Move runs out of time
-     *  3) Driver stops the opmode running.
-     */
-    public void encoderDrive(double speed,
-                             double leftInches, double rightInches,
-                             double timeoutS) {
+        //Muda a static variável indicando que aliança o robô está jogando
+        //Precisamos disso para configurar o vuforia no teleoperado também
+        TeleOperado.ladoO = "Vermelho";
 
-        // Ensure that the opmode is still active
-        if (opModeIsActive()) {
+        //Configura o vuforia para iniciar a engine dele (que também é utilizada no Tf)
+        //O vuforia por si só nesse método não inicia, ele inicia neste "vuf.ativeVuforia"
+        vuf.configureVuforia(TeleOperado.ladoO, hardwareMap);
 
-            // Turn On RUN_TO_POSITION
-            robot.motorEsquerda.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.motorDireita.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        /*
+         * Caso a precisão das argolas seja baixa, fazer o robô se deslocar antes
+         * Inicia o tensor flow para ler a pilha de argolas (desativa e inicia a engine no método abaixo)
+         * Variável que indica a quantidade de argolas na pilha
+         */
+        int numArgolas = tF.pilhaArgolas();
 
-            // reset the timeout time and start motion.
-            runtime.reset();
-            robot.motorEsquerda.setPower(Math.abs(speed));
-            robot.motorDireita.setPower(Math.abs(speed));
+        //Ideia é ler a pilha antes de dar start no robô
+        waitForStart();
 
+        //Exemplo de movimentação sem encoder
+        move.alinharX(20, 0.8);
 
-            while (opModeIsActive() &&
-                   (runtime.seconds() < timeoutS) &&
-                   (robot.motorEsquerda.isBusy() && robot.motorDireita.isBusy())) {
+        //Código para entregar gol pêndulo aqui
 
-                // Display it for the driver.
-                telemetry.addData("Path2",  "Running at %7d :%7d",
-                                            robot.motorEsquerda.getCurrentPosition(),
-                                            robot.motorDireita.getCurrentPosition());
-                telemetry.update();
-            }
+        /*
+         * Quando chegar na imagem do gol para alinhar nos Ps
+         * (ideia é que ele mantenha toda configuração do vuforia,
+         * mesmo não ativado para os trackable)
+         * //Importante lembrar que para desativar o vuforia é vuf.deactivate()
+         * Procurando trackables agora
+         */
+        vuf.ativeVuforia();
 
-            // Stop all motion;
-            robot.motorEsquerda.setPower(0);
-            robot.motorDireita.setPower(0);
-
-            // Turn off RUN_TO_POSITION
-            robot.motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
+        //Ao chegar no final do método ele para sozinho
     }
 }

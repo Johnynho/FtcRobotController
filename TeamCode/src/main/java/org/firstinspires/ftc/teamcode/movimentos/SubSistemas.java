@@ -27,7 +27,7 @@ public class SubSistemas{
     //Objeto para pegar os motores do HardwareClass
     HardwareClass hard = new HardwareClass();
 
-    //Método para alinhar em Y (aliança vermelha para azuprimeira sendo -Y)
+    //Método para alinhar em Y (aliança vermelha para azul, primeira sendo -Y)
     public void alinharY(double y, float a) {
 
         //Valor para motores
