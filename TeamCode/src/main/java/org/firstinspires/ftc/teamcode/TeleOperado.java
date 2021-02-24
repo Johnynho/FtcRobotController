@@ -57,7 +57,7 @@ public class TeleOperado extends LinearOpMode {
             //Variáveis gamepad
             drive = -gamepad1.left_stick_y;
             turn = gamepad1.left_stick_x * 1.5;
-            giro = gamepad1.right_stick_x;
+            giro = Math.pow(gamepad1.right_stick_x, 3); //Exponenciação para arrumar sensibilidade
 
             //Valores para movimentação com mechanum (lados espelhados)
             //Motor Esquerda Frente;
