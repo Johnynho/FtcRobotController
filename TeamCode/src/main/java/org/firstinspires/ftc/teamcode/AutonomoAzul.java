@@ -34,9 +34,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.movimentos.CalculoEncoder;
+
 @Autonomous(name="Autônomo Aliança Azul", group="Pushbot")
 public class AutonomoAzul extends LinearOpMode {
 
+    CalculoEncoder calculoEncoder = new CalculoEncoder();
     HardwareClass  robot   = new HardwareClass();   // Use a Pushbot's hardware
     Vuforia vision = new Vuforia();
     private final ElapsedTime     runtime = new ElapsedTime();
@@ -46,6 +49,7 @@ public class AutonomoAzul extends LinearOpMode {
         robot.hardwareGeral(hardwareMap);
 
         TeleOperado.ladoO = "Azul";
+
 
         // Send telemetry message to signify robot waiting
         telemetry.addData("Status", "Resetting Encoders");

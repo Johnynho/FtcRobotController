@@ -15,18 +15,13 @@ public class CalculoEncoder {
     public double newRightTarget;
 
     //Calculo para saber quanto cada roda precisa andar
-    private void encoderCalc(double rightIn, double leftIn) {
+    public void encoderCalc(double rightIn, double leftIn) {
         newLeftTarget =  robot.motorEsquerda.getCurrentPosition() + (int)(leftIn * COUNTS_PER_INCH);
         newRightTarget = robot.motorDireita.getCurrentPosition() + (int)(rightIn * COUNTS_PER_INCH);
     }
 
     //Método para setar valor com vuforia
     public void setDistanceVuf(double valor) {
-        encoderCalc(valor, valor);
-    }
-
-    //Para as rodas (utilizar no autônomo)
-    public void setDistancWheels(double valor) {
         encoderCalc(valor, valor);
     }
 
