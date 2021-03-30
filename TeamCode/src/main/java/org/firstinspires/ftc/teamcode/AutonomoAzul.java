@@ -64,6 +64,9 @@ public class AutonomoAzul extends LinearOpMode {
         waitForStart();
         telemetry.addData("Path", "Complete");
         telemetry.update();
+
+        //Teste
+        encoderDrive(50,5,5, 5);
     }
 
     /*
