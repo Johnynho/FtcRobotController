@@ -20,11 +20,15 @@ public class EncoderCaboTeste extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();
     DcMotor motorEsquerda, motorDireita;
 
+
     @Override
     public void runOpMode(){
 
         motorEsquerda = hardwareMap.get(DcMotor.class, "motor_Esquerda");
         motorDireita = hardwareMap.get(DcMotor.class,"motor_Direita");
+        
+        motorEsquerda.setDirection(DcMotor.Direction.FORWARD);
+        motorDireita.setDirection(DcMotor.Direction.REVERSE);
 
         motorEsquerda.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -56,7 +60,7 @@ public class EncoderCaboTeste extends LinearOpMode {
             motorDireita.setPower(Math.abs(speed));
 
 
-            while (opModeIsActive() && (runtime.seconds() < timeoutS) && (robot.motorEsquerda.isBusy())) {
+            while (opModeIsActive() && (runtime.seconds() < timeoutS) && (motorEsquerda.isBusy())) {
 
                 // Display it for the driver.
                 telemetry.addData("Path2",  "Running at %7d :%7d");
