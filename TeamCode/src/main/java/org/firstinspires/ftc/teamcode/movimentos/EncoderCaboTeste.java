@@ -18,12 +18,23 @@ public class EncoderCaboTeste extends LinearOpMode {
 
     HardwareClass robot   = new HardwareClass();
     private final ElapsedTime runtime = new ElapsedTime();
+    DcMotor motorEsquerda, motorDireita;
 
     @Override
     public void runOpMode(){
+
+        motorEsquerda = hardwareMap.get(DcMotor.class, "motor_Esquerda");
+        motorDireita = hardwareMap.get(DcMotor.class,"motor_Direita");
+
+        motorEsquerda.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         waitForStart();
+
         encoderDrive(1.0,10,5);
-        int pp = (int) (robot.motorEsquerda.getCurrentPosition()/COUNTS_PER_INCH);
+
+        int pp = (int) (motorEsquerda.getCurrentPosition()/COUNTS_PER_INCH);
+
         telemetry.addData("Polegadas percorridas", pp);
         telemetry.update();
     }
@@ -31,34 +42,34 @@ public class EncoderCaboTeste extends LinearOpMode {
     public void encoderDrive(double speed, double leftInches, double timeoutS) {
         int newLeftTarget;
 
-        newLeftTarget = robot.motorEsquerda.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
-        robot.motorEsquerda.setTargetPosition(newLeftTarget);
+        newLeftTarget = motorEsquerda.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+        motorEsquerda.setTargetPosition(newLeftTarget);
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
             // Turn On RUN_TO_POSITION
-            robot.motorEsquerda.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorEsquerda.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
             runtime.reset();
-            robot.motorEsquerda.setPower(Math.abs(speed));
-            robot.motorDireita.setPower(Math.abs(speed));
+            motorEsquerda.setPower(Math.abs(speed));
+            motorDireita.setPower(Math.abs(speed));
 
 
             while (opModeIsActive() && (runtime.seconds() < timeoutS) && (robot.motorEsquerda.isBusy())) {
 
                 // Display it for the driver.
                 telemetry.addData("Path2",  "Running at %7d :%7d");
-                        robot.motorEsquerda.getCurrentPosition();
+                        motorEsquerda.getCurrentPosition();
                 telemetry.update();
             }
 
             // Stop all motion;
-            robot.motorEsquerda.setPower(0);
-            robot.motorDireita.setPower(0);
+            motorEsquerda.setPower(0);
+            motorDireita.setPower(0);
 
             // Turn off RUN_TO_POSITION
-            robot.motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 }
