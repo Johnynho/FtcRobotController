@@ -41,34 +41,37 @@ public class EncoderCaboTeste extends LinearOpMode {
         waitForStart();
 
         encoderDrive(0.75,10,5);
+
         int pp = (int) (motorEsquerda.getCurrentPosition()/COUNTS_PER_INCH);
+
         telemetry.addData("Polegadas percorridas", pp);
         telemetry.update();
     }
 
     public void encoderDrive(double speed, double leftInches, double timeoutS) {
-        int speedright = (int) (speed-0.19);
+        double speedright = speed-0.19;
         int newLeftTarget;
-        int pp = (int) (motorEsquerda.getCurrentPosition()/COUNTS_PER_INCH);
 
         newLeftTarget = motorEsquerda.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
         motorEsquerda.setTargetPosition(newLeftTarget);
 
         //Confere se o opMode está ativo
         if (opModeIsActive()) {
+
             //Ativa o RUN_TO_POSITION
             motorEsquerda.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
             //Reseta o runtime e começa o movimento
             runtime.reset();
+
             motorEsquerda.setPower(Math.abs(speed));
 
 
-            while (opModeIsActive() && (runtime.seconds() < timeoutS) && (motorEsquerda.isBusy())) {
+            while ((opModeIsActive() && motorEsquerda.isBusy()) && (runtime.seconds() < timeoutS)) {
 
                 motorDireita.setPower(Math.abs(speedright));
                 //Mostra para o piloto informações sobre o caminho
                 telemetry.addData("Path2",  "Running at %7d", motorEsquerda.getCurrentPosition());
-                telemetry.addData("Polegadas percorridas", pp);
                 telemetry.update();
             }
 
