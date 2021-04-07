@@ -22,7 +22,6 @@ public class EncoderCaboTeste extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();
     DcMotor motorEsquerda, motorDireita;
 
-
     @Override
     public void runOpMode(){
 
@@ -63,7 +62,7 @@ public class EncoderCaboTeste extends LinearOpMode {
             motorEsquerda.setPower(Math.abs(speed));
 
 
-            while (opModeIsActive() && (runtime.seconds() < timeoutS) && (motorEsquerda.isBusy())) {
+            while (opModeIsActive() && (runtime.seconds() < timeoutS) && (robot.motorEsquerda.isBusy())) {
 
                 motorDireita.setPower(Math.abs(speedright));
                 //Mostra para o piloto informações sobre o caminho
