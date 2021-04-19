@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.HardwareClass;
+
 @Autonomous(name="Teste Andar Encoder", group="Pushbot")
 public class EncoderCaboTeste extends LinearOpMode {
 
@@ -16,6 +18,7 @@ public class EncoderCaboTeste extends LinearOpMode {
             (WHEEL_DIAMETER_INCHES);                        //Contagens por polegadas
 
     //Inicialização
+    HardwareClass robot   = new HardwareClass();
     private final ElapsedTime runtime = new ElapsedTime();
     DcMotor motorEsquerda, motorDireita;
 
