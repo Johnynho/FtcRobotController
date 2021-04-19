@@ -5,8 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.HardwareClass;
-
 @Autonomous(name="Teste Andar Encoder", group="Pushbot")
 public class EncoderCaboTeste extends LinearOpMode {
 
@@ -18,10 +16,8 @@ public class EncoderCaboTeste extends LinearOpMode {
             (WHEEL_DIAMETER_INCHES);                        //Contagens por polegadas
 
     //Inicialização
-    HardwareClass robot   = new HardwareClass();
     private final ElapsedTime runtime = new ElapsedTime();
     DcMotor motorEsquerda, motorDireita;
-
 
     @Override
     public void runOpMode(){
@@ -35,37 +31,43 @@ public class EncoderCaboTeste extends LinearOpMode {
         motorDireita.setDirection(DcMotor.Direction.FORWARD);
 
         //Configuração do encoder
+        motorDireita.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorEsquerda.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         waitForStart();
 
-        encoderDrive(0.75,10,5);
+        encoderDrive(0.75,10, 10,5);
         int pp = (int) (motorEsquerda.getCurrentPosition()/COUNTS_PER_INCH);
         telemetry.addData("Polegadas percorridas", pp);
         telemetry.update();
     }
 
-    public void encoderDrive(double speed, double leftInches, double timeoutS) {
-        int speedright = (int) (speed-0.19);
+    public void encoderDrive(double speed, double leftInches, double rightInches, double timeoutS) {
         int newLeftTarget;
+        int newRightTarget;
+
         int pp = (int) (motorEsquerda.getCurrentPosition()/COUNTS_PER_INCH);
 
+        newRightTarget = motorDireita.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
         newLeftTarget = motorEsquerda.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+        motorDireita.setTargetPosition(newRightTarget);
         motorEsquerda.setTargetPosition(newLeftTarget);
 
         //Confere se o opMode está ativo
         if (opModeIsActive()) {
             //Ativa o RUN_TO_POSITION
             motorEsquerda.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorDireita.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             //Reseta o runtime e começa o movimento
             runtime.reset();
             motorEsquerda.setPower(Math.abs(speed));
+            motorDireita.setPower(Math.abs(speed));
 
 
-            while (opModeIsActive() && (runtime.seconds() < timeoutS) && (motorEsquerda.isBusy())) {
+            while (opModeIsActive() && (runtime.seconds() < timeoutS) && (motorEsquerda.isBusy() && motorDireita.isBusy())) {
 
-                motorDireita.setPower(Math.abs(speedright));
                 //Mostra para o piloto informações sobre o caminho
                 telemetry.addData("Path2",  "Running at %7d", motorEsquerda.getCurrentPosition());
                 telemetry.addData("Polegadas percorridas", pp);
@@ -78,6 +80,7 @@ public class EncoderCaboTeste extends LinearOpMode {
 
             //Desliga o RUN_TO_POSITION
             motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 }
