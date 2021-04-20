@@ -45,7 +45,6 @@ public class AutonomoVermelho extends LinearOpMode {
     //Objetos
     HardwareClass  robot   = new HardwareClass();   // Use a Pushbot's hardware
     Vuforia vuf = new Vuforia();
-    TensorFlowDirection tF = new TensorFlowDirection();
     SubSistemas move = new SubSistemas();
 
     @Override
@@ -72,7 +71,6 @@ public class AutonomoVermelho extends LinearOpMode {
          * Inicia o tensor flow para ler a pilha de argolas (desativa e inicia a engine no método abaixo)
          * Variável que indica a quantidade de argolas na pilha
          */
-        int numArgolas = tF.pilhaArgolas();
 
         //Ideia é ler a pilha antes de dar start no robô
         waitForStart();
