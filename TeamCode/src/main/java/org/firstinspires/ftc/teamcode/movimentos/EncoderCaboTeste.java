@@ -10,14 +10,14 @@ import org.firstinspires.ftc.teamcode.TensorFlow;
 
 @Autonomous(name="Teste Andar Encoder", group="Pushbot")
 public class EncoderCaboTeste extends LinearOpMode {
-
-    TensorFlow tensorFlow = new TensorFlow();
+    //Criando o objeto do TensorFlow
+    TensorFlow tfEngine = new TensorFlow();
 
     //Calculos do COUNTS_PER_INCH
-    private static final double     COUNTS_PER_MOTOR_GOBILDA  = 537.6;   //CPR * 4 * Redução
-    private static final double     DRIVE_GEAR_REDUCTION    = 1.0;      //Redução fora do motor
-    private static final double     WHEEL_CIRCUNFERENCE_INCHES   = 11.87;     //Circunferência da roda em in
-    private static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_GOBILDA * DRIVE_GEAR_REDUCTION) /
+    private static final double COUNTS_PER_MOTOR_GOBILDA = 537.6;   //CPR * 4 * Redução
+    private static final double DRIVE_GEAR_REDUCTION = 1.0;      //Redução fora do motor
+    private static final double WHEEL_CIRCUNFERENCE_INCHES = 11.87;     //Circunferência da roda em in
+    private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_GOBILDA * DRIVE_GEAR_REDUCTION) /
             (WHEEL_CIRCUNFERENCE_INCHES);                        //Contagens por polegadas
 
     //Inicialização
@@ -25,11 +25,18 @@ public class EncoderCaboTeste extends LinearOpMode {
     DcMotor motorEsquerda, motorDireita, motorEsquerdaTras, motorDireitaTras;
 
     @Override
-    public void runOpMode(){
+    public void runOpMode() {
+        //Inicia a engine do TensorFlow e avisa
+        telemetry.addData("Status: ", "Iniciado");
+        telemetry.update();
+        tfEngine.initEngine(hardwareMap);
+
+        telemetry.addData("Status", "TensorFlow iniciado");
+        telemetry.update();
 
         //Parte da inicialização
         motorEsquerda = hardwareMap.get(DcMotor.class, "motor_Esquerda");
-        motorDireita = hardwareMap.get(DcMotor.class,"motor_Direita");
+        motorDireita = hardwareMap.get(DcMotor.class, "motor_Direita");
         motorEsquerdaTras = hardwareMap.get(DcMotor.class, "motor_Esquerdatras");
         motorDireitaTras = hardwareMap.get(DcMotor.class, "motor_DireitaTras");
 
@@ -47,10 +54,32 @@ public class EncoderCaboTeste extends LinearOpMode {
 
         waitForStart();
 
-        encoderDrive(0.9,10, 10,5);
-        int pp = (int) (motorEsquerda.getCurrentPosition()/COUNTS_PER_INCH);
+        String quantArg = tfEngine.quantidadeDeArgolas();
+
+        tfCounter(quantArg);
+
+        tfEngine.deactivate();
+
+        int pp = (int) (motorEsquerda.getCurrentPosition() / COUNTS_PER_INCH);
         telemetry.addData("Polegadas percorridas", pp);
         telemetry.update();
+    }
+
+    public void tfCounter(String quantArg) {
+        if(quantArg.equals("Quad")){
+            encoderDrive(0.2, 20, -20, 5);
+            return;
+        }
+
+        if (quantArg.equals("Single")) {
+            encoderDrive(0.2, -20, 20, 5);
+            return;
+        }
+
+        if(quantArg.equals(null)) {
+            encoderDrive(0.2, 20, 20, 5);
+            return;
+        }
     }
 
     public void encoderDrive(double speed, double leftInches, double rightInches, double timeoutS) {
