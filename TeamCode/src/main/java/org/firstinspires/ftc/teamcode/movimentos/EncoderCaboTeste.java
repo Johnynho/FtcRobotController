@@ -56,6 +56,7 @@ public class EncoderCaboTeste extends LinearOpMode {
 
         String quantArg = tfEngine.quantidadeDeArgolas();
 
+        sleep(2000);
         tfCounter(quantArg);
 
         tfEngine.deactivate();
@@ -66,12 +67,18 @@ public class EncoderCaboTeste extends LinearOpMode {
     }
 
     public void tfCounter(String quantArg) {
-        if(quantArg != null) {
-            encoderDrive(0.2, 10, 10, 5);
-        } else {
-            encoderDrive(0.2, 20, 20, 5);
+        if(quantArg == "Quad"){
+            encoderDrive(0.2, 20, -20, 5);
+            return;
         }
 
+        if (quantArg == "Single") {
+            encoderDrive(0.2, -20, 20, 5);
+            return;
+        }
+
+        //Se for null
+        encoderDrive(0.6, 20, 20, 5);
     }
 
     public void encoderDrive(double speed, double leftInches, double rightInches, double timeoutS) {
