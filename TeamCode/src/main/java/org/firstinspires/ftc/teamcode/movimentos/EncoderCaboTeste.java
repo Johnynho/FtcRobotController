@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.vuforia.CameraDevice;
 
 import org.firstinspires.ftc.teamcode.TensorFlow;
 
@@ -56,6 +57,10 @@ public class EncoderCaboTeste extends LinearOpMode {
 
         String quantArg = tfEngine.quantidadeDeArgolas();
 
+        //Liga a lanterna
+        CameraDevice.getInstance().setFlashTorchMode(true);
+
+        sleep(2000);
         tfCounter(quantArg);
 
         tfEngine.deactivate();
@@ -66,12 +71,27 @@ public class EncoderCaboTeste extends LinearOpMode {
     }
 
     public void tfCounter(String quantArg) {
-        if(quantArg != null) {
-            encoderDrive(0.2, 10, 10, 5);
-        } else {
-            encoderDrive(0.2, 20, 20, 5);
+        if(quantArg == "Quad"){
+            //Desliga Lanterna
+            CameraDevice.getInstance().setFlashTorchMode(false);
+            //Faz a ação
+            encoderDrive(0.2, 20, -20, 5);
+            return;
         }
 
+        if (quantArg == "Single") {
+            //Desliga Lanterna
+            CameraDevice.getInstance().setFlashTorchMode(false);
+            //Faz a ação
+            encoderDrive(0.2, -20, 20, 5);
+            return;
+        }
+
+        //Se for null
+        //Desliga Lanterna
+        CameraDevice.getInstance().setFlashTorchMode(false);
+        //Faz a ação
+        encoderDrive(0.6, 20, 20, 5);
     }
 
     public void encoderDrive(double speed, double leftInches, double rightInches, double timeoutS) {
