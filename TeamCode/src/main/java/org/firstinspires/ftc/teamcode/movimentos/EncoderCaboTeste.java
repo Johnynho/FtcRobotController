@@ -66,19 +66,13 @@ public class EncoderCaboTeste extends LinearOpMode {
     }
 
     public void tfCounter(String quantArg) {
-        if(quantArg.equals("Quad")){
-            encoderDrive(0.2, 20, -20, 5);
-            return;
-        }
-
-        if (quantArg.equals("Single")) {
-            encoderDrive(0.2, -20, 20, 5);
+        if(quantArg != null) {
+            encoderDrive(0.2, 10, 10, 5);
             return;
         }
 
         if(quantArg.equals(null)) {
             encoderDrive(0.2, 20, 20, 5);
-            return;
         }
     }
 
