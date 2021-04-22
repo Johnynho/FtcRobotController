@@ -123,12 +123,11 @@ public class TensorFlow {
             if (updatedRecognitions != null) {
 
                 updatedRecognitions.size();
+                // step through the list of recognitions and display boundary info.
                 for (Recognition recognition : updatedRecognitions) {
                     pilhaArg = recognition.getLabel();
                 }
             }
-            // step through the list of recognitions and display boundary info.
-
         }
         return pilhaArg;
     }
