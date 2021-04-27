@@ -1,18 +1,25 @@
-package org.firstinspires.ftc.teamcode.movimentos;
+package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.vuforia.CameraDevice;
 
-import org.firstinspires.ftc.teamcode.TensorFlow;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous(name="Teste Andar Encoder", group="Pushbot")
-public class EncoderCaboTeste extends LinearOpMode {
+public class AutonomoGeral extends LinearOpMode {
     //Criando o objeto do TensorFlow
     TensorFlow tfEngine = new TensorFlow();
+
+    //HardwareClass robot = new HardwareClass();
+    BNO055IMU imu;
+    Orientation angles;
 
     //Calculos do COUNTS_PER_INCH
     private static final double COUNTS_PER_MOTOR_GOBILDA = 537.6;   //CPR * 4 * Redução
@@ -35,30 +42,14 @@ public class EncoderCaboTeste extends LinearOpMode {
         telemetry.addData("Status", "TensorFlow iniciado");
         telemetry.update();
 
-        //Parte da inicialização
-        motorEsquerda = hardwareMap.get(DcMotor.class, "motor_Esquerda");
-        motorDireita = hardwareMap.get(DcMotor.class, "motor_Direita");
-        motorEsquerdaTras = hardwareMap.get(DcMotor.class, "motor_Esquerdatras");
-        motorDireitaTras = hardwareMap.get(DcMotor.class, "motor_DireitaTras");
-
-        //Coloca as direções
-        motorEsquerda.setDirection(DcMotor.Direction.REVERSE);
-        motorDireita.setDirection(DcMotor.Direction.FORWARD);
-        motorEsquerdaTras.setDirection(DcMotor.Direction.REVERSE);
-        motorDireitaTras.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        //Configuração do encoder
-        motorDireita.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorEsquerda.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         waitForStart();
 
         String quantArg = tfEngine.quantidadeDeArgolas();
 
+        alinharGyro(90, 0.6, 2);
+
         //Liga a lanterna
-        CameraDevice.getInstance().setFlashTorchMode(true);
+        /*CameraDevice.getInstance().setFlashTorchMode(true);
 
         sleep(2000);
         tfCounter(quantArg);
@@ -67,7 +58,7 @@ public class EncoderCaboTeste extends LinearOpMode {
 
         int pp = (int) (motorEsquerda.getCurrentPosition() / COUNTS_PER_INCH);
         telemetry.addData("Polegadas percorridas", pp);
-        telemetry.update();
+        telemetry.update();*/
     }
 
     public void tfCounter(String quantArg) {
@@ -92,6 +83,71 @@ public class EncoderCaboTeste extends LinearOpMode {
         CameraDevice.getInstance().setFlashTorchMode(false);
         //Faz a ação
         encoderDrive(0.6, 20, 20, 5);
+    }
+
+    public void alinharGyro(double angulo,double max, int timeout){
+        //Declaração de variaveis
+        double curangle = gyroCalculate();
+        double erro = angulo-curangle;
+        double out;
+        double outfix = 0;
+        double kp = 0.001;
+        double erroac = 1;
+        //Transforma 1 milisegundo em 1 segundo (EXEMPLO PODERIA SER 5 OU 10)
+        timeout*=1000;
+
+            //Fala que enquanto o erro for maior que o menor erro que queremos chegar ele faz as comparações
+            while(Math.abs(erro) > erroac) {
+                //Atualiza o valor
+                gyroCalculate();
+
+                //Deixa o output para colocar em velocidade
+                out = kp * erro;
+
+                //Faz a velocidade mínima
+                if (negOrposi(out)){
+                    if (Math.abs(out) < 0.3) {
+                        outfix = 0.3;
+                    }
+                }else{
+                    outfix = -0.3;
+                }
+
+                //Velocidade máxima
+                if(negOrposi(out)){
+                    if(Math.abs(out) > max){
+                        outfix = max;
+                    }
+                }else{
+                    outfix = -max;
+                }
+
+                //Começa o movimento
+                motorEsquerda.setPower(-outfix);
+                motorEsquerdaTras.setPower(-outfix);
+                motorDireita.setPower(outfix);
+                motorDireitaTras.setPower(outfix);
+                erro = angulo - curangle;
+            }
+                //Para qualquer movimento
+                motorEsquerda.setPower(0);
+                motorEsquerdaTras.setPower(0);
+                motorDireita.setPower(0);
+                motorDireitaTras.setPower(0);
+                sleep(timeout);
+    }
+
+    //Método para verificar se o número é negativo ou positivo
+    public boolean negOrposi(double num){
+        if(num > 0){
+            return true;
+        }
+        return false;
+    }
+
+    public double gyroCalculate() {
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        return angles.firstAngle;
     }
 
     public void encoderDrive(double speed, double leftInches, double rightInches, double timeoutS) {
