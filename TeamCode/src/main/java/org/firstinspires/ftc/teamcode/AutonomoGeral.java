@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.vuforia.CameraDevice;
 
@@ -12,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous(name="Teste Andar Encoder", group="Pushbot")
+@Autonomous(name="Autonomo Geral", group="Pushbot")
 public class AutonomoGeral extends LinearOpMode {
     //Criando o objeto do TensorFlow
     TensorFlow tfEngine = new TensorFlow();
@@ -30,7 +31,8 @@ public class AutonomoGeral extends LinearOpMode {
 
     //Inicialização
     private final ElapsedTime runtime = new ElapsedTime();
-    DcMotor motorEsquerda, motorDireita, motorEsquerdaTras, motorDireitaTras;
+    //Servo servoChapa;
+    DcMotor motorEsquerda, motorDireita, motorEsquerdaTras, motorDireitaTras; //motorChapa;
 
     @Override
     public void runOpMode() {
@@ -42,26 +44,66 @@ public class AutonomoGeral extends LinearOpMode {
         telemetry.addData("Status", "TensorFlow iniciado");
         telemetry.update();
 
+        /* ***************************
+               CONFIGURAÇÃO DO GYRO
+         *************************** */
+        //Configura o gyro
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+
+        //Imu no Drive Station
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+
+        //Inicializa os parametros do gyro
+        imu.initialize(parameters);
+
+        /* ***************************
+            CONFIGURAÇÃO DOS MOTORES
+         *************************** */
+
+        //Parte da inicialização
+        //servoChapa = hardwareMap.get(Servo.class,"servo_Chapa");
+        //motorChapa = hardwareMap.get(DcMotor.class, "motor_Chapa");
+        motorEsquerda = hardwareMap.get(DcMotor.class, "motor_Esquerda");
+        motorDireita = hardwareMap.get(DcMotor.class, "motor_Direita");
+        motorEsquerdaTras = hardwareMap.get(DcMotor.class, "motor_Esquerdatras");
+        motorDireitaTras = hardwareMap.get(DcMotor.class, "motor_DireitaTras");
+
+        //Coloca as direções
+        motorEsquerda.setDirection(DcMotor.Direction.REVERSE);
+        motorDireita.setDirection(DcMotor.Direction.FORWARD);
+        motorEsquerdaTras.setDirection(DcMotor.Direction.REVERSE);
+        motorDireitaTras.setDirection(DcMotorSimple.Direction.FORWARD);
+        //motorChapa.setDirection(Dcmotor.Direction.FOWARD);
+        //servoChapa.setDirection(Servo.Direction.FORWARD);
+
+        //Configuração do encoder
+        motorDireita.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorEsquerda.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         waitForStart();
 
         String quantArg = tfEngine.quantidadeDeArgolas();
 
-        alinharGyro(90, 0.6, 2);
-
         //Liga a lanterna
-        /*CameraDevice.getInstance().setFlashTorchMode(true);
+        CameraDevice.getInstance().setFlashTorchMode(true);
 
         sleep(2000);
-        tfCounter(quantArg);
+        tfAutonomous(quantArg);
 
         tfEngine.deactivate();
 
         int pp = (int) (motorEsquerda.getCurrentPosition() / COUNTS_PER_INCH);
         telemetry.addData("Polegadas percorridas", pp);
-        telemetry.update();*/
+        telemetry.update();
     }
 
-    public void tfCounter(String quantArg) {
+    public void tfAutonomous(String quantArg) {
         if(quantArg == "Quad"){
             //Desliga Lanterna
             CameraDevice.getInstance().setFlashTorchMode(false);
@@ -82,9 +124,54 @@ public class AutonomoGeral extends LinearOpMode {
         //Desliga Lanterna
         CameraDevice.getInstance().setFlashTorchMode(false);
         //Faz a ação
-        encoderDrive(0.6, 20, 20, 5);
+        //Levanta o pegador
+        //motorChapa.setPower(0.5);
+        //sleep(1000);
+        //motorChapa.setPower(0);
+        //Anda até perto do meio da quadra
+        encoderDrive(0.5, 58, 62, 5);
+        //Gira para mirar no quadrado
+        alinharGyro(-65, 0.5, 2);
+        //Abaixa o pegador
+        //motorChapa.setPower(-0.5);
+        sleep(3000);
+        //"Cospe" o wobble goal com a roda do servo
+        //motorChapa.setPower(0);
+        //servoChapa.setPosition(1);
+        //Alinha para andar pra trás
+        alinharGyro(-2, 0.5, 2);
+        //Vai até a linha para alinhar com o segundo wobble goal
+        encoderDrive(0.5, -37.75, -37.75, 5);
+        //Gira para ficar de cara com o segundo wobble goal
+        alinharGyro(85, 0.5, 1);
+        //Anda até perto dele
+        encoderDrive(0.3, 22.75, 22.75, 5);
+        //Pega o wobble goal
+        //servoChapa.setPosition(0);
+        //Levanta denovo o pegador
+        //motorChapa.setPower(0.5);
+        sleep(3000);
+        //motorChapa.setPower(0);
+        //Anda para a linha novamente
+        encoderDrive(0.3, -22.75, -22.75, 5);
+        //Alinha com a área de entrega
+        alinharGyro(-2, 0.5, 2);
+        //Anda até a área de entrega com o segundo wobble goal
+        encoderDrive(0.4, 28.75, 28.75, 5);
+        //Gira para poder "Cospir" o wobble goal dentro a área
+        alinharGyro(-35, 0.5, 2);
+        //Abaixa o pegador
+        //motorChapa.setPower(-0.5);
+        sleep(3000);
+        //motorChapa.setPower(0);
+        //Cospe o wobble goal
+        //servoChapa.setPosition(1);
+        //Fica reto novamente
+        alinharGyro(35, 0.6, 1);
     }
 
+    //Angulo positivo == Esquerda
+    //Angulo negativo == Direita
     public void alinharGyro(double angulo,double max, int timeout){
         //Declaração de variaveis
         double curangle = gyroCalculate();
@@ -99,18 +186,20 @@ public class AutonomoGeral extends LinearOpMode {
             //Fala que enquanto o erro for maior que o menor erro que queremos chegar ele faz as comparações
             while(Math.abs(erro) > erroac) {
                 //Atualiza o valor
-                gyroCalculate();
+                curangle = gyroCalculate();
+                telemetry.addData("Gyro:", curangle);
+                telemetry.update();
 
                 //Deixa o output para colocar em velocidade
                 out = kp * erro;
 
                 //Faz a velocidade mínima
                 if (negOrposi(out)){
-                    if (Math.abs(out) < 0.3) {
+                    if (Math.abs(out) < 0.2) {
                         outfix = 0.3;
                     }
                 }else{
-                    outfix = -0.3;
+                    outfix = -0.2;
                 }
 
                 //Velocidade máxima
@@ -153,6 +242,10 @@ public class AutonomoGeral extends LinearOpMode {
     public void encoderDrive(double speed, double leftInches, double rightInches, double timeoutS) {
         int newLeftTarget;
         int newRightTarget;
+        double speedEsquerda;
+        double speedDireita;
+        speedEsquerda = leftInches > 0 ? speed : -speed;
+        speedDireita = rightInches > 0 ? speed : - speed;
 
         int pp = (int) (motorEsquerda.getCurrentPosition()/COUNTS_PER_INCH);
 
@@ -168,11 +261,11 @@ public class AutonomoGeral extends LinearOpMode {
             motorDireita.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             //Reseta o runtime e começa o movimento
             runtime.reset();
+
             motorEsquerda.setPower(Math.abs(speed));
             motorDireita.setPower(Math.abs(speed));
-            motorEsquerdaTras.setPower(Math.abs(speed));
-            motorDireitaTras.setPower(Math.abs(speed));
-
+            motorEsquerdaTras.setPower(speedEsquerda);
+            motorDireitaTras.setPower(speedDireita);
 
             while (opModeIsActive() && (runtime.seconds() < timeoutS) && (motorEsquerda.isBusy() && motorDireita.isBusy())) {
 

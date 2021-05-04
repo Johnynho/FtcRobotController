@@ -121,14 +121,14 @@ public class TeleOperado extends LinearOpMode {
             //No primeiro aperto do botão B apenas levanta a chapa
             if (gamepad1.b && c2 == 0) {
                 hard.ledShooter.enableLight(false);
-                hard.servoPivo.setPosition(SubSistemas.servoPosicao(90));
+                //hard.servoPivo.setPosition(SubSistemas.servoPosicao(90));
                 telemetry.addData("Chapa estado", "chapa levantada 1ª", 90);
                 c2++;
                 //Aqui verifica se a chapa está levantada com a váriavel C2 e o botão X apertado então o servo se fecha e a chapa levanta
             } else if (gamepad1.x && c2 == 1) {
                 hard.servoChapa.setPosition(1);
                 sleep(500);
-                hard.servoPivo.setPosition(SubSistemas.servoPosicao(180));
+                //hard.servoPivo.setPosition(SubSistemas.servoPosicao(180));
                 telemetry.addData("Chapa estado", "chapa levantada 2ª", 180);
                 c2++;
                 hard.ledShooter.enableLight(true);
@@ -136,11 +136,11 @@ public class TeleOperado extends LinearOpMode {
          e abre o servo assim soltando o wobble goal*/
             } else if (gamepad1.b && c2 == 2) {
                 hard.ledShooter.enableLight(false);
-                hard.servoPivo.setPosition(SubSistemas.servoPosicao(160));
+                //hard.servoPivo.setPosition(SubSistemas.servoPosicao(160));
                 telemetry.addData("Chapa estado", "chapa levantada 3ª", 160);
                 hard.servoChapa.setPosition(0);
                 sleep(1000);
-                hard.servoPivo.setPosition(0);
+                //hard.servoPivo.setPosition(0);
                 telemetry.addData("Chapa estado", "chapa levantada 4ª", 0);
                 hard.ledShooter.enableLight(true);
                 c2 = 0;
