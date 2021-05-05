@@ -116,7 +116,45 @@ public class AutonomoGeral extends LinearOpMode {
             //Desliga Lanterna
             CameraDevice.getInstance().setFlashTorchMode(false);
             //Faz a ação
-            encoderDrive(0.2, -20, 20, 5);
+            //Levanta o pegador
+            //motorChapa.setPower(0.5);
+            sleep(3000);
+            //motorChapa.setPower(0);
+            encoderDrive(0.5, 85.63, 85.63, 5);
+            //Alinha com a área B
+            alinharGyro(85, 0.5, 2);
+            //Levanta o pegador
+            //motorChapa.setPower(-0.5);
+            sleep(3000);
+            //motorChapa.setPower(0);
+            //"Cospe" o wobble goal
+            //servoChapa.setPosition(1);
+            //Fica reto novamente
+            alinharGyro(2, 0.5, 2);
+            //Vai pra linha
+            encoderDrive(0.5, -71.88, -71.88, 5);
+            sleep(1000);
+            //Alinha com o wobble
+            alinharGyro(85, 0.5, 2);
+            //Anda até ele
+            encoderDrive(0.4, 22.75, 22.75, 5);
+            //Pega o wobble
+            //servoChapa.setPosition(0);
+            sleep(3000);
+            //Volta pra linha
+            encoderDrive(0.4, -22.75, -22.75, 5);
+            //Alinha para ir na area B
+            alinharGyro(2, 0.5, 2);
+            //Vai até a area
+            encoderDrive(0.5, 92.25, 92.25, 5);
+            //Alinha com a area
+            alinharGyro(45, 0.5, 2);
+            //"Cospe" o wobble goal
+            //servoChapa.setPosition(1);
+            //Alinha novamente para voltar a linha
+            alinharGyro(2, 0.5, 2);
+            //Volta a linha de chegada
+            encoderDrive(0.5, -101.25, -101.25, 5);
             return;
         }
 
@@ -167,7 +205,9 @@ public class AutonomoGeral extends LinearOpMode {
         //Cospe o wobble goal
         //servoChapa.setPosition(1);
         //Fica reto novamente
-        alinharGyro(35, 0.6, 1);
+        alinharGyro(2, 0.5, 2);
+        //Vai até a linha de lançamento
+        encoderDrive(0.4, -51.5, -51.5, 5);
     }
 
     //Angulo positivo == Esquerda
