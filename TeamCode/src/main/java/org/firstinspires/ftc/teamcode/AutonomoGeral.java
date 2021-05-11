@@ -4,7 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotorControllerEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.vuforia.CameraDevice;
 
@@ -17,6 +17,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 public class AutonomoGeral extends LinearOpMode {
     //Criando o objeto do TensorFlow
     TensorFlow tfEngine = new TensorFlow();
+
+    //Declarar variaveis fora de um método
+    double ticksPer;
 
     //HardwareClass robot = new HardwareClass();
     BNO055IMU imu;
@@ -32,7 +35,8 @@ public class AutonomoGeral extends LinearOpMode {
     //Inicialização
     private final ElapsedTime runtime = new ElapsedTime();
     //Servo servoChapa;
-    DcMotor motorEsquerda, motorDireita, motorEsquerdaTras, motorDireitaTras; //motorChapa;
+    DcMotor motorEsquerda, motorDireita, motorEsquerdaTras, motorDireitaTras, motorChapa1, motorChapa2;
+    DcMotorControllerEx rpmMotor;
 
     @Override
     public void runOpMode() {
@@ -66,7 +70,8 @@ public class AutonomoGeral extends LinearOpMode {
 
         //Parte da inicialização
         //servoChapa = hardwareMap.get(Servo.class,"servo_Chapa");
-        //motorChapa = hardwareMap.get(DcMotor.class, "motor_Chapa");
+        motorChapa1 = hardwareMap.get(DcMotor.class, "motor_Chapa1");
+        motorChapa2 = hardwareMap.get(DcMotor.class, "motor_Chapa2");
         motorEsquerda = hardwareMap.get(DcMotor.class, "motor_Esquerda");
         motorDireita = hardwareMap.get(DcMotor.class, "motor_Direita");
         motorEsquerdaTras = hardwareMap.get(DcMotor.class, "motor_Esquerdatras");
@@ -76,8 +81,9 @@ public class AutonomoGeral extends LinearOpMode {
         motorEsquerda.setDirection(DcMotor.Direction.REVERSE);
         motorDireita.setDirection(DcMotor.Direction.FORWARD);
         motorEsquerdaTras.setDirection(DcMotor.Direction.REVERSE);
-        motorDireitaTras.setDirection(DcMotorSimple.Direction.FORWARD);
-        //motorChapa.setDirection(Dcmotor.Direction.FOWARD);
+        motorDireitaTras.setDirection(DcMotor.Direction.FORWARD);
+        motorChapa1.setDirection(DcMotor.Direction.FORWARD);
+        motorChapa2.setDirection(DcMotor.Direction.FORWARD);
         //servoChapa.setDirection(Servo.Direction.FORWARD);
 
         //Configuração do encoder
@@ -91,10 +97,30 @@ public class AutonomoGeral extends LinearOpMode {
         String quantArg = tfEngine.quantidadeDeArgolas();
 
         //Liga a lanterna
-        CameraDevice.getInstance().setFlashTorchMode(true);
+        //CameraDevice.getInstance().setFlashTorchMode(true);
 
-        sleep(2000);
-        tfAutonomous(quantArg);
+        //Teste Shooter
+        /*int c = 0;
+        sleep(5000);
+        while(gamepad1.x) {
+            telemetry.addData("Velocidade em ticks:", rpmMotor.getMotorVelocity(0));
+            telemetry.update();
+            if(c == 0) {
+                ticksPer = rpmTP(5000);
+                rpmMotor.setMotorVelocity(0, ticksPer);
+                c++;
+            }
+        }
+        motorEsquerda.setPower(0);*/
+
+        //Chapa teste
+        motorChapa1.setPower(0.7);
+        motorChapa2.setPower(0.7);
+        sleep(1000);
+        motorChapa1.setPower(0);
+        motorChapa2.setPower(0);
+
+        //tfAutonomous(quantArg);
 
         tfEngine.deactivate();
 
@@ -104,17 +130,16 @@ public class AutonomoGeral extends LinearOpMode {
     }
 
     public void tfAutonomous(String quantArg) {
+        //Desliga Lanterna
+        CameraDevice.getInstance().setFlashTorchMode(false);
         if(quantArg == "Quad"){
             //Desliga Lanterna
-            CameraDevice.getInstance().setFlashTorchMode(false);
             //Faz a ação
             encoderDrive(0.2, 20, -20, 5);
             return;
         }
 
         if (quantArg == "Single") {
-            //Desliga Lanterna
-            CameraDevice.getInstance().setFlashTorchMode(false);
             //Faz a ação
             //Levanta o pegador
             //motorChapa.setPower(0.5);
@@ -151,6 +176,7 @@ public class AutonomoGeral extends LinearOpMode {
             alinharGyro(45, 0.5, 2);
             //"Cospe" o wobble goal
             //servoChapa.setPosition(1);
+            sleep(3000);
             //Alinha novamente para voltar a linha
             alinharGyro(2, 0.5, 2);
             //Volta a linha de chegada
@@ -158,10 +184,7 @@ public class AutonomoGeral extends LinearOpMode {
             return;
         }
 
-        //Se for null
-        //Desliga Lanterna
-        CameraDevice.getInstance().setFlashTorchMode(false);
-        //Faz a ação
+        //Se for null faz a ação
         //Levanta o pegador
         //motorChapa.setPower(0.5);
         //sleep(1000);
@@ -208,6 +231,14 @@ public class AutonomoGeral extends LinearOpMode {
         alinharGyro(2, 0.5, 2);
         //Vai até a linha de lançamento
         encoderDrive(0.4, -51.5, -51.5, 5);
+    }
+
+    public double rpmTP(int rpm){
+        rpm/=60;
+        int rpmMax = 6000/60;
+        double rpmRev = rpm*28;
+        rpmRev/=rpmMax;
+        return rpmRev;
     }
 
     //Angulo positivo == Esquerda
