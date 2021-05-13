@@ -36,13 +36,17 @@ import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class HardwareClass {
-    //Declaração dos motores
-    public DcMotor motorEsquerda, motorDireita = null;
-    public DcMotor motorEsquerdaTras = null;
-    public DcMotor motorDireitaTras = null;
-    public DcMotor motorIntake = null;
-    public DcMotor motorChapa = null;
-    public Servo servoChapa = null;
+    //Declaração dos motores drive
+    public DcMotor motorEsquerda, motorDireita, motorEsquerdaTras, motorDireitaTras;
+    //Declaração dos motores/servos wobble goal
+    public DcMotor motorWobbleEsq, motorWobbleDir;
+    public Servo servoWobble = null;
+    //Declaração dos motores intake
+    public DcMotor motorIntake;
+    //Declaração dos motores/servos shooter
+    public DcMotor motorShooter;
+    public Servo servoBalde, servoShootar;
+    //Declaração do LED
     public LED ledShooter = null;
 
     //Referências de hardware e gyro
@@ -84,8 +88,11 @@ public class HardwareClass {
         motorDireita = hwMap.get(DcMotor.class,"motor_Direita");
         motorDireitaTras = hwMap.get(DcMotor.class,"motor_DireitaTras");
         motorIntake = hwMap.get(DcMotor.class,"motor_Intake");
-        motorChapa = hwMap.get(DcMotor.class,"motor_Chapa");
-        servoChapa = hwMap.get(Servo.class,"servo_Chapa");
+        motorWobbleEsq = hwMap.get(DcMotor.class,"motor_WoobleEsq");
+        motorWobbleDir = hwMap.get(DcMotor.class,"motor_WoobleDir");
+        servoWobble = hwMap.get(Servo.class,"servo_Chapa");
+        servoBalde = hwMap.get(Servo.class,"servo_Balse");
+        servoShootar = hwMap.get(Servo.class,"servo_Shootar");
         ledShooter = hwMap.get(LED.class,"led_Shooter");
 
         //Direção dos motores
@@ -94,20 +101,25 @@ public class HardwareClass {
         motorEsquerdaTras.setDirection(DcMotor.Direction.FORWARD);
         motorDireitaTras.setDirection(DcMotor.Direction.REVERSE);
         motorIntake.setDirection(DcMotor.Direction.FORWARD);
-        motorChapa.setDirection(DcMotor.Direction.FORWARD);
-        servoChapa.setDirection(Servo.Direction.FORWARD);
+        motorWobbleEsq.setDirection(DcMotor.Direction.FORWARD);
+        motorWobbleDir.setDirection(DcMotor.Direction.FORWARD);
+        servoWobble.setDirection(Servo.Direction.FORWARD);
+        servoBalde.setDirection(Servo.Direction.FORWARD);
+        servoShootar.setDirection(Servo.Direction.FORWARD);
 
         //Reseta os encoder, por que são usados em dois OpModes
         motorEsquerda.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorDireita.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorEsquerdaTras.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorDireitaTras.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorShooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         
         //Coloca para se mexer contando o encoder
         motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorEsquerdaTras.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorDireitaTras.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorShooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
  }

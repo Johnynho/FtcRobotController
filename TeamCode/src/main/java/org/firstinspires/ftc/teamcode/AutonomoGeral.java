@@ -35,7 +35,7 @@ public class AutonomoGeral extends LinearOpMode {
     //Inicialização
     private final ElapsedTime runtime = new ElapsedTime();
     //Servo servoChapa;
-    DcMotor motorEsquerda, motorDireita, motorEsquerdaTras, motorDireitaTras, motorChapa1, motorChapa2;
+    DcMotor motorEsquerda, motorDireita, motorEsquerdaTras, motorDireitaTras, motorChapa1, motorChapa2, motorShooter;
     DcMotorControllerEx rpmMotor;
 
     @Override
@@ -70,6 +70,7 @@ public class AutonomoGeral extends LinearOpMode {
 
         //Parte da inicialização
         //servoChapa = hardwareMap.get(Servo.class,"servo_Chapa");
+        motorShooter = hardwareMap.get(DcMotor.class, "motor_Shooter");
         motorChapa1 = hardwareMap.get(DcMotor.class, "motor_Chapa1");
         motorChapa2 = hardwareMap.get(DcMotor.class, "motor_Chapa2");
         motorEsquerda = hardwareMap.get(DcMotor.class, "motor_Esquerda");
@@ -85,8 +86,11 @@ public class AutonomoGeral extends LinearOpMode {
         motorChapa1.setDirection(DcMotor.Direction.FORWARD);
         motorChapa2.setDirection(DcMotor.Direction.FORWARD);
         //servoChapa.setDirection(Servo.Direction.FORWARD);
+        motorShooter.setDirection(DcMotor.Direction.FORWARD);
 
         //Configuração do encoder
+        motorShooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorShooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorDireita.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorEsquerda.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -99,6 +103,7 @@ public class AutonomoGeral extends LinearOpMode {
         //Liga a lanterna
         //CameraDevice.getInstance().setFlashTorchMode(true);
 
+        int portaShooter = motorShooter.getPortNumber();
         //Teste Shooter
         /*int c = 0;
         sleep(5000);
@@ -107,7 +112,7 @@ public class AutonomoGeral extends LinearOpMode {
             telemetry.update();
             if(c == 0) {
                 ticksPer = rpmTP(5000);
-                rpmMotor.setMotorVelocity(0, ticksPer);
+                rpmMotor.setMotorVelocity(portaShooter, ticksPer);
                 c++;
             }
         }

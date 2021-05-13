@@ -16,6 +16,7 @@ public class TeleOperado extends LinearOpMode {
     //Variáveis de controle dos ifs
     boolean antiBumper = false;
     boolean onOff = true;
+    int baldeC = 0;
     int c2 = 0;
 
     //Instanciação de objetos
@@ -125,8 +126,8 @@ public class TeleOperado extends LinearOpMode {
                 telemetry.addData("Chapa estado", "chapa levantada 1ª", 90);
                 c2++;
                 //Aqui verifica se a chapa está levantada com a váriavel C2 e o botão X apertado então o servo se fecha e a chapa levanta
-            } else if (gamepad1.x && c2 == 1) {
-                hard.servoChapa.setPosition(1);
+            } else if (gamepad1.b && c2 == 1) {
+                hard.servoWobble.setPosition(1);
                 sleep(500);
                 //hard.servoPivo.setPosition(SubSistemas.servoPosicao(180));
                 telemetry.addData("Chapa estado", "chapa levantada 2ª", 180);
@@ -138,12 +139,25 @@ public class TeleOperado extends LinearOpMode {
                 hard.ledShooter.enableLight(false);
                 //hard.servoPivo.setPosition(SubSistemas.servoPosicao(160));
                 telemetry.addData("Chapa estado", "chapa levantada 3ª", 160);
-                hard.servoChapa.setPosition(0);
+                hard.servoWobble.setPosition(0);
                 sleep(1000);
                 //hard.servoPivo.setPosition(0);
                 telemetry.addData("Chapa estado", "chapa levantada 4ª", 0);
                 hard.ledShooter.enableLight(true);
                 c2 = 0;
+            }
+
+            //Controle para não atirar se o balde não estiver levantado
+            while(gamepad1.left_bumper){
+                hard.servoBalde.setPosition(1);
+                baldeC = 1;
+            }
+            hard.servoBalde.setPosition(0);
+            baldeC = 0;
+
+            if(gamepad1.left_trigger > 0 && baldeC == 1){
+                hard.servoShootar.setPosition(1);
+                hard.servoShootar.setPosition(0);
             }
 
             //Chama a leitura do Vuforia (somente verificar se o alvo está visível)
