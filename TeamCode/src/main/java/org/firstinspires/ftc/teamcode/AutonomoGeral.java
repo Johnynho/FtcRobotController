@@ -35,7 +35,7 @@ public class AutonomoGeral extends LinearOpMode {
     //Inicialização
     private final ElapsedTime runtime = new ElapsedTime();
     //Servo servoChapa;
-    DcMotor motorEsquerda, motorDireita, motorEsquerdaTras, motorDireitaTras, motorChapa1, motorChapa2, motorShooter;
+    DcMotor motorEsquerda, motorDireita, motorEsquerdaTras, motorDireitaTras, motorWobbleEsq, motorWobbleDir, motorShooter;
     DcMotorControllerEx rpmMotor;
 
     @Override
@@ -71,8 +71,8 @@ public class AutonomoGeral extends LinearOpMode {
         //Parte da inicialização
         //servoChapa = hardwareMap.get(Servo.class,"servo_Chapa");
         motorShooter = hardwareMap.get(DcMotor.class, "motor_Shooter");
-        motorChapa1 = hardwareMap.get(DcMotor.class, "motor_Chapa1");
-        motorChapa2 = hardwareMap.get(DcMotor.class, "motor_Chapa2");
+        motorWobbleEsq = hardwareMap.get(DcMotor.class,"motor_WoobleEsq");
+        motorWobbleDir = hardwareMap.get(DcMotor.class,"motor_WoobleDir");
         motorEsquerda = hardwareMap.get(DcMotor.class, "motor_Esquerda");
         motorDireita = hardwareMap.get(DcMotor.class, "motor_Direita");
         motorEsquerdaTras = hardwareMap.get(DcMotor.class, "motor_Esquerdatras");
@@ -83,8 +83,8 @@ public class AutonomoGeral extends LinearOpMode {
         motorDireita.setDirection(DcMotor.Direction.FORWARD);
         motorEsquerdaTras.setDirection(DcMotor.Direction.REVERSE);
         motorDireitaTras.setDirection(DcMotor.Direction.FORWARD);
-        motorChapa1.setDirection(DcMotor.Direction.FORWARD);
-        motorChapa2.setDirection(DcMotor.Direction.FORWARD);
+        motorWobbleEsq.setDirection(DcMotor.Direction.FORWARD);
+        motorWobbleDir.setDirection(DcMotor.Direction.FORWARD);
         //servoChapa.setDirection(Servo.Direction.FORWARD);
         motorShooter.setDirection(DcMotor.Direction.FORWARD);
 
@@ -119,11 +119,7 @@ public class AutonomoGeral extends LinearOpMode {
         motorEsquerda.setPower(0);*/
 
         //Chapa teste
-        motorChapa1.setPower(0.7);
-        motorChapa2.setPower(0.7);
-        sleep(1000);
-        motorChapa1.setPower(0);
-        motorChapa2.setPower(0);
+        pegWobble(0.7, 1);
 
         //tfAutonomous(quantArg);
 
@@ -146,19 +142,15 @@ public class AutonomoGeral extends LinearOpMode {
 
         if (quantArg == "Single") {
             //Faz a ação
-            //Levanta o pegador
-            //motorChapa.setPower(0.5);
-            sleep(3000);
-            //motorChapa.setPower(0);
+
             encoderDrive(0.5, 85.63, 85.63, 5);
             //Alinha com a área B
             alinharGyro(85, 0.5, 2);
-            //Levanta o pegador
-            //motorChapa.setPower(-0.5);
-            sleep(3000);
-            //motorChapa.setPower(0);
-            //"Cospe" o wobble goal
+            //Abaixa wobble para precisão
+            pegWobble(-0.7, 1);
             //servoChapa.setPosition(1);
+            //Levanta o wobble para facilitar locomoção
+            pegWobble(0.7, 1);
             //Fica reto novamente
             alinharGyro(2, 0.5, 2);
             //Vai pra linha
@@ -168,9 +160,11 @@ public class AutonomoGeral extends LinearOpMode {
             alinharGyro(85, 0.5, 2);
             //Anda até ele
             encoderDrive(0.4, 22.75, 22.75, 5);
+            //Abaixa pegardor
+            pegWobble(-0.7, 1);
             //Pega o wobble
             //servoChapa.setPosition(0);
-            sleep(3000);
+            pegWobble(0.7, 1);
             //Volta pra linha
             encoderDrive(0.4, -22.75, -22.75, 5);
             //Alinha para ir na area B
@@ -179,9 +173,12 @@ public class AutonomoGeral extends LinearOpMode {
             encoderDrive(0.5, 92.25, 92.25, 5);
             //Alinha com a area
             alinharGyro(45, 0.5, 2);
+            //Abaixa wobble goal
+            pegWobble(-0.7, 1);
             //"Cospe" o wobble goal
             //servoChapa.setPosition(1);
-            sleep(3000);
+            //Levanta wobble para o autônomo
+            pegWobble(0.7, 1);
             //Alinha novamente para voltar a linha
             alinharGyro(2, 0.5, 2);
             //Volta a linha de chegada
@@ -190,48 +187,43 @@ public class AutonomoGeral extends LinearOpMode {
         }
 
         //Se for null faz a ação
-        //Levanta o pegador
-        //motorChapa.setPower(0.5);
-        //sleep(1000);
-        //motorChapa.setPower(0);
         //Anda até perto do meio da quadra
         encoderDrive(0.5, 58, 62, 5);
         //Gira para mirar no quadrado
         alinharGyro(-65, 0.5, 2);
         //Abaixa o pegador
-        //motorChapa.setPower(-0.5);
-        sleep(3000);
+        pegWobble(-0.7, 1);
         //"Cospe" o wobble goal com a roda do servo
-        //motorChapa.setPower(0);
         //servoChapa.setPosition(1);
+        //Levanta o pegador para locomoção
+        pegWobble(0.7, 1);
         //Alinha para andar pra trás
         alinharGyro(-2, 0.5, 2);
         //Vai até a linha para alinhar com o segundo wobble goal
         encoderDrive(0.5, -37.75, -37.75, 5);
         //Gira para ficar de cara com o segundo wobble goal
         alinharGyro(85, 0.5, 1);
+        pegWobble(-0.7, 1);
         //Anda até perto dele
         encoderDrive(0.3, 22.75, 22.75, 5);
         //Pega o wobble goal
         //servoChapa.setPosition(0);
         //Levanta denovo o pegador
-        //motorChapa.setPower(0.5);
-        sleep(3000);
-        //motorChapa.setPower(0);
+        pegWobble(0.7, 1);
         //Anda para a linha novamente
         encoderDrive(0.3, -22.75, -22.75, 5);
         //Alinha com a área de entrega
         alinharGyro(-2, 0.5, 2);
         //Anda até a área de entrega com o segundo wobble goal
         encoderDrive(0.4, 28.75, 28.75, 5);
+        //Abaixa para precisão
+        pegWobble(-0.7, 1);
         //Gira para poder "Cospir" o wobble goal dentro a área
         alinharGyro(-35, 0.5, 2);
-        //Abaixa o pegador
-        //motorChapa.setPower(-0.5);
-        sleep(3000);
-        //motorChapa.setPower(0);
         //Cospe o wobble goal
         //servoChapa.setPosition(1);
+        //Levanta o pegador para o teleoperado
+        pegWobble(0.7, 1);
         //Fica reto novamente
         alinharGyro(2, 0.5, 2);
         //Vai até a linha de lançamento
@@ -244,6 +236,15 @@ public class AutonomoGeral extends LinearOpMode {
         double rpmRev = rpm*28;
         rpmRev/=rpmMax;
         return rpmRev;
+    }
+
+    public void pegWobble(double power, int seg){
+        seg*=1000;
+        motorWobbleEsq.setPower(power);
+        motorWobbleDir.setPower(power);
+        sleep(seg);
+        motorWobbleEsq.setPower(0);
+        motorWobbleDir.setPower(0);
     }
 
     //Angulo positivo == Esquerda

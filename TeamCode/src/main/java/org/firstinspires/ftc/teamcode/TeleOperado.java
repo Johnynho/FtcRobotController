@@ -24,6 +24,7 @@ public class TeleOperado extends LinearOpMode {
     Vuforia vuforiaObj = new Vuforia();
     HardwareClass hard = new HardwareClass();
     SubSistemas ali = new SubSistemas();
+    AutonomoGeral aut = new AutonomoGeral();
 
     //String para configurar o vuforia (variável contém a cor da aliança)
     static String ladoO;
@@ -110,7 +111,7 @@ public class TeleOperado extends LinearOpMode {
                 antiBumper = true;
             } else if (!gamepad1.right_bumper) {
                 antiBumper = false;
-                if (gamepad1.left_bumper) {
+                if (gamepad1.right_trigger > 0) {
                     hard.motorIntake.setPower(-1);
                     onOff = false;
                     //Só desativar caso esteja rodando ao contrário, para não dar conflito com o toggle
@@ -133,7 +134,7 @@ public class TeleOperado extends LinearOpMode {
                 telemetry.addData("Chapa estado", "chapa levantada 2ª", 180);
                 c2++;
                 hard.ledShooter.enableLight(true);
-         /*Verifica se o botão B foi apertado duas vezes e o servo está fechado se tudo estiver certo, a chapa se abaixa um pouco
+         /*Verifica se o botão B foi apertado 3 vezes e o servo está fechado se tudo estiver certo, a chapa se abaixa um pouco
          e abre o servo assim soltando o wobble goal*/
             } else if (gamepad1.b && c2 == 2) {
                 hard.ledShooter.enableLight(false);
@@ -166,19 +167,10 @@ public class TeleOperado extends LinearOpMode {
             if (vuforiaObj.visible() && gamepad1.x ^ gamepad1.a){
                 //Variável que somente verifica se algum dos botões foi apertado
                 boolean xApertado = gamepad1.x;
-                while(gyroCalculate() < 90 && gyroCalculate() > 0) {
-                hard.motorEsquerda.setPower(0.2);
-                hard.motorEsquerdaTras.setPower(0.2);
-                hard.motorDireita.setPower(-0.2);
-                hard.motorDireitaTras.setPower(-0.2);
-                }
+                aut.alinharGyro(90, 0.5, 1);
 
-                while(gyroCalculate() > -90 && gyroCalculate() < 0) {
-                hard.motorEsquerda.setPower(-0.2);
-                hard.motorEsquerdaTras.setPower(-0.2);
-                hard.motorDireita.setPower(0.2);
-                hard.motorDireitaTras.setPower(0.2);
-                }
+
+                aut.alinharGyro(-90, 0.5, 1);
 
                 //Verifica se botão X foi apertado
                 if(xApertado) {
