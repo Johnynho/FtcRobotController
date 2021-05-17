@@ -126,7 +126,7 @@ public class TeleOperado extends LinearOpMode {
                 //hard.servoPivo.setPosition(SubSistemas.servoPosicao(90));
                 telemetry.addData("Chapa estado", "chapa levantada 1ª", 90);
                 c2++;
-                //Aqui verifica se a chapa está levantada com a váriavel C2 e o botão X apertado então o servo se fecha e a chapa levanta
+                //Aqui verifica se a chapa está levantada com a váriavel C2 e o botão B apertado pela 3° vez então o servo se fecha e a chapa levanta
             } else if (gamepad1.b && c2 == 1) {
                 hard.servoWobble.setPosition(1);
                 sleep(500);
@@ -169,8 +169,7 @@ public class TeleOperado extends LinearOpMode {
                 boolean xApertado = gamepad1.x;
                 aut.alinharGyro(90, 0.5, 1);
 
-
-                aut.alinharGyro(-90, 0.5, 1);
+                aut.alinharGyro(2, 0.5, 1);
 
                 //Verifica se botão X foi apertado
                 if(xApertado) {

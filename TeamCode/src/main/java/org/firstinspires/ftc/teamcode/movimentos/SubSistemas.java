@@ -1,4 +1,6 @@
 package org.firstinspires.ftc.teamcode.movimentos;
+
+import org.firstinspires.ftc.teamcode.AutonomoGeral;
 import org.firstinspires.ftc.teamcode.HardwareClass;
 
 /**
@@ -27,41 +29,16 @@ public class SubSistemas{
     //Objeto para pegar os motores do HardwareClass
     HardwareClass hard = new HardwareClass();
 
+    AutonomoGeral aut = new AutonomoGeral();
+
     //Método para alinhar em Y (aliança vermelha para azul, primeira sendo -Y)
     public void alinharY(double y, float a) {
-
-        //Valor para motores
-        double p = y < 0 ? -a : a;
-
-        //Sinais que irão fazer o robô se movimentar para esquerda/direita
-        //Se for -a e entrar no setPower do motorEsquerdaTras, ele deve ficar positivo -(-a)
-        hard.motorEsquerda.setPower(p);
-        hard.motorEsquerdaTras.setPower(-p);
-        hard.motorDireita.setPower(-p);
-        hard.motorDireitaTras.setPower(p);
+        aut.alinharGyro(y, a, 1);
     }
 
     //X é a distância em relação ao setPoint (Vuforia)
-    public void alinharX(double x, double v) throws InterruptedException {
-        //p é polegadas em um segundo, só que sem ser somente na velocidade máxima
-        //Exemplo: 19.24 = velocidade máxima, metade 19.24*0.5 (0.5 é um suposto input do motor)
-        p = v * inS;
-
-        //Retorna o tempo que o robô precisa se movimentar para alcançar a distância X
-        double time = x/p;
-
-        hard.motorEsquerda.setPower(v);
-        hard.motorEsquerdaTras.setPower(v);
-        hard.motorDireita.setPower(v);
-        hard.motorDireitaTras.setPower(v);
-
-        Thread.sleep((long) (time*1000));
-
-        hard.motorEsquerda.setPower(0);
-        hard.motorEsquerdaTras.setPower(0);
-        hard.motorDireita.setPower(0);
-        hard.motorDireitaTras.setPower(0);
-
+    public void alinharX(double x, double v){
+        aut.encoderDrive(v, x, x, 5 );
     }
 
     /*

@@ -108,7 +108,7 @@ public class AutonomoGeral extends LinearOpMode {
         /*int c = 0;
         sleep(5000);
         while(gamepad1.x) {
-            telemetry.addData("Velocidade em ticks:", rpmMotor.getMotorVelocity(0));
+            telemetry.addData("Velocidade em ticks:", rpmMotor.getMotorVelocity(portaShooter));
             telemetry.update();
             if(c == 0) {
                 ticksPer = rpmTP(5000);
