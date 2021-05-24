@@ -122,29 +122,20 @@ public class TeleOperado extends LinearOpMode {
 
             //No primeiro aperto do botão B apenas levanta a chapa
             if (gamepad1.b && c2 == 0) {
-                hard.ledShooter.enableLight(false);
-                //hard.servoPivo.setPosition(SubSistemas.servoPosicao(90));
-                telemetry.addData("Chapa estado", "chapa levantada 1ª", 90);
+                aut.pegWobble(-0.7, 1);
+                telemetry.addData("Braço estado:", "Braço abaixado");
                 c2++;
                 //Aqui verifica se a chapa está levantada com a váriavel C2 e o botão B apertado pela 3° vez então o servo se fecha e a chapa levanta
             } else if (gamepad1.b && c2 == 1) {
-                hard.servoWobble.setPosition(1);
-                sleep(500);
-                //hard.servoPivo.setPosition(SubSistemas.servoPosicao(180));
-                telemetry.addData("Chapa estado", "chapa levantada 2ª", 180);
-                c2++;
-                hard.ledShooter.enableLight(true);
-         /*Verifica se o botão B foi apertado 3 vezes e o servo está fechado se tudo estiver certo, a chapa se abaixa um pouco
-         e abre o servo assim soltando o wobble goal*/
-            } else if (gamepad1.b && c2 == 2) {
-                hard.ledShooter.enableLight(false);
-                //hard.servoPivo.setPosition(SubSistemas.servoPosicao(160));
-                telemetry.addData("Chapa estado", "chapa levantada 3ª", 160);
                 hard.servoWobble.setPosition(0);
-                sleep(1000);
-                //hard.servoPivo.setPosition(0);
-                telemetry.addData("Chapa estado", "chapa levantada 4ª", 0);
-                hard.ledShooter.enableLight(true);
+                sleep(500);
+                aut.pegWobble(0.7, 1);
+                telemetry.addData("Braço estado:", "Braço levantado");
+                c2++;
+         /*Verifica se o botão B foi apertado 3 vezes e o servo está fechado se tudo estiver certo, o servo se abre*/
+            } else if (gamepad1.b && c2 == 2) {
+                hard.servoWobble.setPosition(1);
+                telemetry.addData("Braço estado:", "Braço levantado");
                 c2 = 0;
             }
 

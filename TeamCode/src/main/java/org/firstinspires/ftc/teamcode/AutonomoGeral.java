@@ -21,8 +21,7 @@ public class AutonomoGeral extends LinearOpMode {
     //Declarar variaveis fora de um método
     double ticksPer;
 
-    //HardwareClass robot = new HardwareClass();
-    BNO055IMU imu;
+    HardwareClass robot = new HardwareClass();
     Orientation angles;
 
     //Calculos do COUNTS_PER_INCH
@@ -34,8 +33,6 @@ public class AutonomoGeral extends LinearOpMode {
 
     //Inicialização
     private final ElapsedTime runtime = new ElapsedTime();
-    //Servo servoChapa;
-    DcMotor motorEsquerda, motorDireita, motorEsquerdaTras, motorDireitaTras, motorWobbleEsq, motorWobbleDir, motorShooter;
     DcMotorControllerEx rpmMotor;
 
     @Override
@@ -48,54 +45,6 @@ public class AutonomoGeral extends LinearOpMode {
         telemetry.addData("Status", "TensorFlow iniciado");
         telemetry.update();
 
-        /* ***************************
-               CONFIGURAÇÃO DO GYRO
-         *************************** */
-        //Configura o gyro
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
-
-        //Imu no Drive Station
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-
-        //Inicializa os parametros do gyro
-        imu.initialize(parameters);
-
-        /* ***************************
-            CONFIGURAÇÃO DOS MOTORES
-         *************************** */
-
-        //Parte da inicialização
-        //servoChapa = hardwareMap.get(Servo.class,"servo_Chapa");
-        motorShooter = hardwareMap.get(DcMotor.class, "motor_Shooter");
-        motorWobbleEsq = hardwareMap.get(DcMotor.class,"motor_WoobleEsq");
-        motorWobbleDir = hardwareMap.get(DcMotor.class,"motor_WoobleDir");
-        motorEsquerda = hardwareMap.get(DcMotor.class, "motor_Esquerda");
-        motorDireita = hardwareMap.get(DcMotor.class, "motor_Direita");
-        motorEsquerdaTras = hardwareMap.get(DcMotor.class, "motor_Esquerdatras");
-        motorDireitaTras = hardwareMap.get(DcMotor.class, "motor_DireitaTras");
-
-        //Coloca as direções
-        motorEsquerda.setDirection(DcMotor.Direction.REVERSE);
-        motorDireita.setDirection(DcMotor.Direction.FORWARD);
-        motorEsquerdaTras.setDirection(DcMotor.Direction.REVERSE);
-        motorDireitaTras.setDirection(DcMotor.Direction.FORWARD);
-        motorWobbleEsq.setDirection(DcMotor.Direction.FORWARD);
-        motorWobbleDir.setDirection(DcMotor.Direction.FORWARD);
-        //servoChapa.setDirection(Servo.Direction.FORWARD);
-        motorShooter.setDirection(DcMotor.Direction.FORWARD);
-
-        //Configuração do encoder
-        motorShooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorShooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorDireita.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorEsquerda.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         waitForStart();
 
         String quantArg = tfEngine.quantidadeDeArgolas();
@@ -103,7 +52,7 @@ public class AutonomoGeral extends LinearOpMode {
         //Liga a lanterna
         //CameraDevice.getInstance().setFlashTorchMode(true);
 
-        int portaShooter = motorShooter.getPortNumber();
+        //int portaShooter = robot.motorShooter.getPortNumber();
         //Teste Shooter
         /*int c = 0;
         sleep(5000);
@@ -116,16 +65,16 @@ public class AutonomoGeral extends LinearOpMode {
                 c++;
             }
         }
-        motorEsquerda.setPower(0);*/
+        robot.motorEsquerda.setPower(0);*/
 
         //Chapa teste
-        pegWobble(0.7, 1);
+        //pegWobble(0.7, 1);
 
-        //tfAutonomous(quantArg);
+        tfAutonomous(quantArg);
 
         tfEngine.deactivate();
 
-        int pp = (int) (motorEsquerda.getCurrentPosition() / COUNTS_PER_INCH);
+        int pp = (int) (robot.motorEsquerda.getCurrentPosition() / COUNTS_PER_INCH);
         telemetry.addData("Polegadas percorridas", pp);
         telemetry.update();
     }
@@ -146,11 +95,8 @@ public class AutonomoGeral extends LinearOpMode {
             encoderDrive(0.5, 85.63, 85.63, 5);
             //Alinha com a área B
             alinharGyro(85, 0.5, 2);
-            //Abaixa wobble para precisão
-            pegWobble(-0.7, 1);
-            //servoChapa.setPosition(1);
-            //Levanta o wobble para facilitar locomoção
-            pegWobble(0.7, 1);
+            //Solta o wobble
+            robot.servoWobble.setPosition(1);
             //Fica reto novamente
             alinharGyro(2, 0.5, 2);
             //Vai pra linha
@@ -163,7 +109,8 @@ public class AutonomoGeral extends LinearOpMode {
             //Abaixa pegardor
             pegWobble(-0.7, 1);
             //Pega o wobble
-            //servoChapa.setPosition(0);
+            robot.servoWobble.setPosition(0);
+            //Levanta o braço
             pegWobble(0.7, 1);
             //Volta pra linha
             encoderDrive(0.4, -22.75, -22.75, 5);
@@ -173,12 +120,8 @@ public class AutonomoGeral extends LinearOpMode {
             encoderDrive(0.5, 92.25, 92.25, 5);
             //Alinha com a area
             alinharGyro(45, 0.5, 2);
-            //Abaixa wobble goal
-            pegWobble(-0.7, 1);
-            //"Cospe" o wobble goal
-            //servoChapa.setPosition(1);
-            //Levanta wobble para o autônomo
-            pegWobble(0.7, 1);
+            //Solta o wobble goal
+            robot.servoWobble.setPosition(1);
             //Alinha novamente para voltar a linha
             alinharGyro(2, 0.5, 2);
             //Volta a linha de chegada
@@ -191,10 +134,8 @@ public class AutonomoGeral extends LinearOpMode {
         encoderDrive(0.5, 58, 62, 5);
         //Gira para mirar no quadrado
         alinharGyro(-65, 0.5, 2);
-        //Abaixa o pegador
-        pegWobble(-0.7, 1);
-        //"Cospe" o wobble goal com a roda do servo
-        //servoChapa.setPosition(1);
+        //Solta o wobble goal
+        robot.servoWobble.setPosition(1);
         //Levanta o pegador para locomoção
         pegWobble(0.7, 1);
         //Alinha para andar pra trás
@@ -203,11 +144,12 @@ public class AutonomoGeral extends LinearOpMode {
         encoderDrive(0.5, -37.75, -37.75, 5);
         //Gira para ficar de cara com o segundo wobble goal
         alinharGyro(85, 0.5, 1);
+        //Abaixa o braço
         pegWobble(-0.7, 1);
         //Anda até perto dele
         encoderDrive(0.3, 22.75, 22.75, 5);
         //Pega o wobble goal
-        //servoChapa.setPosition(0);
+        robot.servoWobble.setPosition(0);
         //Levanta denovo o pegador
         pegWobble(0.7, 1);
         //Anda para a linha novamente
@@ -216,14 +158,10 @@ public class AutonomoGeral extends LinearOpMode {
         alinharGyro(-2, 0.5, 2);
         //Anda até a área de entrega com o segundo wobble goal
         encoderDrive(0.4, 28.75, 28.75, 5);
-        //Abaixa para precisão
-        pegWobble(-0.7, 1);
         //Gira para poder "Cospir" o wobble goal dentro a área
         alinharGyro(-35, 0.5, 2);
-        //Cospe o wobble goal
-        //servoChapa.setPosition(1);
-        //Levanta o pegador para o teleoperado
-        pegWobble(0.7, 1);
+        //Solta o wobble goal
+        robot.servoWobble.setPosition(1);
         //Fica reto novamente
         alinharGyro(2, 0.5, 2);
         //Vai até a linha de lançamento
@@ -240,11 +178,11 @@ public class AutonomoGeral extends LinearOpMode {
 
     public void pegWobble(double power, int seg){
         seg*=1000;
-        motorWobbleEsq.setPower(power);
-        motorWobbleDir.setPower(power);
+        robot.motorWobbleEsq.setPower(power);
+        robot.motorWobbleDir.setPower(power);
         sleep(seg);
-        motorWobbleEsq.setPower(0);
-        motorWobbleDir.setPower(0);
+        robot.motorWobbleEsq.setPower(0);
+        robot.motorWobbleDir.setPower(0);
     }
 
     //Angulo positivo == Esquerda
@@ -289,17 +227,17 @@ public class AutonomoGeral extends LinearOpMode {
                 }
 
                 //Começa o movimento
-                motorEsquerda.setPower(-outfix);
-                motorEsquerdaTras.setPower(-outfix);
-                motorDireita.setPower(outfix);
-                motorDireitaTras.setPower(outfix);
+                robot.motorEsquerda.setPower(-outfix);
+                robot.motorEsquerdaTras.setPower(-outfix);
+                robot.motorDireita.setPower(outfix);
+                robot.motorDireitaTras.setPower(outfix);
                 erro = angulo - curangle;
             }
                 //Para qualquer movimento
-                motorEsquerda.setPower(0);
-                motorEsquerdaTras.setPower(0);
-                motorDireita.setPower(0);
-                motorDireitaTras.setPower(0);
+                robot.motorEsquerda.setPower(0);
+                robot.motorEsquerdaTras.setPower(0);
+                robot.motorDireita.setPower(0);
+                robot.motorDireitaTras.setPower(0);
                 sleep(timeout);
     }
 
@@ -312,7 +250,7 @@ public class AutonomoGeral extends LinearOpMode {
     }
 
     public double gyroCalculate() {
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         return angles.firstAngle;
     }
 
@@ -324,43 +262,43 @@ public class AutonomoGeral extends LinearOpMode {
         speedEsquerda = leftInches > 0 ? speed : -speed;
         speedDireita = rightInches > 0 ? speed : - speed;
 
-        int pp = (int) (motorEsquerda.getCurrentPosition()/COUNTS_PER_INCH);
+        int pp = (int) (robot.motorEsquerda.getCurrentPosition()/COUNTS_PER_INCH);
 
-        newRightTarget = motorDireita.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
-        newLeftTarget = motorEsquerda.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
-        motorDireita.setTargetPosition(newRightTarget);
-        motorEsquerda.setTargetPosition(newLeftTarget);
+        newRightTarget = robot.motorDireita.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+        newLeftTarget = robot.motorEsquerda.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+        robot.motorDireita.setTargetPosition(newRightTarget);
+        robot.motorEsquerda.setTargetPosition(newLeftTarget);
 
         //Confere se o opMode está ativo
         if (opModeIsActive()) {
             //Ativa o RUN_TO_POSITION
-            motorEsquerda.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorDireita.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.motorEsquerda.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.motorDireita.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             //Reseta o runtime e começa o movimento
             runtime.reset();
 
-            motorEsquerda.setPower(Math.abs(speed));
-            motorDireita.setPower(Math.abs(speed));
-            motorEsquerdaTras.setPower(speedEsquerda);
-            motorDireitaTras.setPower(speedDireita);
+            robot.motorEsquerda.setPower(Math.abs(speed));
+            robot.motorDireita.setPower(Math.abs(speed));
+            robot.motorEsquerdaTras.setPower(speedEsquerda);
+            robot.motorDireitaTras.setPower(speedDireita);
 
-            while (opModeIsActive() && (runtime.seconds() < timeoutS) && (motorEsquerda.isBusy() && motorDireita.isBusy())) {
+            while (opModeIsActive() && (runtime.seconds() < timeoutS) && (robot.motorEsquerda.isBusy() && robot.motorDireita.isBusy())) {
 
                 //Mostra para o piloto informações sobre o caminho
-                telemetry.addData("Path2",  "Running at %7d", motorEsquerda.getCurrentPosition());
+                telemetry.addData("Path2",  "Running at %7d", robot.motorEsquerda.getCurrentPosition());
                 telemetry.addData("Polegadas percorridas", pp);
                 telemetry.update();
             }
 
             //Para qualquer movimento
-            motorDireita.setPower(0);
-            motorEsquerda.setPower(0);
-            motorEsquerdaTras.setPower(0);
-            motorDireitaTras.setPower(0);
+            robot.motorDireita.setPower(0);
+            robot.motorEsquerda.setPower(0);
+            robot.motorEsquerdaTras.setPower(0);
+            robot.motorDireitaTras.setPower(0);
 
             //Desliga o RUN_TO_POSITION
-            motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 }

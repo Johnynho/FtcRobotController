@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -96,10 +97,10 @@ public class HardwareClass {
         ledShooter = hwMap.get(LED.class,"led_Shooter");
 
         //Direção dos motores
-        motorEsquerda.setDirection(DcMotor.Direction.FORWARD);
-        motorDireita.setDirection(DcMotor.Direction.REVERSE);
-        motorEsquerdaTras.setDirection(DcMotor.Direction.FORWARD);
-        motorDireitaTras.setDirection(DcMotor.Direction.REVERSE);
+        motorEsquerda.setDirection(DcMotor.Direction.REVERSE);
+        motorDireita.setDirection(DcMotor.Direction.FORWARD);
+        motorEsquerdaTras.setDirection(DcMotor.Direction.REVERSE);
+        motorDireitaTras.setDirection(DcMotor.Direction.FORWARD);
         motorIntake.setDirection(DcMotor.Direction.FORWARD);
         motorWobbleEsq.setDirection(DcMotor.Direction.FORWARD);
         motorWobbleDir.setDirection(DcMotor.Direction.FORWARD);
