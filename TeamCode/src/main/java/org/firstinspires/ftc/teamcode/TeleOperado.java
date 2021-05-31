@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -24,7 +25,6 @@ public class TeleOperado extends LinearOpMode {
     //Vuforia vuforiaObj = new Vuforia();
     HardwareClass hard = new HardwareClass();
     SubSistemas ali = new SubSistemas();
-    AutonomoGeral aut = new AutonomoGeral();
 
     //String para configurar o vuforia (variável contém a cor da aliança)
     //static String ladoO;
@@ -121,19 +121,25 @@ public class TeleOperado extends LinearOpMode {
             if (gamepad1.b && c2 == 0) {
                 hard.servoWobble.setPosition(0);
                 pegWobble(0.3, 1);
-                telemetry.addData("Braço estado:", "Braço abaixado");
+                telemetry.addData("Braço estado:", "Braço Levantado");
+                telemetry.addData("Servo estado:", "Servo Fechado");
+                telemetry.update();
                 c2++;
                 //Aqui verifica se a chapa está levantada com a váriavel C2 e o botão B apertado pela 3° vez então o servo se fecha e a chapa levanta
             } else if (gamepad1.b && c2 == 1) {
                 hard.servoWobble.setPosition(1);
-                sleep(500);
-                telemetry.addData("Braço estado:", "Braço levantado");
+                telemetry.addData("Braço estado:", "Braço Levantado");
+                telemetry.addData("Servo estado:", "Servo Aberto");
+                telemetry.update();
                 c2++;
          /*Verifica se o botão B foi apertado 3 vezes e o servo está fechado se tudo estiver certo, o servo se abre*/
             } else if (gamepad1.b && c2 == 2) {
                 pegWobble(-0.3, 1);
-                telemetry.addData("Braço estado:", "Braço levantado");
+                telemetry.addData("Braço estado:", "Braço Abaixado");
+                telemetry.addData("Servo estado:", "Servo Aberto");
+                telemetry.update();
                 c2 = 0;
+                sleep(500);
             }
 
             //Controle para não atirar se o balde não estiver levantado
@@ -194,8 +200,8 @@ public class TeleOperado extends LinearOpMode {
         hard.motorWobbleEsq.setPower(power);
         hard.motorWobbleDir.setPower(power);
         sleep(seg);
-        hard.motorWobbleEsq.setPower(0);
-        hard.motorWobbleDir.setPower(0);
+        hard.motorWobbleEsq.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hard.motorWobbleDir.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     private double gyroCalculate() {

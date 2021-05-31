@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -83,15 +82,44 @@ public class AutonomoGeral extends LinearOpMode {
         //Desliga Lanterna
         CameraDevice.getInstance().setFlashTorchMode(false);
         if(quantArg == "Quad"){
-            //Desliga Lanterna
             //Faz a ação
-            encoderDrive(0.2, 20, -20, 5);
+            //Fecha o servo e levanta o wobble goal
+            robot.servoWobble.setPosition(0);
+            pegWobble(0.3, 1);
+            //Anda perto do quadrado
+            encoderDrive(0.5, 120, 120, 5);
+            //Se alinha com o quadrado
+            alinharGyro(-42.5, 0.5, 2);
+            //Solta o wobble
+            robot.servoWobble.setPosition(1);
+            //Fica reto novamente
+            alinharGyro(-2, 0.5, 2);
+            //Alinha com o wobble
+            encoderDrive(0.5, -111, -111, 5);
+            //Gira no wobble goal
+            alinharGyro(85, 0.5, 2);
+            //Anda até ele
+            encoderDrive(0.4, 22.75, 22.75, 5);
+            //Abaixa pegardor
+            pegWobble(-0.3, 1);
+            //Pega o wobble
+            robot.servoWobble.setPosition(0);
+            //Se alinha com o quadrado
+            alinharGyro(-42.5, 0.5, 2);
+            //Solta o wobble goal
+            robot.servoWobble.setPosition(1);
+            //Alinha novamente para voltar a linha
+            alinharGyro(2, 0.5, 2);
+            //Volta a linha de chegada
+            encoderDrive(0.5, -115, -115, 5);
             return;
         }
 
         if (quantArg == "Single") {
             //Faz a ação
-
+            //Fecha o servo e levanta o wobble goal
+            robot.servoWobble.setPosition(0);
+            pegWobble(0.3, 1);
             encoderDrive(0.5, 85.63, 85.63, 5);
             //Alinha com a área B
             alinharGyro(85, 0.5, 2);
@@ -107,11 +135,11 @@ public class AutonomoGeral extends LinearOpMode {
             //Anda até ele
             encoderDrive(0.4, 22.75, 22.75, 5);
             //Abaixa pegardor
-            pegWobble(-0.7, 1);
+            pegWobble(-0.3, 1);
             //Pega o wobble
             robot.servoWobble.setPosition(0);
             //Levanta o braço
-            pegWobble(0.7, 1);
+            pegWobble(0.3, 1);
             //Volta pra linha
             encoderDrive(0.4, -22.75, -22.75, 5);
             //Alinha para ir na area B
@@ -130,9 +158,10 @@ public class AutonomoGeral extends LinearOpMode {
         }
 
         //Se for null faz a ação
-        //Anda até perto do meio da quadra
-        robot.servoWobble.setPosition(1);
-        pegWobble(0.7, 1);
+        //Fecha o servo e levanta o wobble goal
+        robot.servoWobble.setPosition(0);
+        pegWobble(0.3, 1);
+        //Anda para perto do quadrado
         encoderDrive(0.5, 62, 62, 5);
         //Gira para mirar no quadrado
         alinharGyro(-65, 0.5, 2);
@@ -145,20 +174,20 @@ public class AutonomoGeral extends LinearOpMode {
         //Gira para ficar de cara com o segundo wobble goal
         alinharGyro(85, 0.5, 1);
         //Abaixa o braço
-        pegWobble(-0.7, 1);
+        pegWobble(-0.3, 1);
         //Anda até perto dele
         encoderDrive(0.3, 22.75, 22.75, 5);
         //Pega o wobble goal
         robot.servoWobble.setPosition(0);
         //Levanta denovo o pegador
-        pegWobble(0.7, 1);
+        pegWobble(0.3, 1);
         //Anda para a linha novamente
         encoderDrive(0.3, -22.75, -22.75, 5);
         //Alinha com a área de entrega
         alinharGyro(-2, 0.5, 2);
         //Anda até a área de entrega com o segundo wobble goal
         encoderDrive(0.4, 28.75, 28.75, 5);
-        //Gira para poder "Cospir" o wobble goal dentro a área
+        //Gira para poder soltar o wobble goal dentro a área
         alinharGyro(-35, 0.5, 2);
         //Solta o wobble goal
         robot.servoWobble.setPosition(1);
@@ -181,8 +210,8 @@ public class AutonomoGeral extends LinearOpMode {
         robot.motorWobbleEsq.setPower(power);
         robot.motorWobbleDir.setPower(power);
         sleep(seg);
-        robot.motorWobbleEsq.setPower(0);
-        robot.motorWobbleDir.setPower(0);
+        robot.motorWobbleEsq.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.motorWobbleDir.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     //Angulo positivo == Esquerda
