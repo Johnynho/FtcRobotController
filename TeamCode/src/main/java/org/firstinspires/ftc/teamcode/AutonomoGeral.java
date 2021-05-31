@@ -131,13 +131,13 @@ public class AutonomoGeral extends LinearOpMode {
 
         //Se for null faz a ação
         //Anda até perto do meio da quadra
-        encoderDrive(0.5, 58, 62, 5);
+        robot.servoWobble.setPosition(1);
+        pegWobble(0.7, 1);
+        encoderDrive(0.5, 62, 62, 5);
         //Gira para mirar no quadrado
         alinharGyro(-65, 0.5, 2);
         //Solta o wobble goal
         robot.servoWobble.setPosition(1);
-        //Levanta o pegador para locomoção
-        pegWobble(0.7, 1);
         //Alinha para andar pra trás
         alinharGyro(-2, 0.5, 2);
         //Vai até a linha para alinhar com o segundo wobble goal

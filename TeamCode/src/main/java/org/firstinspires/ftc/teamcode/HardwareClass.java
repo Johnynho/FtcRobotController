@@ -47,8 +47,6 @@ public class HardwareClass {
     //Declaração dos motores/servos shooter
     public DcMotor motorShooter;
     public Servo servoBalde, servoShootar;
-    //Declaração do LED
-    public LED ledShooter = null;
 
     //Referências de hardware e gyro
     static BNO055IMU imu;
@@ -84,6 +82,7 @@ public class HardwareClass {
          */
 
         //Pega o nome das variáveis no Dv.
+        motorShooter = hwMap.get(DcMotor.class, "motor_Shooter");
         motorEsquerda = hwMap.get(DcMotor.class, "motor_Esquerda");
         motorEsquerdaTras = hwMap.get(DcMotor.class, "motor_EsquerdaTras");
         motorDireita = hwMap.get(DcMotor.class,"motor_Direita");
@@ -92,18 +91,18 @@ public class HardwareClass {
         motorWobbleEsq = hwMap.get(DcMotor.class,"motor_WoobleEsq");
         motorWobbleDir = hwMap.get(DcMotor.class,"motor_WoobleDir");
         servoWobble = hwMap.get(Servo.class,"servo_Chapa");
-        servoBalde = hwMap.get(Servo.class,"servo_Balse");
+        servoBalde = hwMap.get(Servo.class,"servo_Balde");
         servoShootar = hwMap.get(Servo.class,"servo_Shootar");
-        ledShooter = hwMap.get(LED.class,"led_Shooter");
 
         //Direção dos motores
+        motorShooter.setDirection(DcMotor.Direction.REVERSE);
         motorEsquerda.setDirection(DcMotor.Direction.REVERSE);
         motorDireita.setDirection(DcMotor.Direction.FORWARD);
         motorEsquerdaTras.setDirection(DcMotor.Direction.REVERSE);
         motorDireitaTras.setDirection(DcMotor.Direction.FORWARD);
         motorIntake.setDirection(DcMotor.Direction.FORWARD);
         motorWobbleEsq.setDirection(DcMotor.Direction.FORWARD);
-        motorWobbleDir.setDirection(DcMotor.Direction.FORWARD);
+        motorWobbleDir.setDirection(DcMotor.Direction.REVERSE);
         servoWobble.setDirection(Servo.Direction.FORWARD);
         servoBalde.setDirection(Servo.Direction.FORWARD);
         servoShootar.setDirection(Servo.Direction.FORWARD);

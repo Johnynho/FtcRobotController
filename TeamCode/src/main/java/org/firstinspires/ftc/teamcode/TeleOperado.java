@@ -21,13 +21,13 @@ public class TeleOperado extends LinearOpMode {
 
     //Instanciação de objetos
     ElapsedTime runtime = new ElapsedTime();
-    Vuforia vuforiaObj = new Vuforia();
+    //Vuforia vuforiaObj = new Vuforia();
     HardwareClass hard = new HardwareClass();
     SubSistemas ali = new SubSistemas();
     AutonomoGeral aut = new AutonomoGeral();
 
     //String para configurar o vuforia (variável contém a cor da aliança)
-    static String ladoO;
+    //static String ladoO;
 
     //Referência de oritenação do gyro
     Orientation angles;
@@ -46,9 +46,9 @@ public class TeleOperado extends LinearOpMode {
         //Inicia o hardware do robô
         hard.hardwareGeral(hardwareMap);
         //Manda o lado que estejamos jogando com base no autônomo e configura o vuforia
-        vuforiaObj.configureVuforia("Azul", hardwareMap);
+        //vuforiaObj.configureVuforia("Azul", hardwareMap);
         //Ativa o vuforia
-        vuforiaObj.ativeVuforia();
+        //vuforiaObj.ativeVuforia();
 
         runtime.reset();
 
@@ -99,10 +99,7 @@ public class TeleOperado extends LinearOpMode {
             telemetry.addData("Motor EsquerdoTras %.2f", poder[1]);
             telemetry.addData("Motor Direita %.2f", poder[2]);
             telemetry.addData("Motor DireitaTras %.2f", poder[3]);
-            telemetry.addData("A nossa aliança é a: ", ladoO);
-
-            //Ativação do LED para saber que pode atirar
-            hard.ledShooter.enableLight(true);
+            //telemetry.addData("A nossa aliança é a: ", ladoO);
 
             //Toggle do intake para pegar argolas assim como para soltar
             if (gamepad1.right_bumper && !antiBumper) {
@@ -122,19 +119,19 @@ public class TeleOperado extends LinearOpMode {
 
             //No primeiro aperto do botão B apenas levanta a chapa
             if (gamepad1.b && c2 == 0) {
-                aut.pegWobble(-0.7, 1);
+                hard.servoWobble.setPosition(0);
+                pegWobble(0.3, 1);
                 telemetry.addData("Braço estado:", "Braço abaixado");
                 c2++;
                 //Aqui verifica se a chapa está levantada com a váriavel C2 e o botão B apertado pela 3° vez então o servo se fecha e a chapa levanta
             } else if (gamepad1.b && c2 == 1) {
-                hard.servoWobble.setPosition(0);
+                hard.servoWobble.setPosition(1);
                 sleep(500);
-                aut.pegWobble(0.7, 1);
                 telemetry.addData("Braço estado:", "Braço levantado");
                 c2++;
          /*Verifica se o botão B foi apertado 3 vezes e o servo está fechado se tudo estiver certo, o servo se abre*/
             } else if (gamepad1.b && c2 == 2) {
-                hard.servoWobble.setPosition(1);
+                pegWobble(-0.3, 1);
                 telemetry.addData("Braço estado:", "Braço levantado");
                 c2 = 0;
             }
@@ -153,7 +150,7 @@ public class TeleOperado extends LinearOpMode {
             }
 
             //Chama a leitura do Vuforia (somente verificar se o alvo está visível)
-            vuforiaObj.vuforiaPosi();
+            /*vuforiaObj.vuforiaPosi();
 
             if (vuforiaObj.visible() && gamepad1.x ^ gamepad1.a){
                 //Variável que somente verifica se algum dos botões foi apertado
@@ -188,8 +185,17 @@ public class TeleOperado extends LinearOpMode {
                 //Chama o método para alinhar em X (sleep ativado)
                 ali.alinharX(vuforiaObj.posicaoRobot[0], 0.8);
             }
-            telemetry.update();
+            telemetry.update();*/
         }
+    }
+
+    public void pegWobble(double power, int seg){
+        seg*=1000;
+        hard.motorWobbleEsq.setPower(power);
+        hard.motorWobbleDir.setPower(power);
+        sleep(seg);
+        hard.motorWobbleEsq.setPower(0);
+        hard.motorWobbleDir.setPower(0);
     }
 
     private double gyroCalculate() {
