@@ -104,6 +104,14 @@ public class AutonomoGeral extends LinearOpMode {
             pegWobble(-0.3, 1);
             //Pega o wobble
             robot.servoWobble.setPosition(0);
+            //Levanta o braço
+            pegWobble(0.3, 1);
+            //Volta pra linha
+            encoderDrive(0.4, -22.75, -22.75, 5);
+            //Alinha para ir na area correta
+            alinharGyro(2, 0.5, 2);
+            //Vai até a área
+            encoderDrive(0.5, 106, 106, 5);
             //Se alinha com o quadrado
             alinharGyro(-42.5, 0.5, 2);
             //Solta o wobble goal
