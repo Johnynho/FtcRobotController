@@ -83,9 +83,8 @@ public class AutonomoGeral extends LinearOpMode {
         CameraDevice.getInstance().setFlashTorchMode(false);
         if(quantArg == "Quad"){
             //Faz a ação
-            //Fecha o servo e levanta o wobble goal
             robot.servoWobble.setPosition(0);
-            pegWobble(0.3, 1);
+            pegWobble(-0.2, 1);
             //Anda perto do quadrado
             encoderDrive(0.5, 120, 120, 5);
             //Se alinha com o quadrado
@@ -125,9 +124,8 @@ public class AutonomoGeral extends LinearOpMode {
 
         if (quantArg == "Single") {
             //Faz a ação
-            //Fecha o servo e levanta o wobble goal
             robot.servoWobble.setPosition(0);
-            pegWobble(0.3, 1);
+            pegWobble(-0.2, 1);
             encoderDrive(0.5, 85.63, 85.63, 5);
             //Alinha com a área B
             alinharGyro(85, 0.5, 2);
@@ -168,7 +166,7 @@ public class AutonomoGeral extends LinearOpMode {
         //Se for null faz a ação
         //Fecha o servo e levanta o wobble goal
         robot.servoWobble.setPosition(0);
-        pegWobble(0.3, 1);
+        pegWobble(-0.2, 1);
         //Anda para perto do quadrado
         encoderDrive(0.5, 62, 62, 5);
         //Gira para mirar no quadrado

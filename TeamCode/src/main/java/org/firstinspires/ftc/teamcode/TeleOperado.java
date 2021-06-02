@@ -102,7 +102,7 @@ public class TeleOperado extends LinearOpMode {
             //telemetry.addData("A nossa aliança é a: ", ladoO);
 
             //Toggle do intake para pegar argolas assim como para soltar
-            if (gamepad1.right_bumper && !antiBumper) {
+            if (gamepad1.right_bumper && !antiBumper && !gamepad1.b) {
                 hard.motorIntake.setPower(onOff ? 1 : 0);
                 onOff = !onOff;
                 antiBumper = true;
@@ -118,7 +118,7 @@ public class TeleOperado extends LinearOpMode {
             }
 
             //No primeiro aperto do botão B apenas levanta a chapa
-            if (gamepad1.b && c2 == 0) {
+            if (gamepad1.b && c2 == 0 && !gamepad1.right_bumper) {
                 hard.servoWobble.setPosition(0);
                 pegWobble(0.3, 1);
                 telemetry.addData("Braço estado:", "Braço Levantado");
@@ -126,20 +126,22 @@ public class TeleOperado extends LinearOpMode {
                 telemetry.update();
                 c2++;
                 //Aqui verifica se a chapa está levantada com a váriavel C2 e o botão B apertado pela 3° vez então o servo se fecha e a chapa levanta
-            } else if (gamepad1.b && c2 == 1) {
+            } else if (gamepad1.b && c2 == 1 && !gamepad1.right_bumper) {
                 hard.servoWobble.setPosition(1);
                 telemetry.addData("Braço estado:", "Braço Levantado");
                 telemetry.addData("Servo estado:", "Servo Aberto");
                 telemetry.update();
                 c2++;
          /*Verifica se o botão B foi apertado 3 vezes e o servo está fechado se tudo estiver certo, o servo se abre*/
-            } else if (gamepad1.b && c2 == 2) {
+            } else if (gamepad1.b && c2 == 2 && !gamepad1.right_bumper) {
                 pegWobble(-0.3, 1);
                 telemetry.addData("Braço estado:", "Braço Abaixado");
                 telemetry.addData("Servo estado:", "Servo Aberto");
                 telemetry.update();
                 c2 = 0;
                 sleep(500);
+            } else if(gamepad1.b && gamepad1.right_bumper){
+                c2--;
             }
 
             //Controle para não atirar se o balde não estiver levantado
