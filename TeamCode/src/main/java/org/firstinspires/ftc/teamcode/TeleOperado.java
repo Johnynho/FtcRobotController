@@ -150,12 +150,10 @@ public class TeleOperado extends LinearOpMode {
                 sleep(500);
                 //Botão reset
             } else if (gamepad1.dpad_left){
-                if(c2 == 0){
-                    c2 = 0;
-                }else if (c2 == 1){
+                 if (c2 == 1){
                     hard.servoWobble.setPosition(1);
-                    c2 = 0;
                     pegWobble(-0.3, 1);
+                    c2 = 0;
                 }else if(c2 == 2){
                     pegWobble(-0.3, 1);
                     c2 = 0;
