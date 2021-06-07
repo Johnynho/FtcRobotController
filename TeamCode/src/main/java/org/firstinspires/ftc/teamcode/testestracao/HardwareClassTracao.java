@@ -77,11 +77,6 @@ public class HardwareClassTracao {
         motorEsquerdaTras = hwMap.get(DcMotor.class, "motor_EsquerdaTras");
         motorDireita = hwMap.get(DcMotor.class,"motor_Direita");
         motorDireitaTras = hwMap.get(DcMotor.class,"motor_DireitaTras");
-
-        motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorEsquerdaTras.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorDireitaTras.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
  }

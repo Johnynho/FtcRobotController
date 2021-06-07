@@ -41,7 +41,7 @@ public class HardwareClass {
     public DcMotor motorEsquerda, motorDireita, motorEsquerdaTras, motorDireitaTras;
     //Declaração dos motores/servos wobble goal
     public DcMotor motorWobbleEsq, motorWobbleDir;
-    public Servo servoWobble = null;
+    public Servo servoWobble;
     //Declaração dos motores intake
     public DcMotor motorIntake;
     //Declaração dos motores/servos shooter

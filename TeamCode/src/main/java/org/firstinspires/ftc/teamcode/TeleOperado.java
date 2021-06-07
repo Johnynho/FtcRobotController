@@ -56,6 +56,7 @@ public class TeleOperado extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+
             //Variáveis gamepad
             drive = -gamepad1.left_stick_y;
             turn = gamepad1.left_stick_x * 1.5;
@@ -95,10 +96,11 @@ public class TeleOperado extends LinearOpMode {
             hard.motorDireitaTras.setPower(poder[3]);
 
             //Telemetria com os valores de cada roda
-            telemetry.addData("Motor Esquerdo %.2f", poder[0]);
-            telemetry.addData("Motor EsquerdoTras %.2f", poder[1]);
-            telemetry.addData("Motor Direita %.2f", poder[2]);
-            telemetry.addData("Motor DireitaTras %.2f", poder[3]);
+            telemetry.addData("Motor Esquerdo: ", poder[0] %.2f);
+            telemetry.addData("Motor EsquerdoTras: ", poder[1] %.2f);
+            telemetry.addData("Motor Direita: ", poder[2] %.2f);
+            telemetry.addData("Motor DireitaTras: ", poder[3] %.2f);
+            telemetry.update();
             //telemetry.addData("A nossa aliança é a: ", ladoO);
 
             //Toggle do intake para pegar argolas assim como para soltar
@@ -117,10 +119,15 @@ public class TeleOperado extends LinearOpMode {
                 }
             }
 
+            if(gamepad1.dpad_up){
+                pegWobble(0.2, 1);
+            }
+
             //No primeiro aperto do botão B apenas levanta a chapa
             if (gamepad1.b && c2 == 0 && !gamepad1.right_bumper) {
                 hard.servoWobble.setPosition(0);
-                pegWobble(0.3, 1);
+                sleep(1000);
+                pegWobble(0.5, 1);
                 telemetry.addData("Braço estado:", "Braço Levantado");
                 telemetry.addData("Servo estado:", "Servo Fechado");
                 telemetry.update();
@@ -128,13 +135,15 @@ public class TeleOperado extends LinearOpMode {
                 //Aqui verifica se a chapa está levantada com a váriavel C2 e o botão B apertado pela 3° vez então o servo se fecha e a chapa levanta
             } else if (gamepad1.b && c2 == 1 && !gamepad1.right_bumper) {
                 hard.servoWobble.setPosition(1);
+                pegWobble(0.0, 1);
                 telemetry.addData("Braço estado:", "Braço Levantado");
                 telemetry.addData("Servo estado:", "Servo Aberto");
                 telemetry.update();
                 c2++;
+                sleep(500);
          /*Verifica se o botão B foi apertado 3 vezes e o servo está fechado se tudo estiver certo, o servo se abre*/
             } else if (gamepad1.b && c2 == 2 && !gamepad1.right_bumper) {
-                pegWobble(-0.3, 1);
+                pegWobble(-0.4, 1);
                 telemetry.addData("Braço estado:", "Braço Abaixado");
                 telemetry.addData("Servo estado:", "Servo Aberto");
                 telemetry.update();
