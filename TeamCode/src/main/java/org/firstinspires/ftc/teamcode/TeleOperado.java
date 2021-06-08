@@ -103,7 +103,7 @@ public class TeleOperado extends LinearOpMode {
             telemetry.update();
 
             //Toggle do intake para pegar argolas assim como para soltar
-            if (gamepad1.right_bumper && !antiBumper && !gamepad1.b) {
+            if (gamepad1.right_bumper && !antiBumper) {
                 hard.motorIntake.setPower(onOff ? 1 : 0);
                 onOff = !onOff;
                 antiBumper = true;
@@ -125,7 +125,7 @@ public class TeleOperado extends LinearOpMode {
             //No primeiro aperto do botão B apenas levanta a chapa
             if (gamepad1.b && c2 == 0) {
                 hard.servoWobble.setPosition(0);
-                sleep(1000);
+                sleep(500);
                 pegWobble(0.5, 1);
                 telemetry.addData("Braço estado:", "Braço Levantado");
                 telemetry.addData("Servo estado:", "Servo Fechado");
@@ -139,7 +139,7 @@ public class TeleOperado extends LinearOpMode {
                 telemetry.addData("Servo estado:", "Servo Aberto");
                 telemetry.update();
                 c2++;
-                sleep(500);
+                sleep(200);
          /*Verifica se o botão B foi apertado 3 vezes e o servo está fechado se tudo estiver certo, o servo se abre*/
             } else if (gamepad1.b && c2 == 2) {
                 pegWobble(-0.4, 1);
@@ -147,7 +147,7 @@ public class TeleOperado extends LinearOpMode {
                 telemetry.addData("Servo estado:", "Servo Aberto");
                 telemetry.update();
                 c2 = 0;
-                sleep(500);
+                sleep(200);
                 //Botão reset
             } else if (gamepad1.dpad_left){
                  if (c2 == 1){
