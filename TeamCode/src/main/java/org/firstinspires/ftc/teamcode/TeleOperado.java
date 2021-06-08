@@ -119,14 +119,14 @@ public class TeleOperado extends LinearOpMode {
             }
 
             if(gamepad1.dpad_up){
-                pegWobble(0.2, 1);
+                pegWobble(0.2, 0.5);
             }
 
             //No primeiro aperto do botão B apenas levanta a chapa
             if (gamepad1.b && c2 == 0) {
                 hard.servoWobble.setPosition(0);
                 sleep(500);
-                pegWobble(0.5, 1);
+                pegWobble(0.4, 1);
                 telemetry.addData("Braço estado:", "Braço Levantado");
                 telemetry.addData("Servo estado:", "Servo Fechado");
                 telemetry.update();
@@ -134,7 +134,7 @@ public class TeleOperado extends LinearOpMode {
                 //Aqui verifica se a chapa está levantada com a váriavel C2 e o botão B apertado pela 3° vez então o servo se fecha e a chapa levanta
             } else if (gamepad1.b && c2 == 1) {
                 hard.servoWobble.setPosition(1);
-                pegWobble(0.0, 1);
+                pegWobble(0.0, 0.01);
                 telemetry.addData("Braço estado:", "Braço Levantado");
                 telemetry.addData("Servo estado:", "Servo Aberto");
                 telemetry.update();
@@ -152,10 +152,10 @@ public class TeleOperado extends LinearOpMode {
             } else if (gamepad1.dpad_left){
                  if (c2 == 1){
                     hard.servoWobble.setPosition(1);
-                    pegWobble(-0.3, 1);
+                    pegWobble(-0.4, 1);
                     c2 = 0;
                 }else if(c2 == 2){
-                    pegWobble(-0.3, 1);
+                    pegWobble(-0.4, 1);
                     c2 = 0;
                 }
             }
@@ -213,11 +213,11 @@ public class TeleOperado extends LinearOpMode {
         }
     }
 
-    public void pegWobble(double power, int seg){
+    public void pegWobble(double power, double seg){
         seg*=1000;
         hard.motorWobbleEsq.setPower(power);
         hard.motorWobbleDir.setPower(power);
-        sleep(seg);
+        sleep((long) seg);
         hard.motorWobbleEsq.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hard.motorWobbleDir.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }

@@ -39,6 +39,7 @@ public class AutonomoGeral extends LinearOpMode {
         //Inicia a engine do TensorFlow e avisa
         telemetry.addData("Status: ", "Iniciado");
         telemetry.update();
+        robot.hardwareGeral(hardwareMap);
         tfEngine.initEngine(hardwareMap);
 
         telemetry.addData("Status", "TensorFlow iniciado");
@@ -145,7 +146,7 @@ public class AutonomoGeral extends LinearOpMode {
             //Pega o wobble
             robot.servoWobble.setPosition(0);
             //Levanta o braço
-            pegWobble(0.3, 1);
+            pegWobble(0.4, 1);
             //Volta pra linha
             encoderDrive(0.4, -22.75, -22.75, 5);
             //Alinha para ir na area B
@@ -164,19 +165,19 @@ public class AutonomoGeral extends LinearOpMode {
         }
 
         //Se for null faz a ação
-        //Fecha o servo e levanta o wobble goal
+        //Fecha o servo
         robot.servoWobble.setPosition(0);
-        pegWobble(-0.2, 1);
         //Anda para perto do quadrado
-        encoderDrive(0.5, 62, 62, 5);
+        encoderDrive(0.3, 52, 52, 5);
         //Gira para mirar no quadrado
-        alinharGyro(-65, 0.5, 2);
+        alinharGyro(-90, 0.4, 2);
         //Solta o wobble goal
+        pegWobble(-0.35, 1);
         robot.servoWobble.setPosition(1);
         //Alinha para andar pra trás
-        alinharGyro(-2, 0.5, 2);
+        alinharGyro(-2, 0.4, 2);
         //Vai até a linha para alinhar com o segundo wobble goal
-        encoderDrive(0.5, -37.75, -37.75, 5);
+        encoderDrive(0.3, -27.75, -27.75, 5);
         //Gira para ficar de cara com o segundo wobble goal
         alinharGyro(85, 0.5, 1);
         //Abaixa o braço
@@ -186,21 +187,19 @@ public class AutonomoGeral extends LinearOpMode {
         //Pega o wobble goal
         robot.servoWobble.setPosition(0);
         //Levanta denovo o pegador
-        pegWobble(0.3, 1);
+        pegWobble(0.4, 1);
         //Anda para a linha novamente
         encoderDrive(0.3, -22.75, -22.75, 5);
         //Alinha com a área de entrega
-        alinharGyro(-2, 0.5, 2);
+        alinharGyro(-2, 0.4, 2);
         //Anda até a área de entrega com o segundo wobble goal
-        encoderDrive(0.4, 28.75, 28.75, 5);
+        encoderDrive(0.3, 18.75, 18.75, 5);
         //Gira para poder soltar o wobble goal dentro a área
-        alinharGyro(-35, 0.5, 2);
+        alinharGyro(-90, 0.4, 2);
         //Solta o wobble goal
         robot.servoWobble.setPosition(1);
         //Fica reto novamente
         alinharGyro(2, 0.5, 2);
-        //Vai até a linha de lançamento
-        encoderDrive(0.4, -51.5, -51.5, 5);
     }
 
     public double rpmTP(int rpm){
