@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorControllerEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -25,6 +26,8 @@ public class TeleOperado extends LinearOpMode {
     //Vuforia vuforiaObj = new Vuforia();
     HardwareClass hard = new HardwareClass();
     SubSistemas ali = new SubSistemas();
+
+    DcMotorControllerEx rpmMotor;
 
     //String para configurar o vuforia (variável contém a cor da aliança)
     //static String ladoO;
@@ -158,7 +161,23 @@ public class TeleOperado extends LinearOpMode {
                     pegWobble(-0.4, 1);
                     c2 = 0;
                 }
+            }int portaShooter = hard.motorShooter.getPortNumber();
+
+            double ticksPer;
+            //Teste Shooter
+            int c = 0;
+        while(gamepad1.x) {
+            c = 0;
+            telemetry.addData("Velocidade em ticks:", rpmMotor.getMotorVelocity(portaShooter));
+            telemetry.update();
+            if(c == 0) {
+                ticksPer = rpmTP(5000);
+                rpmMotor.setMotorVelocity(portaShooter, ticksPer);
             }
+        }if (!gamepad1.x) {
+                c = 1;
+            }
+        hard.motorShooter.setPower(0);
 
             //Controle para não atirar se o balde não estiver levantado
             while(gamepad1.left_bumper){
@@ -220,6 +239,14 @@ public class TeleOperado extends LinearOpMode {
         sleep((long) seg);
         hard.motorWobbleEsq.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hard.motorWobbleDir.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+    public double rpmTP(int rpm){
+        rpm/=60;
+        int rpmMax = 6000/60;
+        double rpmRev = rpm*28;
+        rpmRev/=rpmMax;
+        return rpmRev;
     }
 
     private double gyroCalculate() {
