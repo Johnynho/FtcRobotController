@@ -20,6 +20,7 @@ public class TeleOperado extends LinearOpMode {
     boolean onOff = true;
     int baldeC = 0;
     int c2 = 0;
+    int wb = 0;
 
     //Instanciação de objetos
     ElapsedTime runtime = new ElapsedTime();
@@ -52,6 +53,13 @@ public class TeleOperado extends LinearOpMode {
         //vuforiaObj.configureVuforia("Azul", hardwareMap);
         //Ativa o vuforia
         //vuforiaObj.ativeVuforia();
+
+        hard.motorWobbleEsq.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hard.motorWobbleDir.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hard.motorEsquerda.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hard.motorDireita.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hard.motorEsquerdaTras.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hard.motorDireitaTras.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         runtime.reset();
 
@@ -99,11 +107,7 @@ public class TeleOperado extends LinearOpMode {
             hard.motorDireitaTras.setPower(poder[3]);
 
             //Telemetria com os valores de cada roda
-            telemetry.addData("Motor Esquerdo: ","(%.2f)",  poder[0]);
-            telemetry.addData("Motor EsquerdoTras: ","(%.2f)",  poder[1]);
-            telemetry.addData("Motor Direita: ","(%.2f)",  poder[2]);
-            telemetry.addData("Motor DireitaTras: ","(%.2f)",  poder[3]);
-            telemetry.update();
+
 
             //Toggle do intake para pegar argolas assim como para soltar
             if (gamepad1.right_bumper && !antiBumper) {
@@ -121,77 +125,50 @@ public class TeleOperado extends LinearOpMode {
                 }
             }
 
-            if(gamepad1.dpad_up){
-                pegWobble(0.2, 0.5);
+            //No primeiro aperto do botão B apenas levanta a chapa
+            if (gamepad1.b) {
+                hard.servoWobble.setPosition(1);
+                 }
+
+            if (gamepad1.a){
+                hard.servoWobble.setPosition(0);
             }
 
-            //No primeiro aperto do botão B apenas levanta a chapa
-            if (gamepad1.b && c2 == 0) {
-                hard.servoWobble.setPosition(0);
-                sleep(500);
-                pegWobble(0.4, 1);
-                telemetry.addData("Braço estado:", "Braço Levantado");
-                telemetry.addData("Servo estado:", "Servo Fechado");
-                telemetry.update();
-                c2++;
-                //Aqui verifica se a chapa está levantada com a váriavel C2 e o botão B apertado pela 3° vez então o servo se fecha e a chapa levanta
-            } else if (gamepad1.b && c2 == 1) {
-                hard.servoWobble.setPosition(1);
-                pegWobble(0.0, 0.01);
-                telemetry.addData("Braço estado:", "Braço Levantado");
-                telemetry.addData("Servo estado:", "Servo Aberto");
-                telemetry.update();
-                c2++;
-                sleep(200);
-         /*Verifica se o botão B foi apertado 3 vezes e o servo está fechado se tudo estiver certo, o servo se abre*/
-            } else if (gamepad1.b && c2 == 2) {
-                pegWobble(-0.4, 1);
-                telemetry.addData("Braço estado:", "Braço Abaixado");
-                telemetry.addData("Servo estado:", "Servo Aberto");
-                telemetry.update();
-                c2 = 0;
-                sleep(200);
-                //Botão reset
-            } else if (gamepad1.dpad_left){
-                 if (c2 == 1){
-                    hard.servoWobble.setPosition(1);
-                    pegWobble(-0.4, 1);
-                    c2 = 0;
-                }else if(c2 == 2){
-                    pegWobble(-0.4, 1);
-                    c2 = 0;
-                }
+
+            //Controle para não atirar se o balde não estiver levantado
+            if (gamepad1.left_bumper){
+                hard.motorWobbleEsq.setPower(-1);
+                hard.motorWobbleDir.setPower(-1);
+            }else if (gamepad1.left_trigger > 0 ) {
+                hard.motorWobbleEsq.setPower(1);
+                hard.motorWobbleDir.setPower(1);
+            }else{
+                hard.motorWobbleEsq.setPower(0);
+                hard.motorWobbleDir.setPower(0);
+            }
+            telemetry.addData("PODER ESQUERDA: ", hard.motorWobbleEsq.getPower());
+            telemetry.addData("PODER DIREITA: ", hard.motorWobbleDir.getPower());
+            telemetry.update();
             }int portaShooter = hard.motorShooter.getPortNumber();
 
             double ticksPer;
             //Teste Shooter
             int c = 0;
-        while(gamepad1.x) {
-            c = 0;
-            telemetry.addData("Velocidade em ticks:", rpmMotor.getMotorVelocity(portaShooter));
-            telemetry.update();
-            if(c == 0) {
-                ticksPer = rpmTP(5000);
-                rpmMotor.setMotorVelocity(portaShooter, ticksPer);
-            }
-        }if (!gamepad1.x) {
-                c = 1;
-            }
-        hard.motorShooter.setPower(0);
 
             //Controle para não atirar se o balde não estiver levantado
-            while(gamepad1.left_bumper){
-                hard.servoBalde.setPosition(1);
-                baldeC = 1;
+            if (gamepad1.left_bumper){
+                hard.motorWobbleEsq.setPower(-0.85);
+                hard.motorWobbleEsq.setPower(-0.85);
+            }else if (gamepad1.left_trigger > 0 ) {
+                hard.motorWobbleEsq.setPower(0.7);
+                hard.motorWobbleEsq.setPower(0.7);
+            }else{
+                hard.motorWobbleEsq.setPower(0);
+                hard.motorWobbleDir.setPower(0);
             }
-            hard.servoBalde.setPosition(0);
-            baldeC = 0;
-
-            if(gamepad1.left_trigger > 0 && baldeC == 1){
-                hard.servoShootar.setPosition(1);
-                hard.servoShootar.setPosition(0);
-            }
-
+            telemetry.addData("PODER ESQUERDA: ", hard.motorWobbleEsq.getPower());
+            telemetry.addData("PODER DIREITA: ", hard.motorWobbleDir.getPower());
+            telemetry.update();
             //Chama a leitura do Vuforia (somente verificar se o alvo está visível)
             /*vuforiaObj.vuforiaPosi();
 
@@ -230,15 +207,14 @@ public class TeleOperado extends LinearOpMode {
             }
             telemetry.update();*/
         }
-    }
 
-    public void pegWobble(double power, double seg){
+    public void pegWobble(double power, int seg){
         seg*=1000;
         hard.motorWobbleEsq.setPower(power);
         hard.motorWobbleDir.setPower(power);
-        sleep((long) seg);
-        hard.motorWobbleEsq.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        hard.motorWobbleDir.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        sleep(seg);
+        hard.motorWobbleEsq.setPower(0);
+        hard.motorWobbleDir.setPower(0);
     }
 
     public double rpmTP(int rpm){

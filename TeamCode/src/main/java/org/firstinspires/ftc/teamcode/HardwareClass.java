@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -98,7 +99,7 @@ public class HardwareClass {
         motorDireita.setDirection(DcMotor.Direction.FORWARD);
         motorEsquerdaTras.setDirection(DcMotor.Direction.REVERSE);
         motorDireitaTras.setDirection(DcMotor.Direction.FORWARD);
-        motorIntake.setDirection(DcMotor.Direction.REVERSE);
+        motorIntake.setDirection(DcMotor.Direction.FORWARD);
         motorWobbleEsq.setDirection(DcMotor.Direction.FORWARD);
         motorWobbleDir.setDirection(DcMotor.Direction.REVERSE);
         servoWobble.setDirection(Servo.Direction.FORWARD);

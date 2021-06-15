@@ -33,6 +33,8 @@ public class TesteSemFIeld extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+
+
             //Variáveis gamepad
             drive = -gamepad1.left_stick_y;
             turn = gamepad1.left_stick_x * 1.5;

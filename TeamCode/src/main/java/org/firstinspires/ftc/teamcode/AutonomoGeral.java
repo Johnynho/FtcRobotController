@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.drawable.shapes.RoundRectShape;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -43,10 +45,18 @@ public class AutonomoGeral extends LinearOpMode {
         robot.hardwareGeral(hardwareMap);
         tfEngine.initEngine(hardwareMap);
 
+        robot.motorWobbleEsq.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.motorWobbleDir.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        robot.motorEsquerda.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.motorDireita.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.motorEsquerdaTras.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.motorDireitaTras.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         telemetry.addData("Status", "TensorFlow iniciado");
         telemetry.update();
 
-        robot.servoWobble.setPosition(0);
+        robot.servoWobble.setPosition(1);
 
         waitForStart();
 
@@ -77,16 +87,16 @@ public class AutonomoGeral extends LinearOpMode {
         telemetry.addData("Polegadas percorridas", pp);
         telemetry.update();
 
-        //tfAutonomous(quantArg);
+        tfAutonomous(quantArg);
 
-        double curangle = gyroCalculate();
+        /*double curangle = gyroCalculate();
         while (true) {
             curangle = gyroCalculate();
             telemetry.addData("Gyro:", curangle);
             telemetry.update();
-        }
+        }*/
 
-        //tfEngine.deactivate();
+        tfEngine.deactivate();
     }
 
     public void tfAutonomous(String quantArg) {
@@ -95,135 +105,19 @@ public class AutonomoGeral extends LinearOpMode {
         CameraDevice.getInstance().setFlashTorchMode(false);
         if(quantArg == "Quad"){
             //Faz a ação
-            telemetry.addData("Polegadas percorridas", pp);
-            telemetry.update();
-            pegWobble(-0.2, 1);
-            //Anda perto do quadrado
-            encoderDrive(0.5, 120, 120, 5);
-            telemetry.addData("Polegadas percorridas", pp);
-            telemetry.update();
-            //Se alinha com o quadrado
-            alinharGyro(-42.5, 0.5, 2);
-            //Solta o wobble
-            robot.servoWobble.setPosition(1);
-            //Fica reto novamente
-            alinharGyro(-2, 0.5, 2);
-            //Alinha com o wobble
-            encoderDrive(0.5, -111, -111, 5);
-            telemetry.addData("Polegadas percorridas", pp);
-            telemetry.update();
-            //Gira no wobble goal
-            alinharGyro(85, 0.5, 2);
-            //Anda até ele
-            encoderDrive(0.4, 22.75, 22.75, 5);
-            telemetry.addData("Polegadas percorridas", pp);
-            telemetry.update();
-            //Abaixa pegardor
-            pegWobble(-0.3, 1);
-            //Pega o wobble
-            robot.servoWobble.setPosition(0);
-            //Levanta o braço
-            pegWobble(0.3, 1);
-            //Volta pra linha
-            encoderDrive(0.4, -22.75, -22.75, 5);
-            telemetry.addData("Polegadas percorridas", pp);
-            telemetry.update();
-            //Alinha para ir na area correta
-            alinharGyro(2, 0.5, 2);
-            //Vai até a área
-            encoderDrive(0.5, 106, 106, 5);
-            telemetry.addData("Polegadas percorridas", pp);
-            telemetry.update();
-            //Se alinha com o quadrado
-            alinharGyro(-42.5, 0.5, 2);
-            //Solta o wobble goal
-            robot.servoWobble.setPosition(1);
-            //Alinha novamente para voltar a linha
-            alinharGyro(2, 0.5, 2);
+            encoderDrive(0.8, 56, 56, 10);
             return;
         }
 
         if (quantArg == "Single") {
             //Faz a ação
-            robot.servoWobble.setPosition(0);
-            pegWobble(-0.2, 1);
-            encoderDrive(0.5, 85.63, 85.63, 5);
-            //Alinha com a área B
-            alinharGyro(85, 0.5, 2);
-            //Solta o wobble
-            robot.servoWobble.setPosition(1);
-            //Fica reto novamente
-            alinharGyro(2, 0.5, 2);
-            //Vai pra linha
-            encoderDrive(0.5, -71.88, -71.88, 5);
-            sleep(1000);
-            //Alinha com o wobble
-            alinharGyro(85, 0.5, 2);
-            //Anda até ele
-            encoderDrive(0.4, 22.75, 22.75, 5);
-            //Abaixa pegardor
-            pegWobble(-0.3, 1);
-            //Pega o wobble
-            robot.servoWobble.setPosition(0);
-            //Levanta o braço
-            pegWobble(0.4, 1);
-            //Volta pra linha
-            encoderDrive(0.4, -22.75, -22.75, 5);
-            //Alinha para ir na area B
-            alinharGyro(2, 0.5, 2);
-            //Vai até a area
-            encoderDrive(0.5, 92.25, 92.25, 5);
-            //Alinha com a area
-            alinharGyro(45, 0.5, 2);
-            //Solta o wobble goal
-            robot.servoWobble.setPosition(1);
-            //Alinha novamente para voltar a linha
-            alinharGyro(2, 0.5, 2);
-            //Volta a linha de chegada
-            encoderDrive(0.5, -101.25, -101.25, 5);
+            encoderDrive(0.8, 56, 56, 10);
             return;
         }
 
         //Se for null faz a ação
         //Anda para perto do quadrado
-        encoderDrive(0.3, 52, 52, 1);
-        telemetry.addData("Polegadas percorridas", pp);
-        telemetry.update();
-        //Gira para mirar no quadrado
-        alinharGyro(-90, 0.4, 2);
-        //Solta o wobble goal
-        /*pegWobble(-0.35, 1);
-        robot.servoWobble.setPosition(1);
-        //Alinha para andar pra trás
-        alinharGyro(-2, 0.4, 2);
-        //Vai até a linha para alinhar com o segundo wobble goal
-        encoderDrive(0.3, -27.75, -27.75, 5);
-        telemetry.addData("Polegadas percorridas", pp);
-        telemetry.update();
-        //Gira para ficar de cara com o segundo wobble goal
-        alinharGyro(85, 0.5, 1);
-        //Abaixa o braço
-        pegWobble(-0.3, 1);
-        //Anda até perto dele
-        encoderDrive(0.3, 22.75, 22.75, 5);
-        telemetry.addData("Polegadas percorridas", pp);
-        telemetry.update();
-        //Pega o wobble goal
-        robot.servoWobble.setPosition(0);
-        //Levanta denovo o pegador
-        pegWobble(0.4, 1);
-        //Anda para a linha novamente
-        encoderDrive(0.3, -22.75, -22.75, 5);
-        //Alinha com a área de entrega
-        alinharGyro(-2, 0.4, 2);
-        //Anda até a área de entrega com o segundo wobble goal
-        encoderDrive(0.3, 18.75, 18.75, 5);
-        //Gira para poder soltar o wobble goal dentro a área
-        alinharGyro(-90, 0.4, 2);
-        //Solta o wobble goal
-        robot.servoWobble.setPosition(1);
-        //Fica reto novamente
-        alinharGyro(2, 0.5, 2);*/
+        encoderDrive(0.8, 56, 56, 10);
     }
 
     public double rpmTP(int rpm){
@@ -235,12 +129,12 @@ public class AutonomoGeral extends LinearOpMode {
     }
 
     public void pegWobble(double power, int seg){
-        seg*=1000;
+
         robot.motorWobbleEsq.setPower(power);
         robot.motorWobbleDir.setPower(power);
         sleep(seg);
-        robot.motorWobbleEsq.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        robot.motorWobbleDir.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.motorWobbleEsq.setPower(0);
+        robot.motorWobbleDir.setPower(0);
     }
 
     //Angulo positivo == Esquerda
@@ -251,7 +145,7 @@ public class AutonomoGeral extends LinearOpMode {
         double erro = angulo-curangle;
         double out;
         double outfix = 0;
-        double kp = 0.0005;
+        double kp = 0.00005;
         double erroac = 1;
         //Transforma 1 milisegundo em 1 segundo (EXEMPLO PODERIA SER 5 OU 10)
         timeout*=1000;
@@ -269,7 +163,7 @@ public class AutonomoGeral extends LinearOpMode {
                 //Faz a velocidade mínima
                 if (negOrposi(out)){
                     if (Math.abs(out) < 0.2) {
-                        outfix = 0.3;
+                        outfix = 0.2;
                     }
                 }else{
                     outfix = -0.2;
@@ -342,10 +236,12 @@ public class AutonomoGeral extends LinearOpMode {
 
             while (opModeIsActive() && (runtime.seconds() < timeoutS) && (robot.motorEsquerda.isBusy() && robot.motorDireita.isBusy())) {
 
-                //Mostra para o piloto informações sobre o caminho
-                telemetry.addData("Path2",  "Running at %7d", robot.motorEsquerda.getCurrentPosition());
-                telemetry.addData("Polegadas percorridas", pp);
+                telemetry.addData("Power Esquerda: ", robot.motorEsquerda.getPower());
+                telemetry.addData("Power Direita: ", robot.motorDireita.getPower());
+                telemetry.addData("Power Esquerda Tras: ", robot.motorEsquerdaTras.getPower());
+                telemetry.addData("Power Direita Tras: ", robot.motorDireitaTras.getPower());
                 telemetry.update();
+
             }
 
             //Para qualquer movimento
