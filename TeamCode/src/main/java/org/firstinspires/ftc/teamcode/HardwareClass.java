@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorControllerEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -44,8 +45,8 @@ public class HardwareClass {
     //Declaração dos motores intake
     public DcMotor motorIntake;
     //Declaração dos motores/servos shooter
-    public DcMotor motorShooter;
     public Servo servoBalde, servoShootar;
+    public DcMotorControllerEx rpmMotor;
 
     //Referências de hardware e gyro
     static BNO055IMU imu;
@@ -61,12 +62,12 @@ public class HardwareClass {
          * =============================================================================
          */
 
-       //Configura o gyro
+        //Configura o gyro
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
 
         //Imu no Drive Station
         imu = hwMap.get(BNO055IMU.class, "imu");
@@ -81,20 +82,19 @@ public class HardwareClass {
          */
 
         //Pega o nome das variáveis no Dv.
-        motorShooter = hwMap.get(DcMotor.class, "motor_Shooter");
+        rpmMotor = hwMap.get(DcMotorControllerEx.class, "motor_Shooter");
         motorEsquerda = hwMap.get(DcMotor.class, "motor_Esquerda");
         motorEsquerdaTras = hwMap.get(DcMotor.class, "motor_EsquerdaTras");
-        motorDireita = hwMap.get(DcMotor.class,"motor_Direita");
-        motorDireitaTras = hwMap.get(DcMotor.class,"motor_DireitaTras");
-        motorIntake = hwMap.get(DcMotor.class,"motor_Intake");
-        motorWobbleEsq = hwMap.get(DcMotor.class,"motor_WoobleEsq");
-        motorWobbleDir = hwMap.get(DcMotor.class,"motor_WoobleDir");
-        servoWobble = hwMap.get(Servo.class,"servo_Chapa");
-        servoBalde = hwMap.get(Servo.class,"servo_Balde");
-        servoShootar = hwMap.get(Servo.class,"servo_Shootar");
+        motorDireita = hwMap.get(DcMotor.class, "motor_Direita");
+        motorDireitaTras = hwMap.get(DcMotor.class, "motor_DireitaTras");
+        motorIntake = hwMap.get(DcMotor.class, "motor_Intake");
+        motorWobbleEsq = hwMap.get(DcMotor.class, "motor_WoobleEsq");
+        motorWobbleDir = hwMap.get(DcMotor.class, "motor_WoobleDir");
+        servoWobble = hwMap.get(Servo.class, "servo_Chapa");
+        servoBalde = hwMap.get(Servo.class, "servo_Balde");
+        servoShootar = hwMap.get(Servo.class, "servo_Shootar");
 
         //Direção dos motores
-        motorShooter.setDirection(DcMotor.Direction.REVERSE);
         motorEsquerda.setDirection(DcMotor.Direction.REVERSE);
         motorDireita.setDirection(DcMotor.Direction.FORWARD);
         motorEsquerdaTras.setDirection(DcMotor.Direction.REVERSE);
@@ -111,14 +111,12 @@ public class HardwareClass {
         motorDireita.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorEsquerdaTras.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorDireitaTras.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorShooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        
+
         //Coloca para se mexer contando o encoder
         motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorEsquerdaTras.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorDireitaTras.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorShooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
  }

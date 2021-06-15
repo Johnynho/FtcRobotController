@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorControllerEx;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -27,8 +28,6 @@ public class TeleOperado extends LinearOpMode {
     //Vuforia vuforiaObj = new Vuforia();
     HardwareClass hard = new HardwareClass();
     SubSistemas ali = new SubSistemas();
-
-    DcMotorControllerEx rpmMotor;
 
     //String para configurar o vuforia (variável contém a cor da aliança)
     //static String ladoO;
@@ -128,47 +127,49 @@ public class TeleOperado extends LinearOpMode {
             //No primeiro aperto do botão B apenas levanta a chapa
             if (gamepad1.b) {
                 hard.servoWobble.setPosition(1);
-                 }
+            }
 
-            if (gamepad1.a){
+            if (gamepad1.a) {
                 hard.servoWobble.setPosition(0);
             }
 
 
             //Controle para não atirar se o balde não estiver levantado
-            if (gamepad1.left_bumper){
+            /*if (gamepad1.left_bumper) {
                 hard.motorWobbleEsq.setPower(-1);
                 hard.motorWobbleDir.setPower(-1);
-            }else if (gamepad1.left_trigger > 0 ) {
+            } else if (gamepad1.left_trigger > 0) {
                 hard.motorWobbleEsq.setPower(1);
                 hard.motorWobbleDir.setPower(1);
-            }else{
+            } else {
                 hard.motorWobbleEsq.setPower(0);
                 hard.motorWobbleDir.setPower(0);
             }
             telemetry.addData("PODER ESQUERDA: ", hard.motorWobbleEsq.getPower());
             telemetry.addData("PODER DIREITA: ", hard.motorWobbleDir.getPower());
-            telemetry.update();
-            }int portaShooter = hard.motorShooter.getPortNumber();
+            telemetry.update();*/
 
             double ticksPer;
             //Teste Shooter
             int c = 0;
+            while (gamepad1.x) {
+                c = 0;
+                telemetry.addData("Velocidade em ticks:", hard.rpmMotor.getMotorVelocity(1));
+                telemetry.update();
+                if (c == 0) {
+                    ticksPer = rpmTP(5000);
+                    hard.rpmMotor.setMotorVelocity(1, ticksPer);
+                }
+            }
+            if (!gamepad1.x) {
+                c = 1;
+            }
+            ticksPer = rpmTP(0);
+            hard.rpmMotor.setMotorVelocity(1, ticksPer);
 
             //Controle para não atirar se o balde não estiver levantado
-            if (gamepad1.left_bumper){
-                hard.motorWobbleEsq.setPower(-0.85);
-                hard.motorWobbleEsq.setPower(-0.85);
-            }else if (gamepad1.left_trigger > 0 ) {
-                hard.motorWobbleEsq.setPower(0.7);
-                hard.motorWobbleEsq.setPower(0.7);
-            }else{
-                hard.motorWobbleEsq.setPower(0);
-                hard.motorWobbleDir.setPower(0);
-            }
-            telemetry.addData("PODER ESQUERDA: ", hard.motorWobbleEsq.getPower());
-            telemetry.addData("PODER DIREITA: ", hard.motorWobbleDir.getPower());
-            telemetry.update();
+
+        }
             //Chama a leitura do Vuforia (somente verificar se o alvo está visível)
             /*vuforiaObj.vuforiaPosi();
 
