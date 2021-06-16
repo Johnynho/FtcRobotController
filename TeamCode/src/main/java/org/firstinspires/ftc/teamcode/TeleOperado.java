@@ -72,7 +72,7 @@ public class TeleOperado extends LinearOpMode {
              *                                TRAÇÃO
              * =============================================================================
              */
-            
+
             //Variáveis gamepad
             drive = -gamepad1.left_stick_y;
             turn = gamepad1.left_stick_x * 1.5;
