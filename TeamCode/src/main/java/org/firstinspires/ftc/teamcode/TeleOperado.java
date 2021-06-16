@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorControllerEx;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -22,6 +20,8 @@ public class TeleOperado extends LinearOpMode {
     int baldeC = 0;
     int c2 = 0;
     int wb = 0;
+    int c;
+    double ticksPer;
 
     //Instanciação de objetos
     ElapsedTime runtime = new ElapsedTime();
@@ -67,6 +67,12 @@ public class TeleOperado extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+            /*
+             * =============================================================================
+             *                                TRAÇÃO
+             * =============================================================================
+             */
+            
             //Variáveis gamepad
             drive = -gamepad1.left_stick_y;
             turn = gamepad1.left_stick_x * 1.5;
@@ -105,8 +111,11 @@ public class TeleOperado extends LinearOpMode {
             hard.motorDireita.setPower(poder[2]);
             hard.motorDireitaTras.setPower(poder[3]);
 
-            //Telemetria com os valores de cada roda
-
+            /*
+             * =============================================================================
+             *                                INTAKE
+             * =============================================================================
+             */
 
             //Toggle do intake para pegar argolas assim como para soltar
             if (gamepad1.right_bumper && !antiBumper) {
@@ -123,6 +132,12 @@ public class TeleOperado extends LinearOpMode {
                     hard.motorIntake.setPower(0);
                 }
             }
+
+            /*
+             * =============================================================================
+             *                              WOBBLE GOAL
+             * =============================================================================
+             */
 
             //No primeiro aperto do botão B apenas levanta a chapa
             if (gamepad1.b) {
@@ -149,9 +164,18 @@ public class TeleOperado extends LinearOpMode {
             telemetry.addData("PODER DIREITA: ", hard.motorWobbleDir.getPower());
             telemetry.update();*/
 
-            double ticksPer;
+            /*
+             * =============================================================================
+             *                                SHOOTER
+             * =============================================================================
+             */
+
+            if (gamepad1.left_trigger > 0 && baldeC == 1) {
+                hard.servoShootar.setPosition(1);
+                hard.servoShootar.setPosition(0);
+            }
+
             //Teste Shooter
-            int c = 0;
             while (gamepad1.x) {
                 c = 0;
                 telemetry.addData("Velocidade em ticks:", hard.rpmMotor.getMotorVelocity(1));
@@ -167,9 +191,12 @@ public class TeleOperado extends LinearOpMode {
             ticksPer = rpmTP(0);
             hard.rpmMotor.setMotorVelocity(1, ticksPer);
 
-            //Controle para não atirar se o balde não estiver levantado
+            /*
+             * =============================================================================
+             *                                VUFORIA
+             * =============================================================================
+             */
 
-        }
             //Chama a leitura do Vuforia (somente verificar se o alvo está visível)
             /*vuforiaObj.vuforiaPosi();
 
@@ -208,6 +235,7 @@ public class TeleOperado extends LinearOpMode {
             }
             telemetry.update();*/
         }
+    }
 
     public void pegWobble(double power, int seg){
         seg*=1000;
