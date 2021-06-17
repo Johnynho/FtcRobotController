@@ -17,11 +17,10 @@ public class TeleOperado extends LinearOpMode {
     //Variáveis de controle dos ifs
     boolean antiBumper = false;
     boolean onOff = true;
-    int baldeC = 0;
     int c2 = 0;
     int wb = 0;
     int c;
-    double ticksPer;
+    double angularRate;
 
     //Instanciação de objetos
     ElapsedTime runtime = new ElapsedTime();
@@ -148,9 +147,7 @@ public class TeleOperado extends LinearOpMode {
                 hard.servoWobble.setPosition(0);
             }
 
-
-            //Controle para não atirar se o balde não estiver levantado
-            /*if (gamepad1.left_bumper) {
+            if (gamepad1.left_bumper) {
                 hard.motorWobbleEsq.setPower(-1);
                 hard.motorWobbleDir.setPower(-1);
             } else if (gamepad1.left_trigger > 0) {
@@ -162,7 +159,7 @@ public class TeleOperado extends LinearOpMode {
             }
             telemetry.addData("PODER ESQUERDA: ", hard.motorWobbleEsq.getPower());
             telemetry.addData("PODER DIREITA: ", hard.motorWobbleDir.getPower());
-            telemetry.update();*/
+            telemetry.update();
 
             /*
              * =============================================================================
@@ -170,26 +167,31 @@ public class TeleOperado extends LinearOpMode {
              * =============================================================================
              */
 
-            if (gamepad1.left_trigger > 0 && baldeC == 1) {
+            /*while(gamepad1.left_bumper) {
+                hard.servoBalde.setPosition(1);
+            }
+            hard.servoBalde.setPosition(0);
+
+            if (gamepad1.left_trigger > 0 && gamepad1.left_bumper) {
                 hard.servoShootar.setPosition(1);
                 hard.servoShootar.setPosition(0);
-            }
+            }*/
 
             //Teste Shooter
             while (gamepad1.x) {
                 c = 0;
-                telemetry.addData("Velocidade em ticks:", hard.rpmMotor.getMotorVelocity(1));
+                telemetry.addData("Velocidade em ticks:", hard.rpmMotor.getVelocity());
                 telemetry.update();
                 if (c == 0) {
-                    ticksPer = rpmTP(5000);
-                    hard.rpmMotor.setMotorVelocity(1, ticksPer);
+                    angularRate = rpmAR(5000);
+                    hard.rpmMotor.setVelocity(angularRate);
                 }
             }
             if (!gamepad1.x) {
                 c = 1;
             }
-            ticksPer = rpmTP(0);
-            hard.rpmMotor.setMotorVelocity(1, ticksPer);
+            angularRate = rpmAR(0);
+            hard.rpmMotor.setVelocity(angularRate);
 
             /*
              * =============================================================================
@@ -246,12 +248,10 @@ public class TeleOperado extends LinearOpMode {
         hard.motorWobbleDir.setPower(0);
     }
 
-    public double rpmTP(int rpm){
+    public double rpmAR(int rpm){
         rpm/=60;
-        int rpmMax = 6000/60;
-        double rpmRev = rpm*28;
-        rpmRev/=rpmMax;
-        return rpmRev;
+        rpm*=360;
+        return rpm;
     }
 
     private double gyroCalculate() {

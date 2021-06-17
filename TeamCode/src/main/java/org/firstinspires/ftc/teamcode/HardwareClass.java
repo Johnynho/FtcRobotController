@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorControllerEx;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -46,7 +47,7 @@ public class HardwareClass {
     public DcMotor motorIntake;
     //Declaração dos motores/servos shooter
     public Servo servoBalde, servoShootar;
-    public DcMotorControllerEx rpmMotor;
+    public DcMotorEx rpmMotor;
 
     //Referências de hardware e gyro
     static BNO055IMU imu;
@@ -82,7 +83,7 @@ public class HardwareClass {
          */
 
         //Pega o nome das variáveis no Dv.
-        rpmMotor = hwMap.get(DcMotorControllerEx.class, "motor_Shooter");
+        rpmMotor = hwMap.get(DcMotorEx.class, "motor_Rpm");
         motorEsquerda = hwMap.get(DcMotor.class, "motor_Esquerda");
         motorEsquerdaTras = hwMap.get(DcMotor.class, "motor_EsquerdaTras");
         motorDireita = hwMap.get(DcMotor.class, "motor_Direita");
