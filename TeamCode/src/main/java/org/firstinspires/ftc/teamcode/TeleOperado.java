@@ -146,7 +146,7 @@ public class TeleOperado extends LinearOpMode {
             if (gamepad1.a) {
                 hard.servoWobble.setPosition(0);
             }
-
+            /*
             if (gamepad1.left_bumper) {
                 hard.motorWobbleEsq.setPower(-1);
                 hard.motorWobbleDir.setPower(-1);
@@ -160,22 +160,22 @@ public class TeleOperado extends LinearOpMode {
             telemetry.addData("PODER ESQUERDA: ", hard.motorWobbleEsq.getPower());
             telemetry.addData("PODER DIREITA: ", hard.motorWobbleDir.getPower());
             telemetry.update();
-
+            */
             /*
              * =============================================================================
              *                                SHOOTER
              * =============================================================================
              */
 
-            /*while(gamepad1.left_bumper) {
+            while(gamepad1.left_bumper) {
                 hard.servoBalde.setPosition(1);
             }
             hard.servoBalde.setPosition(0);
 
-            if (gamepad1.left_trigger > 0 && gamepad1.left_bumper) {
-                hard.servoShootar.setPosition(1);
+            while (gamepad1.left_trigger > 0) {
                 hard.servoShootar.setPosition(0);
-            }*/
+            }
+            hard.servoShootar.setPosition(1);
 
             //Teste Shooter
             while (gamepad1.x) {
