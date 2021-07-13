@@ -31,9 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorControllerEx;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -41,8 +39,8 @@ public class HardwareClass {
     //Declaração dos motores drive
     public DcMotor motorEsquerda, motorDireita, motorEsquerdaTras, motorDireitaTras;
     //Declaração dos motores/servos wobble goal
-    public DcMotor motorWobbleEsq, motorWobbleDir;
-    public Servo servoWobble;
+    public DcMotor motorWobble;
+    public DcMotor motorPegWobble;
     //Declaração dos motores intake
     public DcMotor motorIntake;
     //Declaração dos motores/servos shooter
@@ -89,9 +87,8 @@ public class HardwareClass {
         motorDireita = hwMap.get(DcMotor.class, "motor_Direita");
         motorDireitaTras = hwMap.get(DcMotor.class, "motor_DireitaTras");
         motorIntake = hwMap.get(DcMotor.class, "motor_Intake");
-        motorWobbleEsq = hwMap.get(DcMotor.class, "motor_WoobleEsq");
-        motorWobbleDir = hwMap.get(DcMotor.class, "motor_WoobleDir");
-        servoWobble = hwMap.get(Servo.class, "servo_Chapa");
+        motorWobble = hwMap.get(DcMotor.class, "motor_Wobble");
+        motorPegWobble = hwMap.get(DcMotor.class, "motor_PegWobble");
         servoBalde = hwMap.get(Servo.class, "servo_Balde");
         servoShootar = hwMap.get(Servo.class, "servo_Shootar");
 
@@ -101,9 +98,8 @@ public class HardwareClass {
         motorEsquerdaTras.setDirection(DcMotor.Direction.REVERSE);
         motorDireitaTras.setDirection(DcMotor.Direction.FORWARD);
         motorIntake.setDirection(DcMotor.Direction.FORWARD);
-        motorWobbleEsq.setDirection(DcMotor.Direction.FORWARD);
-        motorWobbleDir.setDirection(DcMotor.Direction.REVERSE);
-        servoWobble.setDirection(Servo.Direction.FORWARD);
+        motorWobble.setDirection(DcMotor.Direction.FORWARD);
+        motorPegWobble.setDirection(DcMotor.Direction.FORWARD);
         servoBalde.setDirection(Servo.Direction.FORWARD);
         servoShootar.setDirection(Servo.Direction.FORWARD);
 

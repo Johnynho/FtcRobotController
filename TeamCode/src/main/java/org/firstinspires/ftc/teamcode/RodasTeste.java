@@ -18,7 +18,7 @@ public class RodasTeste extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        int c2 = 0;
+        int c2;
         double poderEsquerda;
         double poderDireita;
         double max;
@@ -54,15 +54,18 @@ public class RodasTeste extends LinearOpMode {
             if (max > 1.0) {
                 poderEsquerda /= max;
                 poderDireita /= max;
-            } else if (max == 0) {
-                motorDireita.setPower(0);
-                motorEsquerda.setPower(0);
-                motorDireitoBack.setPower(0);
-                motorEsquerdoBack.setPower(0);
+                c2 = 0;
+            } else {
+                if (max == 0) {
+                    motorDireita.setPower(0);
+                    motorEsquerda.setPower(0);
+                    motorDireitoBack.setPower(0);
+                    motorEsquerdoBack.setPower(0);
 
+                }
+                c2 = 0;
             }
 
-            c2 = 0;
             //Mandando a força para os motores
             if (c2 == 0) {
                 motorDireita.setPower(poderDireita);

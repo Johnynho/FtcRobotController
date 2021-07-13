@@ -52,8 +52,7 @@ public class TeleOperado extends LinearOpMode {
         //Ativa o vuforia
         //vuforiaObj.ativeVuforia();
 
-        hard.motorWobbleEsq.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        hard.motorWobbleDir.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hard.motorWobble.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hard.motorEsquerda.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hard.motorDireita.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hard.motorEsquerdaTras.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -140,34 +139,28 @@ public class TeleOperado extends LinearOpMode {
 
             //No primeiro aperto do botão B apenas levanta a chapa
             if (gamepad1.b) {
-                hard.servoWobble.setPosition(1);
+                hard.motorPegWobble.setPower(-1);
+            }else if (gamepad1.a) {
+                hard.motorPegWobble.setPower(1);
+            }else{
+                hard.motorPegWobble.setPower(0);
+            }
+            
+            if (gamepad1.left_bumper) {
+                hard.motorWobble.setPower(-1);
+            } else if (gamepad1.left_trigger > 0) {
+                hard.motorWobble.setPower(1);
+            } else {
+                hard.motorWobble.setPower(0);
             }
 
-            if (gamepad1.a) {
-                hard.servoWobble.setPosition(0);
-            }
-            /*
-            if (gamepad1.left_bumper) {
-                hard.motorWobbleEsq.setPower(-1);
-                hard.motorWobbleDir.setPower(-1);
-            } else if (gamepad1.left_trigger > 0) {
-                hard.motorWobbleEsq.setPower(1);
-                hard.motorWobbleDir.setPower(1);
-            } else {
-                hard.motorWobbleEsq.setPower(0);
-                hard.motorWobbleDir.setPower(0);
-            }
-            telemetry.addData("PODER ESQUERDA: ", hard.motorWobbleEsq.getPower());
-            telemetry.addData("PODER DIREITA: ", hard.motorWobbleDir.getPower());
-            telemetry.update();
-            */
             /*
              * =============================================================================
              *                                SHOOTER
              * =============================================================================
              */
 
-            while(gamepad1.left_bumper) {
+            /*while(gamepad1.left_bumper) {
                 hard.servoBalde.setPosition(1);
             }
             hard.servoBalde.setPosition(0);
@@ -175,7 +168,7 @@ public class TeleOperado extends LinearOpMode {
             while (gamepad1.left_trigger > 0) {
                 hard.servoShootar.setPosition(0);
             }
-            hard.servoShootar.setPosition(1);
+            hard.servoShootar.setPosition(1);*/
 
             //Teste Shooter
             while (gamepad1.x) {
@@ -237,15 +230,6 @@ public class TeleOperado extends LinearOpMode {
             }
             telemetry.update();*/
         }
-    }
-
-    public void pegWobble(double power, int seg){
-        seg*=1000;
-        hard.motorWobbleEsq.setPower(power);
-        hard.motorWobbleDir.setPower(power);
-        sleep(seg);
-        hard.motorWobbleEsq.setPower(0);
-        hard.motorWobbleDir.setPower(0);
     }
 
     public double rpmAR(int rpm){

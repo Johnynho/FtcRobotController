@@ -32,7 +32,6 @@ public class AutonomoGeral extends LinearOpMode {
 
     //Inicialização
     private final ElapsedTime runtime = new ElapsedTime();
-    DcMotorControllerEx rpmMotor;
 
     @Override
     public void runOpMode() {
@@ -43,8 +42,7 @@ public class AutonomoGeral extends LinearOpMode {
         robot.hardwareGeral(hardwareMap);
         tfEngine.initEngine(hardwareMap);
 
-        robot.motorWobbleEsq.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        robot.motorWobbleDir.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.motorWobble.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         robot.motorEsquerda.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         robot.motorDireita.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -54,39 +52,17 @@ public class AutonomoGeral extends LinearOpMode {
         telemetry.addData("Status", "TensorFlow iniciado");
         telemetry.update();
 
-        robot.servoWobble.setPosition(1);
-
+        robot.motorPegWobble.setPower(1);
+        sleep(500);
+        robot.motorPegWobble.setPower(0);
         waitForStart();
 
         String quantArg = tfEngine.quantidadeDeArgolas();
 
-        //Liga a lanterna
-        //CameraDevice.getInstance().setFlashTorchMode(true);
-
-        //int portaShooter = robot.motorShooter.getPortNumber();
-        //Teste Shooter
-        /*int c = 0;
-        sleep(5000);
-        while(gamepad1.x) {
-            telemetry.addData("Velocidade em ticks:", rpmMotor.getMotorVelocity(portaShooter));
-            telemetry.update();
-            if(c == 0) {
-                ticksPer = rpmTP(5000);
-                rpmMotor.setMotorVelocity(portaShooter, ticksPer);
-                c++;
-            }
-        }
-        robot.motorEsquerda.setPower(0);*/
-
-        //Chapa teste
-        //pegWobble(0.7, 1);
-
-        int pp = (int) (robot.motorEsquerda.getCurrentPosition() / COUNTS_PER_INCH);
-        telemetry.addData("Polegadas percorridas", pp);
-        telemetry.update();
 
         tfAutonomous(quantArg);
 
+        //Teste Gyro
         /*double curangle = gyroCalculate();
         while (true) {
             curangle = gyroCalculate();
@@ -99,8 +75,6 @@ public class AutonomoGeral extends LinearOpMode {
 
     public void tfAutonomous(String quantArg) {
         //Desliga Lanterna
-        int pp = (int) (robot.motorEsquerda.getCurrentPosition() / COUNTS_PER_INCH);
-        CameraDevice.getInstance().setFlashTorchMode(false);
         if(quantArg == "Quad"){
             //Faz a ação
             encoderDrive(0.8, 56, 56, 10);
@@ -128,11 +102,9 @@ public class AutonomoGeral extends LinearOpMode {
 
     public void pegWobble(double power, int seg){
 
-        robot.motorWobbleEsq.setPower(power);
-        robot.motorWobbleDir.setPower(power);
+        robot.motorWobble.setPower(power);
         sleep(seg);
-        robot.motorWobbleEsq.setPower(0);
-        robot.motorWobbleDir.setPower(0);
+        robot.motorWobble.setPower(0);
     }
 
     //Angulo positivo == Esquerda
