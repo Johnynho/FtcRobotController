@@ -155,6 +155,11 @@ public class TeleOperado extends LinearOpMode {
                 hard.motorPegWobble.setPower(1);
                 sleep(400);
                 hard.motorPegWobble.setPower(0);
+                hard.motorPegWobble.setPower(-1);
+                sleep(200);
+                hard.motorPegWobble.setPower(1);
+                sleep(200);
+                hard.motorPegWobble.setPower(0);
                 c2 = 2;
             }else if (gamepad1.b && c2 == 2){
                 hard.motorWobble.setPower(-1);
@@ -162,7 +167,6 @@ public class TeleOperado extends LinearOpMode {
                 hard.motorWobble.setPower(0);
                 c2 = 0;
             }
-
 
             /*//No primeiro aperto do botão B apenas levanta a chapa
             if (gamepad1.b) {
@@ -180,6 +184,7 @@ public class TeleOperado extends LinearOpMode {
             } else {
                 hard.motorWobble.setPower(0);
             }
+
             */
             /*
              * =============================================================================

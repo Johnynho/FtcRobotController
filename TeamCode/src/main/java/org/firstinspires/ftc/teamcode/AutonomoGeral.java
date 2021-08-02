@@ -52,9 +52,13 @@ public class AutonomoGeral extends LinearOpMode {
         telemetry.addData("Status", "TensorFlow iniciado");
         telemetry.update();
 
-        robot.motorPegWobble.setPower(1);
-        sleep(500);
-        robot.motorPegWobble.setPower(0);
+        robot.motorPegWobble.setPower(-1);
+        sleep(300);
+        robot.motorPegWobble.setPower(-0.4);
+        sleep(100);
+        robot.motorWobble.setPower(1);
+        sleep(800);
+        robot.motorWobble.setPower(0);
         waitForStart();
 
         String quantArg = tfEngine.quantidadeDeArgolas();
@@ -90,6 +94,18 @@ public class AutonomoGeral extends LinearOpMode {
         //Se for null faz a ação
         //Anda para perto do quadrado
         encoderDrive(0.8, 56, 56, 10);
+        alinharGyro(-75, 0.4, 1);
+        robot.motorWobble.setPower(-1);
+        sleep(800);
+        robot.motorWobble.setPower(0);
+        sleep(100);
+        robot.motorPegWobble.setPower(1);
+        sleep(400);
+        robot.motorPegWobble.setPower(0);
+        sleep(1500);
+        encoderDrive(0.8, -5, -5, 10);
+        sleep(1500);
+        alinharGyro(0, 0.4, 1);
     }
 
     public double rpmTP(int rpm){
@@ -115,7 +131,7 @@ public class AutonomoGeral extends LinearOpMode {
         double erro = angulo-curangle;
         double out;
         double outfix = 0;
-        double kp = 0.00005;
+        double kp = 0.00000000000000005;
         double erroac = 1;
         //Transforma 1 milisegundo em 1 segundo (EXEMPLO PODERIA SER 5 OU 10)
         timeout*=1000;
