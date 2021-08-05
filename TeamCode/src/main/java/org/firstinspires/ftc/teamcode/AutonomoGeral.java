@@ -93,8 +93,8 @@ public class AutonomoGeral extends LinearOpMode {
 
         //Se for null faz a ação
         //Anda para perto do quadrado
-        encoderDrive(0.8, 56, 56, 10);
-        alinharGyro(-75, 0.4, 1);
+        encoderDrive(0.4, 40, 40, 10);
+        alinharGyro(-40, 0.3, 1);
         robot.motorWobble.setPower(-1);
         sleep(800);
         robot.motorWobble.setPower(0);
@@ -193,34 +193,46 @@ public class AutonomoGeral extends LinearOpMode {
     }
 
     public void encoderDrive(double speed, double leftInches, double rightInches, double timeoutS) {
+        int newLeftBTarget;
+        int newRightBTarget;
         int newLeftTarget;
         int newRightTarget;
         double speedEsquerda;
         double speedDireita;
+        double speedEsquerdaB;
+        double speedDireitaB;
         speedEsquerda = leftInches > 0 ? speed : -speed;
         speedDireita = rightInches > 0 ? speed : - speed;
+        speedEsquerdaB = leftInches > 0 ? speed : -speed;
+        speedDireitaB = rightInches > 0 ? speed : - speed;
 
         int pp = (int) (robot.motorEsquerda.getCurrentPosition()/COUNTS_PER_INCH);
 
         newRightTarget = robot.motorDireita.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
         newLeftTarget = robot.motorEsquerda.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+        newRightBTarget = robot.motorDireita.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+        newLeftBTarget = robot.motorEsquerda.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
         robot.motorDireita.setTargetPosition(newRightTarget);
         robot.motorEsquerda.setTargetPosition(newLeftTarget);
+        robot.motorDireitaTras.setTargetPosition(newRightBTarget);
+        robot.motorEsquerdaTras.setTargetPosition(newLeftBTarget);
 
         //Confere se o opMode está ativo
         if (opModeIsActive()) {
             //Ativa o RUN_TO_POSITION
             robot.motorEsquerda.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.motorDireita.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.motorEsquerdaTras.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.motorDireitaTras.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             //Reseta o runtime e começa o movimento
             runtime.reset();
 
             robot.motorEsquerda.setPower(Math.abs(speed));
             robot.motorDireita.setPower(Math.abs(speed));
-            robot.motorEsquerdaTras.setPower(speedEsquerda);
-            robot.motorDireitaTras.setPower(speedDireita);
+            robot.motorEsquerdaTras.setPower(Math.abs(speed));
+            robot.motorDireitaTras.setPower(Math.abs(speed));
 
-            while (opModeIsActive() && (runtime.seconds() < timeoutS) && (robot.motorEsquerda.isBusy() && robot.motorDireita.isBusy())) {
+            while (opModeIsActive() && (runtime.seconds() < timeoutS) && (robot.motorEsquerda.isBusy() && robot.motorDireita.isBusy()) && (robot.motorEsquerdaTras.isBusy() && robot.motorDireitaTras.isBusy())) {
 
                 telemetry.addData("Power Esquerda: ", robot.motorEsquerda.getPower());
                 telemetry.addData("Power Direita: ", robot.motorDireita.getPower());
@@ -239,6 +251,8 @@ public class AutonomoGeral extends LinearOpMode {
             //Desliga o RUN_TO_POSITION
             robot.motorEsquerda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.motorDireita.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.motorEsquerdaTras.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.motorDireitaTras.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 }
