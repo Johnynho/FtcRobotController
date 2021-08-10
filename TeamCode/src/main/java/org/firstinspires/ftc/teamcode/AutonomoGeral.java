@@ -81,13 +81,37 @@ public class AutonomoGeral extends LinearOpMode {
         //Desliga Lanterna
         if(quantArg == "Quad"){
             //Faz a ação
-            encoderDrive(0.8, 56, 56, 10);
+            encoderDrive(0.8, 90, 90, 10);
+            alinharGyro(-40, 0.3, 1);
+            robot.motorWobble.setPower(-1);
+            sleep(800);
+            robot.motorWobble.setPower(0);
+            sleep(100);
+            robot.motorPegWobble.setPower(1);
+            sleep(400);
+            robot.motorPegWobble.setPower(0);
+            sleep(1500);
+            encoderDrive(0.8, -5, -5, 10);
+            sleep(1500);
+            alinharGyro(0, 0.4, 1);
             return;
         }
 
         if (quantArg == "Single") {
             //Faz a ação
-            encoderDrive(0.8, 56, 56, 10);
+            encoderDrive(0.8, 73, 73, 10);
+            alinharGyro(85, 0.3, 1);
+            robot.motorWobble.setPower(-1);
+            sleep(800);
+            robot.motorWobble.setPower(0);
+            sleep(100);
+            robot.motorPegWobble.setPower(1);
+            sleep(400);
+            robot.motorPegWobble.setPower(0);
+            sleep(1500);
+            encoderDrive(0.8, -5, -5, 10);
+            sleep(1500);
+            alinharGyro(0, 0.4, 1);
             return;
         }
 
