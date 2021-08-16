@@ -40,6 +40,14 @@ public class AutonomoGeral extends LinearOpMode {
         telemetry.addData("Status: ", "Iniciado");
         telemetry.update();
         robot.hardwareGeral(hardwareMap);
+
+        robot.motorPegWobble.setPower(-1);
+        sleep(300);
+        robot.motorPegWobble.setPower(-0.4);
+        sleep(100);
+        robot.motorWobble.setPower(1);
+        sleep(800);
+        robot.motorWobble.setPower(0);
         tfEngine.initEngine(hardwareMap);
 
         robot.motorWobble.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -52,18 +60,10 @@ public class AutonomoGeral extends LinearOpMode {
         telemetry.addData("Status", "TensorFlow iniciado");
         telemetry.update();
 
-        robot.motorPegWobble.setPower(-1);
-        sleep(300);
-        robot.motorPegWobble.setPower(-0.4);
-        sleep(100);
-        robot.motorWobble.setPower(1);
-        sleep(800);
-        robot.motorWobble.setPower(0);
+
         waitForStart();
 
         String quantArg = tfEngine.quantidadeDeArgolas();
-
-
         tfAutonomous(quantArg);
 
         //Teste Gyro
@@ -81,7 +81,7 @@ public class AutonomoGeral extends LinearOpMode {
         //Desliga Lanterna
         if(quantArg == "Quad"){
             //Faz a ação
-            encoderDrive(0.8, 90, 90, 10);
+            encoderDrive(0.4, 103, 103, 10);
             alinharGyro(-40, 0.3, 1);
             robot.motorWobble.setPower(-1);
             sleep(800);
@@ -91,16 +91,17 @@ public class AutonomoGeral extends LinearOpMode {
             sleep(400);
             robot.motorPegWobble.setPower(0);
             sleep(1500);
-            encoderDrive(0.8, -5, -5, 10);
+            encoderDrive(0.4, -5, -5, 10);
             sleep(1500);
             alinharGyro(0, 0.4, 1);
+            encoderDrive(0.4, -23, -23, 10);
             return;
         }
 
         if (quantArg == "Single") {
             //Faz a ação
-            encoderDrive(0.8, 73, 73, 10);
-            alinharGyro(85, 0.3, 1);
+            encoderDrive(0.4, 82, 82, 10);
+            alinharGyro(45, 0.3, 1);
             robot.motorWobble.setPower(-1);
             sleep(800);
             robot.motorWobble.setPower(0);
@@ -109,7 +110,7 @@ public class AutonomoGeral extends LinearOpMode {
             sleep(400);
             robot.motorPegWobble.setPower(0);
             sleep(1500);
-            encoderDrive(0.8, -5, -5, 10);
+            encoderDrive(0.4, -7, -7, 10);
             sleep(1500);
             alinharGyro(0, 0.4, 1);
             return;
@@ -117,7 +118,7 @@ public class AutonomoGeral extends LinearOpMode {
 
         //Se for null faz a ação
         //Anda para perto do quadrado
-        encoderDrive(0.4, 40, 40, 10);
+        encoderDrive(0.4, 52, 52, 10);
         alinharGyro(-40, 0.3, 1);
         robot.motorWobble.setPower(-1);
         sleep(800);
@@ -127,9 +128,11 @@ public class AutonomoGeral extends LinearOpMode {
         sleep(400);
         robot.motorPegWobble.setPower(0);
         sleep(1500);
-        encoderDrive(0.8, -5, -5, 10);
+        encoderDrive(0.4, -5, -5, 10);
         sleep(1500);
         alinharGyro(0, 0.4, 1);
+        encoderDrive(0.4, 10, 10, 10);
+
     }
 
     public double rpmTP(int rpm){
